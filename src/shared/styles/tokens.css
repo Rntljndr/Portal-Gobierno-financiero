@@ -1,0 +1,102 @@
+@import 'tailwindcss';
+
+/* Capa primitiva: paleta cruda (Cencosud) */
+@theme {
+  --color-cs-azul-oscuro: #061494;
+  --color-cs-azul: #0047b0;
+  --color-cs-azul-claro: #0073ff;
+  --color-cs-gris: #ededed;
+  --color-cs-celeste: #c4dfff;
+  --color-cs-gris-oscuro: #455b85;
+  --color-cs-negro: #2f2f2f;
+  --color-cs-naranja: #ff6a00;
+
+  --color-warn-bg: #fff4e0;
+  --color-warn-fg: #b45309;
+  --color-warn-line: #fdba74;
+  --color-err-bg: #fee8e8;
+  --color-err-fg: #b42318;
+  --color-err-line: #fca5a5;
+  --color-ok-bg: #e3f9ec;
+  --color-ok-fg: #067647;
+
+  --font-sans: 'Montserrat', system-ui, -apple-system, sans-serif;
+}
+
+/* Capa semántica: alias con significado, consumidos por los componentes */
+:root {
+  --background: #f8fafc;
+  --foreground: var(--color-cs-negro);
+
+  --primary: var(--color-cs-azul);
+  --primary-foreground: var(--color-white);
+
+  --muted: var(--color-cs-gris);
+  --muted-foreground: #8a90a2;
+
+  --destructive: var(--color-err-fg);
+  --destructive-foreground: var(--color-white);
+  --destructive-surface: var(--color-err-bg);
+  --destructive-line: var(--color-err-line);
+
+  --success: var(--color-ok-fg);
+  --success-foreground: var(--color-white);
+  --success-surface: var(--color-ok-bg);
+
+  --warning: var(--color-warn-fg);
+  --warning-foreground: var(--color-white);
+  --warning-surface: var(--color-warn-bg);
+  --warning-line: var(--color-warn-line);
+
+  --border: rgb(6 20 148 / 0.1);
+  --border-strong: rgb(6 20 148 / 0.18);
+  --ring: var(--color-cs-azul);
+
+  /* Subgrupo específico de superficie: el sidebar es azul oscuro, no reusa los tokens de UI clara */
+  --sidebar-bg: var(--color-cs-azul);
+  --sidebar-bg-2: #003685;
+  --sidebar-foreground: rgb(255 255 255 / 0.82);
+  --sidebar-active: #1e47b8;
+  --sidebar-border: rgb(255 255 255 / 0.1);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-surface: var(--destructive-surface);
+  --color-destructive-line: var(--destructive-line);
+
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-surface: var(--success-surface);
+
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning-surface: var(--warning-surface);
+  --color-warning-line: var(--warning-line);
+
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-ring: var(--ring);
+
+  --color-sidebar-bg: var(--sidebar-bg);
+  --color-sidebar-bg-2: var(--sidebar-bg-2);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-active: var(--sidebar-active);
+  --color-sidebar-border: var(--sidebar-border);
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+}
