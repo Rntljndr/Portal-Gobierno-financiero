@@ -39,6 +39,7 @@ export type IconName =
   | 'view_table'
   | 'minus'
   | 'sparkles'
+  | 'lock'
 
 export interface GlyphProps {
   s: number

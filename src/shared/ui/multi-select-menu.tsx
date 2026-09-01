@@ -17,7 +17,7 @@ export function MultiSelectMenu({ placeholder, options, values, query, onQueryCh
     <Popover.Content
       align="start"
       sideOffset={4}
-      className="z-130 w-(--radix-popover-trigger-width) rounded-[10px] border border-border bg-white p-1 shadow-[0_8px_24px_rgba(6,20,148,0.12)]"
+      className="z-[9100] w-(--radix-popover-trigger-width) rounded-[10px] border border-border bg-white p-1 shadow-[0_8px_24px_rgba(6,20,148,0.12)]"
     >
       <div className="p-1.5">
         <div className="flex h-8 items-center gap-2 rounded-lg border border-border bg-[#F8FAFD] px-2.5">

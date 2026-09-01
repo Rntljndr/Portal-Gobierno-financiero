@@ -1,46 +1,39 @@
-import { Button, Icon } from '@/shared/ui'
-import { currencyOptions } from '@/data/reales'
+import { Badge, Icon } from '@/shared/ui'
+import { RealesFilterToggle } from './reales-filters'
 
 interface RealesToolbarProps {
-  search: string
-  onSearchChange: (v: string) => void
-  currency: string
-  onCurrencyChange: (v: string) => void
+  filtersOpen: boolean
+  onToggleFilters: () => void
+  activeFilterCount: number
+  comparisonCount: number
+  onOpenComparar: () => void
+  onDownload: () => void
 }
 
-export function RealesToolbar({ search, onSearchChange, currency, onCurrencyChange }: RealesToolbarProps) {
+export function RealesToolbar({ filtersOpen, onToggleFilters, activeFilterCount, comparisonCount, onOpenComparar, onDownload }: RealesToolbarProps) {
   return (
-    <div className="mx-8 mb-4 flex flex-wrap items-center gap-2.5 rounded-2xl border border-border bg-white p-3.5">
-      <div className="flex h-9 min-w-[280px] flex-1 items-center gap-2 rounded-lg border border-border bg-white px-3">
-        <Icon name="search" size={14} color="#8A90A2" />
-        <input
-          value={search}
-          onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Buscar por PEP, proveedor o documento..."
-          className="h-full flex-1 bg-transparent text-[12.5px] outline-none placeholder:text-muted-foreground"
-        />
+    <div className="mx-8 mb-3 flex flex-wrap items-center justify-between gap-3">
+      <div className="flex items-center gap-2.5">
+        <RealesFilterToggle open={filtersOpen} onToggle={onToggleFilters} activeCount={activeFilterCount} />
+        <Badge variant="neutral" className="border border-[#DDD0F8] bg-[#F3EEFF] text-[#6922E7]">
+          <Icon name="trendup" size={12} color="currentColor" />
+          Forecast Agosto 2026
+        </Badge>
       </div>
-      <Button variant="outline" size="sm">
-        <Icon name="filter" size={12} color="#0047B0" /> Filtros
-      </Button>
-      <div className="flex h-9 items-center gap-1.5 rounded-lg border-[1.5px] border-border bg-white px-3">
-        <Icon name="dollar" size={13} color="#455B85" />
-        <span className="text-[12.5px] text-muted-foreground">Moneda:</span>
-        <select
-          value={currency}
-          onChange={(e) => onCurrencyChange(e.target.value)}
-          className="bg-transparent text-[12.5px] font-semibold text-foreground outline-none"
+      <div className="flex items-center gap-2">
+        <button type="button" onClick={onDownload} className="inline-flex items-center gap-1.5 rounded-lg border border-border-strong bg-white px-3 py-[7px] text-xs font-semibold text-primary hover:bg-[#F4F7FE]">
+          <Icon name="download" size={12} color="#0047B0" /> Descarga
+        </button>
+        <button
+          type="button"
+          onClick={onOpenComparar}
+          className="inline-flex items-center gap-2 rounded-lg border-[1.5px] border-border-strong bg-white px-3 py-[7px] text-xs font-semibold text-foreground hover:bg-[#F4F7FE] data-[active=true]:border-primary"
+          data-active={comparisonCount > 0}
         >
-          {currencyOptions.map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
-            </option>
-          ))}
-        </select>
+          Comparar
+          {comparisonCount > 0 && <span className="flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-white">{comparisonCount}</span>}
+        </button>
       </div>
-      <Button variant="outline" size="sm">
-        <Icon name="download" size={12} color="#0047B0" /> Excel
-      </Button>
     </div>
   )
 }

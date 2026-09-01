@@ -1,29 +1,54 @@
-import { useState } from 'react'
-import { movimientosReales } from '@/data/reales'
-import { RealesHeader } from './components/reales-header'
+import { useNavigate } from 'react-router'
+import { Breadcrumb, Pagination } from '@/shared/ui'
+import { calcTotals } from './lib/reales-calc'
+import { downloadRealesCsv } from './lib/download-csv'
+import { useReales } from './lib/use-reales'
+import { RealesPageHeader } from './components/reales-page-header'
+import { RealesKpis } from './components/reales-kpis'
 import { RealesToolbar } from './components/reales-toolbar'
+import { RealesFiltersPanel } from './components/reales-filters'
 import { RealesTable } from './components/reales-table'
+import { RealesComparisonDrawer } from './components/reales-comparison-drawer'
+import type { RealesN7Row, RealesRow } from '@/data/reales'
 
 export function RealesPage() {
-  const [currency, setCurrency] = useState('USD')
-  const [syncing, setSyncing] = useState(false)
-  const [search, setSearch] = useState('')
+  const navigate = useNavigate()
+  const s = useReales()
 
-  const handleSync = () => {
-    setSyncing(true)
-    setTimeout(() => setSyncing(false), 1600)
-  }
+  const aggregateTotals = s.filteredN4.reduce(
+    (acc, r) => {
+      const t = calcTotals(r)
+      return { plan: acc.plan + t.plan, real: acc.real + t.real, disponible: acc.disponible + t.disponible, realMasForecast: acc.realMasForecast + t.realMasForecast, desvio: acc.desvio + t.desvio, pctDesvio: 0 }
+    },
+    { plan: 0, real: 0, disponible: 0, realMasForecast: 0, desvio: 0, pctDesvio: 0 },
+  )
 
-  const filtered = movimientosReales.filter((r) => {
-    const q = search.toLowerCase()
-    return !q || r.pep.toLowerCase().includes(q) || r.vendor.toLowerCase().includes(q) || r.doc.toLowerCase().includes(q)
-  })
+  const goToN7 = (row: RealesRow | RealesN7Row) => navigate(`/reales/${encodeURIComponent(row.codigo)}`)
 
   return (
     <div className="h-full overflow-y-auto">
-      <RealesHeader syncing={syncing} onSync={handleSync} />
-      <RealesToolbar search={search} onSearchChange={setSearch} currency={currency} onCurrencyChange={setCurrency} />
-      <RealesTable rows={filtered} />
+      <Breadcrumb items={[{ label: 'SIP', to: '/' }, { label: 'Presupuesto', to: '/ejercicios' }, { label: 'Ejercicios', to: '/ejercicios' }, { label: 'Reales' }]} />
+      <RealesPageHeader tab={s.tab} onTabChange={s.setTab} />
+      <RealesKpis totals={aggregateTotals} currency={s.currency} />
+      <RealesToolbar
+        filtersOpen={s.filtersOpen}
+        onToggleFilters={() => s.setFiltersOpen((v) => !v)}
+        activeFilterCount={s.activeFilterCount}
+        comparisonCount={s.comparisonKeys.length}
+        onOpenComparar={() => s.setCompDrawerOpen(true)}
+        onDownload={() => downloadRealesCsv(s.filteredN4, 'Reales_N4_2026.csv')}
+      />
+      <RealesFiltersPanel open={s.filtersOpen} isN7={s.isN7} filters={s.filters} options={s.options} onChange={s.onChangeFilter} onClear={s.clearFilters} activeCount={s.activeFilterCount} />
+      <RealesTable
+        rows={s.paged}
+        mode={s.isN7 ? 'n7' : 'n4'}
+        currency={s.currency}
+        comparisons={s.comparisonKeys}
+        itemLabel={s.isN7 ? 'PEPs N7' : 'servicios'}
+        onRowClick={s.isN7 ? (row) => navigate(`/reales/${encodeURIComponent((row as RealesN7Row).parentCodigo)}/${encodeURIComponent(row.codigo)}`) : goToN7}
+      />
+      <Pagination page={s.page} totalPages={s.totalPages} totalItems={s.totalFiltered} pageSize={s.pageSize} onPageChange={s.setPage} itemLabel={s.isN7 ? 'PEPs N7' : 'servicios'} />
+      <RealesComparisonDrawer open={s.compDrawerOpen} onClose={() => s.setCompDrawerOpen(false)} comparisons={s.comparisons} onChange={s.setComparisons} />
     </div>
   )
 }

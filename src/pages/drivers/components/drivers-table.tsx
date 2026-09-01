@@ -1,4 +1,4 @@
-import { Icon, EmptyState } from '@/shared/ui'
+import { Badge, Icon, EmptyState } from '@/shared/ui'
 import type { DriverRow } from '@/data/drivers'
 import { EstadoPill } from './estado-pill'
 
@@ -36,12 +36,12 @@ export function DriversTable({ rows, onDelete }: { rows: DriverRow[]; onDelete: 
                 <td className={`${td} min-w-[200px] font-semibold text-foreground`}>
                   <div className="mb-1 flex items-center gap-1.5">
                     {r.nuevo && (
-                      <span className="rounded bg-[#E1FBEF] px-1.5 py-0.5 text-[10px] font-bold text-[#067647]">Nuevo</span>
+                      <Badge variant="success" shape="chip" className="text-[10px]">Nuevo</Badge>
                     )}
                     {!r.distribucion && (
-                      <span className="inline-flex items-center gap-1 rounded bg-[#FFF4E0] px-1.5 py-0.5 text-[10px] font-semibold text-[#B45309]">
-                        <Icon name="alert" size={10} color="#B45309" /> Sin distribución
-                      </span>
+                      <Badge variant="warning" shape="chip" className="text-[10px]">
+                        <Icon name="alert" size={10} color="currentColor" /> Sin distribución
+                      </Badge>
                     )}
                   </div>
                   {r.nombre}

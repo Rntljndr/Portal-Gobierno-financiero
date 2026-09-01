@@ -1,9 +1,9 @@
 import type { Servicio } from '@/data/services'
+import { Pagination } from '@/shared/ui'
 import { PepN4Actions } from './pep-n4-actions'
 import { ServicesToolbar } from './services-toolbar'
 import { ServicesGrid } from './services-grid'
 import { ServicesTable } from './services-table'
-import { Pagination } from './pagination'
 import type { useMisServicios } from '../lib/use-mis-servicios'
 
 interface ServicesSectionProps {
@@ -51,6 +51,7 @@ export function ServicesSection({ state, onOpenModal, onOpenServicio }: Services
         totalItems={state.filteredCount}
         pageSize={state.pageSize}
         onPageChange={state.setPage}
+        itemLabel="servicios"
       />
     </>
   )

@@ -1,4 +1,4 @@
-import { Icon, KpiCard } from '@/shared/ui'
+import { Badge, Icon, KpiCard } from '@/shared/ui'
 
 export function DashboardKpiRow() {
   return (
@@ -10,9 +10,9 @@ export function DashboardKpiRow() {
         iconBg="#EEF1FB"
         delta={
           <>
-            <span className="inline-flex items-center gap-1 rounded-[4px] bg-[#E1FBEF] px-1.5 py-0.5 text-[11.5px] font-bold text-[#067647]">
-              <Icon name="trendup" size={10} color="#067647" /> 8.0%
-            </span>
+            <Badge variant="success" shape="chip" className="text-[11.5px]">
+              <Icon name="trendup" size={10} color="currentColor" /> 8.0%
+            </Badge>
             <span className="text-cs-gris-oscuro">vs año anterior</span>
           </>
         }
@@ -24,9 +24,9 @@ export function DashboardKpiRow() {
         iconBg="#E1FBEF"
         delta={
           <>
-            <span className="inline-flex items-center gap-1 rounded-[4px] bg-[#E1FBEF] px-1.5 py-0.5 text-[11.5px] font-bold text-[#067647]">
-              <Icon name="trendup" size={10} color="#067647" /> 2.1%
-            </span>
+            <Badge variant="success" shape="chip" className="text-[11.5px]">
+              <Icon name="trendup" size={10} color="currentColor" /> 2.1%
+            </Badge>
             <span className="text-cs-gris-oscuro">sobre forecast base</span>
           </>
         }
@@ -38,9 +38,9 @@ export function DashboardKpiRow() {
         iconBg="#EEF1FB"
         delta={
           <>
-            <span className="inline-flex items-center gap-1 rounded-[4px] bg-[#E1FBEF] px-1.5 py-0.5 text-[11.5px] font-bold text-[#067647]">
-              <Icon name="trendup" size={10} color="#067647" /> 3.4%
-            </span>
+            <Badge variant="success" shape="chip" className="text-[11.5px]">
+              <Icon name="trendup" size={10} color="currentColor" /> 3.4%
+            </Badge>
             <span className="text-cs-gris-oscuro">avance del año</span>
           </>
         }
@@ -53,7 +53,7 @@ export function DashboardKpiRow() {
         iconBg="#FFF4E0"
         delta={
           <>
-            <span className="rounded-[4px] bg-[#FFF4E0] px-1.5 py-0.5 text-[11.5px] font-bold text-[#B45309]">UMBRAL 5%</span>
+            <Badge variant="warning" shape="chip" className="text-[11.5px]">UMBRAL 5%</Badge>
             <span className="text-cs-gris-oscuro">por debajo del límite</span>
           </>
         }

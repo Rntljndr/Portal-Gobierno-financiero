@@ -5,6 +5,7 @@ const ITEMS: { to: string; icon: IconName; title: string; meta: string }[] = [
   { to: '/ejercicios/mis-servicios/drivers', icon: 'drives', title: 'Drivers', meta: '199 elementos' },
   { to: '/ejercicios/mis-servicios/cecos', icon: 'ceco', title: 'Centros de costo', meta: '354 elementos' },
   { to: '/ejercicios/mis-servicios/banderas', icon: 'flag', title: 'Banderas', meta: '120 elementos' },
+  { to: '/ejercicios/mis-servicios/peps', icon: 'config', title: 'ABM PEPS N4', meta: '8 elementos' },
 ]
 
 export function EditElementsTabs() {

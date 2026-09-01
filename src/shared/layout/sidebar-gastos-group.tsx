@@ -11,8 +11,9 @@ interface GastosItem {
 const GASTOS_ITEMS: GastosItem[] = [
   { label: 'Ejercicios', to: '/ejercicios' },
   { label: 'Reportería', to: '/reporteria' },
-  { label: 'Reales', to: '/reales' },
   { label: 'Forecast', to: '/forecast' },
+  { label: 'Reales', to: '/reales' },
+  { label: 'Preliminares', to: '/preliminares' },
 ]
 
 interface SidebarGastosGroupProps {

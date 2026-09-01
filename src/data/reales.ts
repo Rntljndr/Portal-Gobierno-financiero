@@ -1,29 +1,49 @@
-export type MovimientoStatus = 'Posted' | 'Pending'
+import { monthKeys, monthLabels, pepN4Tablon } from './reporteria'
+import { pepN4Meta } from './pep-n4-meta'
 
-export interface MovimientoReal {
-  pep: string
-  doc: string
-  vendor: string
-  amount: number
-  currency: string
-  date: string
-  status: MovimientoStatus
+export { monthKeys, monthLabels }
+
+/** Meses ya cerrados (con real reportado); el resto del año queda en forecast. */
+export const REALES_LAST_CLOSED = 7
+export const REALES_MES_ABIERTO_LABEL = 'Agosto 2026'
+export const REALES_ULTIMO_REAL_LABEL = 'Julio 2026'
+
+export interface RealesRow {
+  codigo: string
+  nombre: string
+  pais: string
+  paisDestino: string
+  equipo: string
+  planFactor: number
+  meses: Record<string, number>
+  gerenciaPadre: string
+  gerencia: string
+  centroCosto: string
+  asignacion: string
+  bandera: string
+  cuentaContable: string
+  moneda: string
 }
 
-export const movimientosReales: MovimientoReal[] = [
-  { pep: 'PEP-2027-001', doc: '5500-0042', vendor: 'Oracle Argentina S.A.', amount: 23250000, currency: 'USD', date: '2026-03-22', status: 'Posted' },
-  { pep: 'PEP-2027-003', doc: '5500-0043', vendor: 'IBM Chile Ltda.', amount: 9030000, currency: 'CLP', date: '2026-03-21', status: 'Posted' },
-  { pep: 'PEP-2027-005', doc: '5500-0044', vendor: 'Globant Argentina', amount: 95580000, currency: 'ARS', date: '2026-03-20', status: 'Pending' },
-  { pep: 'PEP-2027-007', doc: '5500-0045', vendor: 'Mercado Libre Colombia', amount: 121680000, currency: 'COP', date: '2026-03-19', status: 'Posted' },
-  { pep: 'PEP-2027-008', doc: '5500-0046', vendor: 'Atento Chile', amount: 48000000, currency: 'CLP', date: '2026-03-18', status: 'Posted' },
-  { pep: 'PEP-2027-002', doc: '5500-0047', vendor: 'UX Studio AR', amount: 8584, currency: 'ARS', date: '2026-03-17', status: 'Pending' },
-  { pep: 'PEP-2027-006', doc: '5500-0048', vendor: 'Shutterstock LLC', amount: 12500, currency: 'USD', date: '2026-03-15', status: 'Posted' },
-]
+export interface RealesN4Row extends RealesRow {
+  children: RealesRow[]
+}
 
-export const currencyOptions = [
-  { value: 'USD', label: 'USD — Dólar' },
-  { value: 'CLP', label: 'CLP — Peso Chileno' },
-  { value: 'PEN', label: 'PEN — Sol Peruano' },
-  { value: 'ARS', label: 'ARS — Peso Argentino' },
-  { value: 'BRL', label: 'BRL — Real Brasilero' },
-]
+export interface RealesN7Row extends RealesRow {
+  parentCodigo: string
+  parentNombre: string
+}
+
+function enrich(codigo: string, base: { nombre: string; pais: string; equipo: string; planFactor: number; meses: Record<string, number> }, metaCodigo: string): RealesRow {
+  const meta = pepN4Meta[metaCodigo]
+  return { codigo, paisDestino: base.pais, ...base, ...meta }
+}
+
+export const realesRows: RealesN4Row[] = pepN4Tablon.map((n4) => ({
+  ...enrich(n4.codigo, n4, n4.codigo),
+  children: n4.children.map((n7) => enrich(n7.codigo, n7, n4.codigo)),
+}))
+
+export const realesN7Rows: RealesN7Row[] = realesRows.flatMap((n4) =>
+  n4.children.map((c) => ({ ...c, parentCodigo: n4.codigo, parentNombre: n4.nombre })),
+)

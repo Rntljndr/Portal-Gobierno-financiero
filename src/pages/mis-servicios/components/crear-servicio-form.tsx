@@ -1,5 +1,7 @@
 import { pepPreview, type CrearServicioDraft } from '../lib/crear-servicio-draft'
-import { BanderaOrigenFields, Field, GerenciaFields, PaisCuentaFields, selectClass } from './crear-servicio-fields'
+import { BanderaOrigenFields, Field, GerenciaFields, PaisCuentaFields } from './crear-servicio-fields'
+
+const inputClass = 'h-10 w-full rounded-lg border border-border bg-white px-3 text-[13px] outline-none focus:border-primary'
 
 interface CrearServicioFormProps {
   draft: CrearServicioDraft
@@ -14,7 +16,7 @@ export function CrearServicioForm({ draft, onChange }: CrearServicioFormProps) {
           value={draft.nombre}
           onChange={(e) => onChange({ nombre: e.target.value })}
           placeholder="Ej: HP - Consultoría SAP Chile"
-          className={selectClass}
+          className={inputClass}
         />
       </Field>
 

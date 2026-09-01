@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Icon, MultiSelect } from '@/shared/ui'
+import { Icon, MultiSelect, Select } from '@/shared/ui'
 import { filtroOpciones } from '@/data/services'
 import { centrosCosto } from '@/data/centros-costo'
 import { countryTabs, divisionData } from '@/data/reporteria'
@@ -42,15 +42,7 @@ export function FiltersPanel({ filters, onChange, onClear, activeCount }: Filter
           <div className="grid grid-cols-4 gap-2.5">
             <MultiSelect placeholder="País origen" options={countryTabs} values={filters.paisOrigen} onChange={(v) => onChange('paisOrigen', v)} />
             <MultiSelect placeholder="País destino" options={countryTabs} values={filters.paisDestino} onChange={(v) => onChange('paisDestino', v)} />
-            <select
-              value={forecast}
-              onChange={(e) => setForecast(e.target.value)}
-              className="h-9 rounded-lg border border-border bg-white px-3 text-[12.5px] text-foreground outline-none"
-            >
-              {forecastVersions.map((f) => (
-                <option key={f}>{f}</option>
-              ))}
-            </select>
+            <Select value={forecast} onChange={setForecast} options={forecastVersions} className="h-9" />
             <div className="flex h-9 items-center gap-2 rounded-lg border border-border bg-white px-3">
               <Icon name="search" size={14} color="#8A90A2" />
               <input

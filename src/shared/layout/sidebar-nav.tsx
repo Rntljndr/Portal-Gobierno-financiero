@@ -2,7 +2,7 @@ import { useLocation } from 'react-router'
 import { SidebarNavItem } from './sidebar-nav-item'
 import { SidebarGastosGroup } from './sidebar-gastos-group'
 
-const GASTOS_PREFIXES = ['/ejercicios', '/reporteria', '/reales', '/forecast']
+const GASTOS_PREFIXES = ['/ejercicios', '/reporteria', '/reales', '/preliminares', '/forecast']
 
 interface SidebarNavProps {
   collapsed: boolean
