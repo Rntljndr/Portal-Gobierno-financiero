@@ -1,8 +1,6 @@
 import { useState } from 'react'
 
 export interface ReporteriaFilters {
-  paisOrigen: string[]
-  paisDestino: string[]
   buscarServicio: string
   division: string[]
   bandera: string[]
@@ -12,24 +10,43 @@ export interface ReporteriaFilters {
   equipo: string[]
   cuentaContable: string[]
   codigoPep: string[]
+  origenServicio: string[]
+  referencia: string[]
+  justificacion: string[]
+  descripcion: string[]
 }
 
-const EMPTY: ReporteriaFilters = {
-  paisOrigen: [], paisDestino: [], buscarServicio: '', division: [], bandera: [], centroCosto: [],
-  gerenciaPadre: [], gerencia: [], equipo: [], cuentaContable: [], codigoPep: [],
+export const EMPTY_REPORTERIA_FILTERS: ReporteriaFilters = {
+  buscarServicio: '',
+  division: [], bandera: [], centroCosto: [], gerenciaPadre: [], gerencia: [], equipo: [],
+  cuentaContable: [], codigoPep: [], origenServicio: [], referencia: [], justificacion: [], descripcion: [],
 }
 
-const MULTI_KEYS: (keyof ReporteriaFilters)[] = [
-  'paisOrigen', 'paisDestino', 'division', 'bandera', 'centroCosto', 'gerenciaPadre', 'gerencia', 'equipo', 'cuentaContable', 'codigoPep',
-]
+const MULTI_KEYS = (Object.keys(EMPTY_REPORTERIA_FILTERS) as (keyof ReporteriaFilters)[]).filter((k) => k !== 'buscarServicio')
+
+function countActive(f: ReporteriaFilters): number {
+  return MULTI_KEYS.reduce((acc, k) => acc + (f[k] as string[]).length, 0) + (f.buscarServicio.trim() ? 1 : 0)
+}
 
 export function useReporteriaFilters() {
-  const [filters, setFilters] = useState<ReporteriaFilters>(EMPTY)
+  const [draft, setDraft] = useState<ReporteriaFilters>(EMPTY_REPORTERIA_FILTERS)
+  const [applied, setApplied] = useState<ReporteriaFilters>(EMPTY_REPORTERIA_FILTERS)
 
-  const onChange = <K extends keyof ReporteriaFilters>(key: K, value: ReporteriaFilters[K]) =>
-    setFilters((prev) => ({ ...prev, [key]: value }))
+  const onChange = <K extends keyof ReporteriaFilters>(key: K, value: ReporteriaFilters[K]) => setDraft((prev) => ({ ...prev, [key]: value }))
 
-  const activeCount = MULTI_KEYS.reduce((acc, k) => acc + (filters[k] as string[]).length, 0) + (filters.buscarServicio.trim() ? 1 : 0)
+  const onClear = () => {
+    setDraft(EMPTY_REPORTERIA_FILTERS)
+    setApplied(EMPTY_REPORTERIA_FILTERS)
+  }
 
-  return { filters, onChange, clear: () => setFilters(EMPTY), activeCount }
+  const onApply = () => setApplied(draft)
+
+  const loadFilters = (next: ReporteriaFilters) => {
+    setDraft(next)
+    setApplied(next)
+  }
+
+  const pending = JSON.stringify(draft) !== JSON.stringify(applied)
+
+  return { draft, applied, onChange, onClear, onApply, pending, activeCount: countActive(applied), loadFilters }
 }

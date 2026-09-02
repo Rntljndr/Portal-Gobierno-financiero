@@ -48,7 +48,7 @@ export function RealesPage() {
         onRowClick={s.isN7 ? (row) => navigate(`/reales/${encodeURIComponent((row as RealesN7Row).parentCodigo)}/${encodeURIComponent(row.codigo)}`) : goToN7}
       />
       <Pagination page={s.page} totalPages={s.totalPages} totalItems={s.totalFiltered} pageSize={s.pageSize} onPageChange={s.setPage} itemLabel={s.isN7 ? 'PEPs N7' : 'servicios'} />
-      <RealesComparisonDrawer open={s.compDrawerOpen} onClose={() => s.setCompDrawerOpen(false)} comparisons={s.comparisons} onChange={s.setComparisons} />
+      <RealesComparisonDrawer open={s.compDrawerOpen} onClose={() => s.setCompDrawerOpen(false)} applied={s.comparisons} onApply={s.setComparisons} />
     </div>
   )
 }

@@ -6,6 +6,7 @@ import { calcTotals } from './lib/reales-calc'
 import { downloadRealesCsv } from './lib/download-csv'
 import { EMPTY_COMPARISONS, activeComparisonKeys } from './lib/comparisons'
 import { RealesComparisonDrawer } from './components/reales-comparison-drawer'
+import { CompararButton } from './components/comparar-button'
 import { RealesDetailHeader } from './components/reales-detail-header'
 import { RealesKpis } from './components/reales-kpis'
 import { RealesTable } from './components/reales-table'
@@ -50,12 +51,7 @@ export function RealesSubPepPage() {
         >
           <Icon name="download" size={12} color="#0047B0" /> Descarga
         </button>
-        <button type="button" onClick={() => setCompOpen(true)} className="inline-flex items-center gap-2 rounded-lg border-[1.5px] border-border-strong bg-white px-3 py-[7px] text-xs font-semibold text-foreground hover:bg-[#F4F7FE]">
-          Comparar
-          {activeComparisonKeys(comparisons).length > 0 && (
-            <span className="flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-white">{activeComparisonKeys(comparisons).length}</span>
-          )}
-        </button>
+        <CompararButton count={activeComparisonKeys(comparisons).length} onClick={() => setCompOpen(true)} />
       </div>
 
       <RealesTable
@@ -67,7 +63,7 @@ export function RealesSubPepPage() {
         showFooter={false}
       />
 
-      <RealesComparisonDrawer open={compOpen} onClose={() => setCompOpen(false)} comparisons={comparisons} onChange={setComparisons} />
+      <RealesComparisonDrawer open={compOpen} onClose={() => setCompOpen(false)} applied={comparisons} onApply={setComparisons} />
     </div>
   )
 }

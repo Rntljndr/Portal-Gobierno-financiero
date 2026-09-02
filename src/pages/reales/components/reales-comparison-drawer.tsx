@@ -1,14 +1,32 @@
+import { useEffect, useState } from 'react'
 import { Button, Drawer, Select } from '@/shared/ui'
 import { EMPTY_COMPARISONS, type Comparisons } from '../lib/comparisons'
 
 interface RealesComparisonDrawerProps {
   open: boolean
   onClose: () => void
-  comparisons: Comparisons
-  onChange: (next: Comparisons) => void
+  applied: Comparisons
+  onApply: (next: Comparisons) => void
 }
 
-export function RealesComparisonDrawer({ open, onClose, comparisons, onChange }: RealesComparisonDrawerProps) {
+export function RealesComparisonDrawer({ open, onClose, applied, onApply }: RealesComparisonDrawerProps) {
+  const [draft, setDraft] = useState<Comparisons>(applied)
+
+  useEffect(() => {
+    if (open) setDraft(applied)
+  }, [open, applied])
+
+  const handleAplicar = () => {
+    onApply(draft)
+    onClose()
+  }
+
+  const handleLimpiar = () => {
+    setDraft(EMPTY_COMPARISONS)
+    onApply(EMPTY_COMPARISONS)
+    onClose()
+  }
+
   return (
     <Drawer
       open={open}
@@ -16,10 +34,10 @@ export function RealesComparisonDrawer({ open, onClose, comparisons, onChange }:
       title="Comparar con"
       footer={
         <>
-          <Button variant="outline" onClick={() => onChange(EMPTY_COMPARISONS)}>
+          <Button variant="outline" onClick={handleLimpiar}>
             Limpiar
           </Button>
-          <Button variant="primary" onClick={onClose}>
+          <Button variant="primary" onClick={handleAplicar}>
             Aplicar
           </Button>
         </>
@@ -28,8 +46,8 @@ export function RealesComparisonDrawer({ open, onClose, comparisons, onChange }:
       <label className="flex cursor-pointer items-center gap-3 border-b border-[#F1F4FB] py-3">
         <input
           type="checkbox"
-          checked={comparisons.presupuesto}
-          onChange={(e) => onChange({ ...comparisons, presupuesto: e.target.checked })}
+          checked={draft.presupuesto}
+          onChange={(e) => setDraft({ ...draft, presupuesto: e.target.checked })}
           className="size-4 accent-primary"
         />
         <div>
@@ -41,8 +59,8 @@ export function RealesComparisonDrawer({ open, onClose, comparisons, onChange }:
       <div className="border-b border-[#F1F4FB] py-3.5">
         <div className="mb-2 text-[13px] font-semibold text-foreground">Forecast</div>
         <Select
-          value={comparisons.forecastSel || 'none'}
-          onChange={(v) => onChange({ ...comparisons, forecastSel: (v === 'none' ? '' : v) as Comparisons['forecastSel'] })}
+          value={draft.forecastSel || 'none'}
+          onChange={(v) => setDraft({ ...draft, forecastSel: (v === 'none' ? '' : v) as Comparisons['forecastSel'] })}
           options={[
             { value: 'none', label: 'Sin comparación' },
             { value: 'forecastActual', label: 'Forecast actual (Ago 2026)' },
@@ -54,8 +72,8 @@ export function RealesComparisonDrawer({ open, onClose, comparisons, onChange }:
       <label className="flex cursor-pointer items-center gap-3 py-3">
         <input
           type="checkbox"
-          checked={comparisons.anioAnterior}
-          onChange={(e) => onChange({ ...comparisons, anioAnterior: e.target.checked })}
+          checked={draft.anioAnterior}
+          onChange={(e) => setDraft({ ...draft, anioAnterior: e.target.checked })}
           className="size-4 accent-[#22976B]"
         />
         <div>

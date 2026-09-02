@@ -1,5 +1,6 @@
 import { Badge, Icon } from '@/shared/ui'
 import { RealesFilterToggle } from './reales-filters'
+import { CompararButton } from './comparar-button'
 
 interface RealesToolbarProps {
   filtersOpen: boolean
@@ -24,15 +25,7 @@ export function RealesToolbar({ filtersOpen, onToggleFilters, activeFilterCount,
         <button type="button" onClick={onDownload} className="inline-flex items-center gap-1.5 rounded-lg border border-border-strong bg-white px-3 py-[7px] text-xs font-semibold text-primary hover:bg-[#F4F7FE]">
           <Icon name="download" size={12} color="#0047B0" /> Descarga
         </button>
-        <button
-          type="button"
-          onClick={onOpenComparar}
-          className="inline-flex items-center gap-2 rounded-lg border-[1.5px] border-border-strong bg-white px-3 py-[7px] text-xs font-semibold text-foreground hover:bg-[#F4F7FE] data-[active=true]:border-primary"
-          data-active={comparisonCount > 0}
-        >
-          Comparar
-          {comparisonCount > 0 && <span className="flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-white">{comparisonCount}</span>}
-        </button>
+        <CompararButton count={comparisonCount} onClick={onOpenComparar} />
       </div>
     </div>
   )

@@ -1,6 +1,16 @@
-import { Breadcrumb, Icon } from '@/shared/ui'
+import { Badge, Breadcrumb, Icon } from '@/shared/ui'
+import { forecastVersions } from '../lib/filter-catalog'
+import { useSavedConfigs } from '../lib/use-saved-configs'
+import { ConfiguracionesButton } from './configuraciones-button'
 
-export function ReporteriaHeader() {
+interface ReporteriaHeaderProps {
+  forecastVersion: string
+  savedConfigsState: ReturnType<typeof useSavedConfigs>
+}
+
+export function ReporteriaHeader({ forecastVersion, savedConfigsState }: ReporteriaHeaderProps) {
+  const forecastLabel = forecastVersions.find((f) => f.value === forecastVersion)?.label ?? forecastVersion
+
   return (
     <>
       <Breadcrumb
@@ -13,20 +23,21 @@ export function ReporteriaHeader() {
       />
       <div className="flex items-start justify-between p-[10px_32px_20px]">
         <div>
-          <div className="text-[26px] leading-tight font-bold tracking-tight text-primary">
-            Reportería próximo ejercicio 2027
-          </div>
-          <div className="mt-1 text-[13px] text-muted-foreground">
-            Análisis en tiempo real del ejercicio presupuestario en curso
-          </div>
+          <div className="text-[26px] leading-tight font-bold tracking-tight text-primary">Reportería próximo ejercicio 2027</div>
+          <div className="mt-1 text-[13px] text-muted-foreground">Análisis en tiempo real del ejercicio presupuestario en curso</div>
         </div>
-        <button
-          type="button"
-          disabled
-          className="inline-flex items-center gap-2 rounded-[10px] border border-border bg-white px-3.5 py-2 text-[12.5px] font-semibold text-cs-gris-oscuro opacity-50"
-        >
-          <Icon name="config" size={14} color="currentColor" /> Configuraciones
-        </button>
+        <div className="flex items-center gap-2.5">
+          <Badge variant="primary">
+            <Icon name="calendar" size={14} color="currentColor" />
+            {forecastLabel}
+          </Badge>
+          <ConfiguracionesButton
+            savedConfigs={savedConfigsState.savedConfigs}
+            onLoad={savedConfigsState.onLoad}
+            onSave={savedConfigsState.onSave}
+            onDelete={savedConfigsState.onDelete}
+          />
+        </div>
       </div>
     </>
   )
