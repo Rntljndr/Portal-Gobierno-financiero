@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router'
+import { createBrowserRouter, createHashRouter } from 'react-router'
 import { AppShell } from '@/shared/layout/app-shell'
 import { EjerciciosPage } from '@/pages/ejercicios/ejercicios-page'
 import { ForecastLayout } from '@/pages/forecast/forecast-layout'
@@ -24,7 +24,9 @@ import { PreliminaresLayout } from '@/pages/preliminares/preliminares-layout'
 import { PreliminaresPage } from '@/pages/preliminares/preliminares-page'
 import { PreliminaresDetallePage } from '@/pages/preliminares/preliminares-detalle-page'
 
-export const router = createBrowserRouter([
+const createRouter = import.meta.env.VITE_STANDALONE_EXPORT ? createHashRouter : createBrowserRouter
+
+export const router = createRouter([
   {
     element: <AppShell />,
     children: [

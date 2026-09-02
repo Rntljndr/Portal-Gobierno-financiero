@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "build:singlefile": "tsc -b && vite build --config vite.singlefile.config.ts",
+    "build:export": "VITE_STANDALONE_EXPORT=true vite build --config vite.config.export.ts",
+    "build:export-zip": "VITE_STANDALONE_EXPORT=true vite build --config vite.config.export-zip.ts",
     "lint": "oxlint",
     "preview": "vite preview"
   },

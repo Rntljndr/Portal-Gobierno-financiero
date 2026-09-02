@@ -10,7 +10,9 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
-dist-singlefile
+export
+export-zip
+export.zip
 *.local
 
 # Reference/source material used to build the mock (not project source)

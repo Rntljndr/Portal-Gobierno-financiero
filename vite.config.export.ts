@@ -5,15 +5,13 @@ import tailwindcss from '@tailwindcss/vite'
 import { viteSingleFile } from 'vite-plugin-singlefile'
 
 export default defineConfig({
+  base: './', // rutas relativas: sin esto, /assets/x.js da 404 fuera de la raíz del dominio
   plugins: [react(), tailwindcss(), viteSingleFile()],
   resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
-    },
+    alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
   build: {
-    outDir: 'dist-singlefile',
-    cssCodeSplit: false,
-    assetsInlineLimit: 100000000,
+    outDir: 'export',
+    emptyOutDir: true,
   },
 })
