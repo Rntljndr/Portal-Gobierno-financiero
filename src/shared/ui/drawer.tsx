@@ -8,12 +8,13 @@ interface DrawerProps {
   onClose: () => void
   title: string
   eyebrow?: string
+  subtitle?: string
   wide?: boolean
   footer?: ReactNode
   children: ReactNode
 }
 
-export function Drawer({ open, onClose, title, eyebrow, wide, footer, children }: DrawerProps) {
+export function Drawer({ open, onClose, title, eyebrow, subtitle, wide, footer, children }: DrawerProps) {
   return (
     <Dialog.Root open={open} onOpenChange={(next) => !next && onClose()}>
       <Dialog.Portal>
@@ -28,6 +29,7 @@ export function Drawer({ open, onClose, title, eyebrow, wide, footer, children }
             <div>
               {eyebrow && <div className="mb-1 text-[10.5px] font-bold tracking-[0.1em] text-primary uppercase">{eyebrow}</div>}
               <Dialog.Title className="text-[17px] font-bold text-foreground">{title}</Dialog.Title>
+              {subtitle && <div className="mt-0.5 text-[11px] text-muted-foreground">{subtitle}</div>}
             </div>
             <Dialog.Close asChild>
               <button type="button" aria-label="Cerrar" className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-[#F1F4FA]">

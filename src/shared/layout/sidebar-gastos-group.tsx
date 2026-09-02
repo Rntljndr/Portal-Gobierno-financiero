@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { Icon } from '@/shared/ui'
 import { cn } from '@/shared/lib/utils'
+import { SidebarTooltip } from './sidebar-tooltip'
 
 interface GastosItem {
   label: string
@@ -23,16 +24,19 @@ interface SidebarGastosGroupProps {
 }
 
 export function SidebarGastosGroup({ active, collapsed, currentPath }: SidebarGastosGroupProps) {
+  const navigate = useNavigate()
   const [open, setOpen] = useState(true)
 
   return (
     <>
       <div
         className={cn(
-          'mx-3 my-0.5 flex cursor-pointer items-center gap-3 rounded-[10px] px-3.5 py-2.5 text-[13px] font-medium text-white/78 hover:bg-white/8 hover:text-white',
-          active && 'bg-sidebar-active border border-white/22 px-[13px] py-[9px] font-semibold text-white',
+          'group relative my-0.5 flex cursor-pointer items-center rounded-[10px] text-[13px] font-medium text-white/78 hover:bg-white/8 hover:text-white',
+          collapsed ? 'mx-1.5 justify-center gap-0 px-0 py-2.5' : 'mx-3 gap-3 px-3.5 py-2.5',
+          active && 'border border-white/22 bg-sidebar-active font-semibold text-white',
+          active && (collapsed ? 'py-[9px]' : 'p-[9px_13px]'),
         )}
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => (collapsed ? navigate(GASTOS_ITEMS[0].to) : setOpen((v) => !v))}
       >
         <Icon name="calendar" size={16} color={active ? '#fff' : 'rgba(255,255,255,0.78)'} />
         {!collapsed && (
@@ -41,6 +45,7 @@ export function SidebarGastosGroup({ active, collapsed, currentPath }: SidebarGa
             <Icon name={open ? 'chevron_up' : 'chevron_down'} size={12} color="rgba(255,255,255,0.6)" />
           </>
         )}
+        {collapsed && <SidebarTooltip label="Gestión de Gastos" />}
       </div>
 
       {!collapsed && open && (

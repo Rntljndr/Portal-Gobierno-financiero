@@ -1,6 +1,6 @@
 import { countryBudgets } from '@/data/reporteria'
 import { Icon } from '@/shared/ui'
-import { formatTableAmount } from '@/shared/lib/format'
+import { formatTableAmountUSD } from '@/shared/lib/format'
 
 function KpiDivider() {
   return <div className="w-px shrink-0 self-stretch bg-border" />
@@ -34,19 +34,19 @@ export function TotalsKpiBar() {
 
   return (
     <div className="mx-8 mb-4 flex items-stretch overflow-hidden rounded-xl border border-border bg-white">
-      <KpiCell label="Plan" value={formatTableAmount(totalPlan)} />
+      <KpiCell label="Plan" value={formatTableAmountUSD(totalPlan)} />
       <KpiDivider />
-      <KpiCell label="Forecast base" value={formatTableAmount(totalFBase)} />
+      <KpiCell label="Forecast base" value={formatTableAmountUSD(totalFBase)} />
       <KpiDivider />
       <KpiCell label="Variación %" value={`${varPct > 0 ? '+' : ''}${varPct.toFixed(1)}%`} tone={varTone} />
       <KpiDivider />
-      <KpiCell label="Variación $" value={formatTableAmount(Math.abs(variacion))} tone={varTone} />
+      <KpiCell label="Variación $" value={formatTableAmountUSD(Math.abs(variacion))} tone={varTone} />
       <div className="mx-1 w-[3px] shrink-0 self-stretch bg-border" />
-      <KpiCell label="Forecast base + IPC" value={formatTableAmount(totalFIPC)} flex={1.2} />
+      <KpiCell label="Forecast base + IPC" value={formatTableAmountUSD(totalFIPC)} flex={1.2} />
       <KpiDivider />
       <KpiCell label="Variación %" value={`${varFIPCPct > 0 ? '+' : ''}${varFIPCPct.toFixed(1)}%`} tone={varFIPCTone} />
       <KpiDivider />
-      <KpiCell label="Variación $" value={formatTableAmount(Math.abs(varFIPC))} tone={varFIPCTone} />
+      <KpiCell label="Variación $" value={formatTableAmountUSD(Math.abs(varFIPC))} tone={varFIPCTone} />
     </div>
   )
 }

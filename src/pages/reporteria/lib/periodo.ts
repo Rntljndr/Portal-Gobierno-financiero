@@ -15,6 +15,10 @@ export function allMonthsSelected(): SelMonths {
   return Object.fromEntries(MONTH_KEYS.map((k) => [k, true]))
 }
 
+export function isPeriodoActive(sel: SelMonths): boolean {
+  return !MONTH_KEYS.every((k) => sel[k])
+}
+
 export function quarterState(sel: SelMonths, q: Quarter): 'all' | 'none' | 'partial' {
   const keys = MONTHS_BY_QUARTER[q].map((m) => m.key)
   const count = keys.filter((k) => sel[k]).length

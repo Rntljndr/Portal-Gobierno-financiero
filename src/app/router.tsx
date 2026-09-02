@@ -20,8 +20,9 @@ import { RealesSubPepPage } from '@/pages/reales/reales-subpep-page'
 import { ConfiguracionesPage } from '@/pages/configuraciones/configuraciones-page'
 import { PepsPage } from '@/pages/peps/peps-page'
 import { EditarPepN4Page } from '@/pages/peps/editar-pep-n4-page'
+import { PreliminaresLayout } from '@/pages/preliminares/preliminares-layout'
 import { PreliminaresPage } from '@/pages/preliminares/preliminares-page'
-import { PreliminaresN7Page } from '@/pages/preliminares/preliminares-n7-page'
+import { PreliminaresDetallePage } from '@/pages/preliminares/preliminares-detalle-page'
 
 export const router = createBrowserRouter([
   {
@@ -41,8 +42,14 @@ export const router = createBrowserRouter([
       { path: '/reales', element: <RealesPage /> },
       { path: '/reales/:codigo', element: <RealesN7Page /> },
       { path: '/reales/:codigo/:n7codigo', element: <RealesSubPepPage /> },
-      { path: '/preliminares', element: <PreliminaresPage /> },
-      { path: '/preliminares/:codigo', element: <PreliminaresN7Page /> },
+      {
+        path: '/preliminares',
+        element: <PreliminaresLayout />,
+        children: [
+          { index: true, element: <PreliminaresPage /> },
+          { path: ':codigo', element: <PreliminaresDetallePage /> },
+        ],
+      },
       {
         path: '/forecast',
         element: <ForecastLayout />,

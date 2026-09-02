@@ -1,4 +1,5 @@
 import { Icon } from '@/shared/ui'
+import { RoleSwitcher } from './role-switcher'
 
 interface TopbarProps {
   pais?: string
@@ -20,15 +21,7 @@ export function Topbar({ pais = 'Chile', notifCount = 3 }: TopbarProps) {
             <div className="absolute top-0.5 right-0.5 size-2.5 rounded-full border-2 border-white bg-cs-naranja" />
           )}
         </div>
-        <div className="flex cursor-pointer items-center gap-2.5">
-          <div className="text-right leading-tight">
-            <div className="text-[13px] font-semibold text-foreground">Andrea Morales</div>
-            <div className="mt-0.5 text-[11px] text-muted-foreground">Responsable de Servicios</div>
-          </div>
-          <div className="flex size-9 items-center justify-center rounded-full bg-muted text-cs-gris-oscuro">
-            <Icon name="user" size={18} color="#455B85" />
-          </div>
-        </div>
+        <RoleSwitcher />
       </div>
     </div>
   )

@@ -9,7 +9,12 @@ interface SidebarHeaderProps {
 
 export function SidebarHeader({ collapsed, onToggle }: SidebarHeaderProps) {
   return (
-    <div className="flex items-center gap-3 border-b border-sidebar-border p-[22px_22px_16px]">
+    <div
+      className={cn(
+        'flex shrink-0 items-center gap-3 border-b border-sidebar-border p-[22px_22px_16px]',
+        collapsed && 'flex-col justify-center gap-2 p-[14px_0]',
+      )}
+    >
       <div className="flex size-10 shrink-0 items-center justify-center rounded-[10px] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.2)]">
         <img src={cencosudLogo} width={26} height={15} alt="Cencosud" />
       </div>

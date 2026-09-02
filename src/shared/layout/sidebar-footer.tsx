@@ -1,4 +1,5 @@
 import { Icon } from '@/shared/ui'
+import { cn } from '@/shared/lib/utils'
 
 interface SidebarFooterProps {
   collapsed: boolean
@@ -6,7 +7,7 @@ interface SidebarFooterProps {
 
 export function SidebarFooter({ collapsed }: SidebarFooterProps) {
   return (
-    <div className="flex items-center gap-2.5 border-t border-sidebar-border p-3.5">
+    <div className={cn('flex shrink-0 items-center gap-2.5 border-t border-sidebar-border p-3.5', collapsed && 'justify-center p-[14px_0]')}>
       <div className="flex size-[34px] shrink-0 items-center justify-center rounded-full bg-cs-azul-claro text-[11px] font-bold text-white">
         AM
       </div>

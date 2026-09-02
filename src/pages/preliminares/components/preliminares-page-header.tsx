@@ -15,7 +15,7 @@ export function PreliminaresPageHeader({ tab, onTabChange }: PreliminaresPageHea
           <span className="text-[26px] leading-tight font-bold tracking-tight text-primary">Preliminares</span>
           <Badge variant="primary">{PRELIM_MES_OPEN_LABEL}</Badge>
         </div>
-        <div className="mt-1.5 text-[13px] text-muted-foreground">Registro de costos preliminares · Mes en curso: {PRELIM_MES_OPEN_LABEL}</div>
+        <div className="mt-1.5 text-[13px] text-muted-foreground">Mes abierto: <strong className="font-semibold text-foreground">{PRELIM_MES_OPEN_LABEL}</strong> · registro de costos preliminares</div>
       </div>
       <div className="flex flex-wrap items-center gap-2.5">
         <CierreIndicator dias={PRELIM_DIAS_FALTAN} fecha={PRELIM_CIERRE_DATE} />

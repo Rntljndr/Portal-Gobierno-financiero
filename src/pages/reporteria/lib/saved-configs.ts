@@ -1,15 +1,12 @@
 import type { CurrencyView } from '@/data/reporteria'
 import type { ReporteriaFilters } from './use-reporteria-filters'
-import type { SelMonths } from './periodo'
 
 const STORAGE_KEY = 'rr_reporteria_configs_v1'
 
 export interface SavedConfigData {
   filters: ReporteriaFilters
-  selMonths: SelMonths
   vistaMoneda: CurrencyView
   activeTab: string
-  forecastVersion: string
 }
 
 export interface SavedConfig {

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Icon } from '@/shared/ui'
 import type { ReporteriaFilters } from '../lib/use-reporteria-filters'
 import { AplicarFiltrosBar } from './aplicar-filtros-bar'
+import { FiltersFeaturedRow } from './filters-featured-row'
 import { FiltersFieldsGrid } from './filters-fields-grid'
 
 interface FiltersPanelProps {
@@ -33,6 +34,8 @@ export function FiltersPanel({ draft, onChange, onClear, onApply, pending, activ
 
       {open && (
         <div className="mt-2.5 flex flex-col rounded-xl border border-border bg-white shadow-[0_4px_16px_rgba(6,20,60,0.06)]">
+          <FiltersFeaturedRow draft={draft} onChange={onChange} />
+          <div className="mx-[18px] h-px bg-border" />
           <FiltersFieldsGrid draft={draft} onChange={onChange} />
           <AplicarFiltrosBar pending={pending} onClear={onClear} onApply={onApply} />
         </div>

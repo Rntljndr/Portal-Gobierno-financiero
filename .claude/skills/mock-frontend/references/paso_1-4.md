@@ -1,15 +1,25 @@
 # Arranque del Proyecto (Pasos 1 a 4)
 
-Solo para proyectos nuevos. Un proyecto ya armado con este skill entra directo al paso 5 ([paso-5-portar-contenido.md](paso-5-portar-contenido.md)).
+Solo para proyectos nuevos. Un proyecto ya armado con este skill entra directo al paso 5 ([paso_5.md](paso_5.md)).
 
 ## Paso 1 — Crear el proyecto base (scaffold)
 
-Generar un proyecto simple y funcional usando el flag no interactivo del propio framework en vez de responder prompts a mano — mantiene el paso scripteable y repetible:
+Generar un proyecto simple y funcional usando el flag no interactivo del propio framework en vez de responder prompts a mano — mantiene el paso scripteable y repetible.
+
+**Antes de correrlo, proteger lo que ya existe en el directorio.** `--overwrite` es lo que permite que el scaffold corra sin preguntar cuando el directorio no está vacío, pero lo hace borrando TODO su contenido salvo `.git` (así lo implementa `create-vite`) — incluida `.claude/skills/`, donde vive este mismo skill, e `input/`, el material de referencia que aportó la persona. Sacar esas dos carpetas del camino antes de scaffoldear y devolverlas después, en el mismo bloque:
 ```bash
+mkdir -p /tmp/mock-frontend-setup
+[ -d .claude ] && mv .claude /tmp/mock-frontend-setup/
+[ -d input ] && mv input /tmp/mock-frontend-setup/
+
 pnpm create vite . --template react-ts --overwrite --no-interactive
+
+[ -d /tmp/mock-frontend-setup/.claude ] && mv /tmp/mock-frontend-setup/.claude .
+[ -d /tmp/mock-frontend-setup/input ] && mv /tmp/mock-frontend-setup/input .
+rm -rf /tmp/mock-frontend-setup
 ```
 
-**Checkpoint:** el proyecto existe y `pnpm install` termina sin errores. Nada visual aún — avisarle a la persona que es normal.
+**Checkpoint:** el proyecto existe, `.claude/` e `input/` siguen en su lugar, y `pnpm install` termina sin errores. Nada visual aún — avisarle a la persona que es normal.
 
 ## Paso 2 — Hoja en blanco
 
@@ -37,4 +47,4 @@ Verificar de punta a punta, tú mismo, antes de seguir:
 
 **Regla de sala limpia:** si existe un proyecto de referencia (código viejo, HTML exportado, archivo de diseño) para el producto que se está mockeando, no abrirlo hasta que esta verificación pase. Su estructura nunca debe filtrarse a las decisiones de arquitectura — es fuente de contenido para el paso 5, no un insumo técnico.
 
-**Checkpoint:** confirmarle a la persona, en una frase, que la base está lista y verificada, y que ahora empieza la parte visible: portar las pantallas ([paso-5-portar-contenido.md](paso-5-portar-contenido.md)).
+**Checkpoint:** confirmarle a la persona, en una frase, que la base está lista y verificada, y que ahora empieza la parte visible: portar las pantallas ([paso_5.md](paso_5.md)).

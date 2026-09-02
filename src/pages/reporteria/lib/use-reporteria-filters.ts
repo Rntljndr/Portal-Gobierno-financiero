@@ -1,6 +1,11 @@
 import { useState } from 'react'
+import { allMonthsSelected, isPeriodoActive, type SelMonths } from './periodo'
 
 export interface ReporteriaFilters {
+  paisOrigen: string[]
+  paisDestino: string[]
+  forecastVersion: string
+  selMonths: SelMonths
   buscarServicio: string
   division: string[]
   bandera: string[]
@@ -16,27 +21,38 @@ export interface ReporteriaFilters {
   descripcion: string[]
 }
 
-export const EMPTY_REPORTERIA_FILTERS: ReporteriaFilters = {
-  buscarServicio: '',
-  division: [], bandera: [], centroCosto: [], gerenciaPadre: [], gerencia: [], equipo: [],
-  cuentaContable: [], codigoPep: [], origenServicio: [], referencia: [], justificacion: [], descripcion: [],
+function createDefaultFilters(): ReporteriaFilters {
+  return {
+    paisOrigen: [],
+    paisDestino: [],
+    forecastVersion: 'F2_2027',
+    selMonths: allMonthsSelected(),
+    buscarServicio: '',
+    division: [], bandera: [], centroCosto: [], gerenciaPadre: [], gerencia: [], equipo: [],
+    cuentaContable: [], codigoPep: [], origenServicio: [], referencia: [], justificacion: [], descripcion: [],
+  }
 }
 
-const MULTI_KEYS = (Object.keys(EMPTY_REPORTERIA_FILTERS) as (keyof ReporteriaFilters)[]).filter((k) => k !== 'buscarServicio')
+const COUNTED_MULTI_KEYS = [
+  'division', 'bandera', 'centroCosto', 'gerenciaPadre', 'gerencia', 'equipo',
+  'cuentaContable', 'codigoPep', 'origenServicio', 'referencia', 'justificacion', 'descripcion',
+] as const satisfies readonly (keyof ReporteriaFilters)[]
 
 function countActive(f: ReporteriaFilters): number {
-  return MULTI_KEYS.reduce((acc, k) => acc + (f[k] as string[]).length, 0) + (f.buscarServicio.trim() ? 1 : 0)
+  const fromMulti = COUNTED_MULTI_KEYS.reduce((acc, k) => acc + (f[k] as string[]).length, 0)
+  return fromMulti + (f.buscarServicio.trim() ? 1 : 0) + (isPeriodoActive(f.selMonths) ? 1 : 0)
 }
 
 export function useReporteriaFilters() {
-  const [draft, setDraft] = useState<ReporteriaFilters>(EMPTY_REPORTERIA_FILTERS)
-  const [applied, setApplied] = useState<ReporteriaFilters>(EMPTY_REPORTERIA_FILTERS)
+  const [draft, setDraft] = useState<ReporteriaFilters>(createDefaultFilters)
+  const [applied, setApplied] = useState<ReporteriaFilters>(createDefaultFilters)
 
   const onChange = <K extends keyof ReporteriaFilters>(key: K, value: ReporteriaFilters[K]) => setDraft((prev) => ({ ...prev, [key]: value }))
 
   const onClear = () => {
-    setDraft(EMPTY_REPORTERIA_FILTERS)
-    setApplied(EMPTY_REPORTERIA_FILTERS)
+    const next = { ...createDefaultFilters(), paisOrigen: draft.paisOrigen, paisDestino: draft.paisDestino, forecastVersion: draft.forecastVersion }
+    setDraft(next)
+    setApplied(next)
   }
 
   const onApply = () => setApplied(draft)

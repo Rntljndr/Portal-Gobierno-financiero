@@ -1,16 +1,18 @@
 import { ipcFactorByMonth, monthKeys, type PepN4Row } from '@/data/reporteria'
 import { rowTotal, rowTotalFIPC, rowTotalPlan } from '../../lib/pep-n4-table-helpers'
+import type { StickyLayout } from '../../lib/pep-n4-table-cols'
 import { RowIdentityCells } from './row-identity-cells'
 import { MonthCells } from './month-cells'
 import { RowTotals } from './row-totals'
 
 interface TableRowProps {
+  layout: StickyLayout
   row: PepN4Row
   isExpanded: boolean
   onToggle: () => void
 }
 
-export function TableRow({ row, isExpanded, onToggle }: TableRowProps) {
+export function TableRow({ layout, row, isExpanded, onToggle }: TableRowProps) {
   const totProy = rowTotal(row.meses)
   const totPlan = rowTotalPlan(row.meses, row.planFactor)
   const totFIPC = rowTotalFIPC(row.meses)
@@ -18,7 +20,7 @@ export function TableRow({ row, isExpanded, onToggle }: TableRowProps) {
   return (
     <>
       <tr className="cursor-pointer bg-white hover:bg-[#FAFBFF]" onClick={onToggle}>
-        <RowIdentityCells codigo={row.codigo} nombre={row.nombre} pais={row.pais} paisDestino={row.paisDestino} equipo={row.equipo} bg="#fff" isExpanded={isExpanded} onToggle={onToggle} />
+        <RowIdentityCells layout={layout} codigo={row.codigo} nombre={row.nombre} pais={row.pais} paisDestino={row.paisDestino} equipo={row.equipo} bg="#fff" isExpanded={isExpanded} onToggle={onToggle} />
         {monthKeys.map((k) => {
           const proy = row.meses[k] || 0
           const plan = Math.round(proy * row.planFactor)
@@ -29,7 +31,7 @@ export function TableRow({ row, isExpanded, onToggle }: TableRowProps) {
       </tr>
       {isExpanded && row.children.map((child) => (
         <tr key={child.codigo} className="bg-[#F8FAFD]">
-          <RowIdentityCells codigo={child.codigo} nombre={child.nombre} pais={child.pais} paisDestino={child.paisDestino} equipo={child.equipo} bg="#F8FAFD" isChild />
+          <RowIdentityCells layout={layout} codigo={child.codigo} nombre={child.nombre} pais={child.pais} paisDestino={child.paisDestino} equipo={child.equipo} bg="#F8FAFD" isChild />
           {monthKeys.map((k) => {
             const proy = child.meses[k] || 0
             const plan = Math.round(proy * child.planFactor)

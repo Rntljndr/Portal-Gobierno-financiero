@@ -1,28 +1,29 @@
 import { monthLabels } from '@/data/reporteria'
 import { Icon } from '@/shared/ui'
-import { STICKY_COLS, STICKY_LEFT, SUB_HEADERS } from '../../lib/pep-n4-table-cols'
+import { SUB_HEADERS, type StickyLayout } from '../../lib/pep-n4-table-cols'
 import type { SortCol } from '../../lib/pep-n4-table-helpers'
 
 interface TableHeaderProps {
+  layout: StickyLayout
   sortCol: SortCol
   sortDir: 'asc' | 'desc' | null
   onSort: (col: SortCol) => void
 }
 
-const SORT_KEYS: Record<number, Exclude<SortCol, null>> = { 3: 'pais', 4: 'paisDestino', 5: 'equipo' }
+const SORT_KEYS: Record<string, Exclude<SortCol, null>> = { paisOrigen: 'pais', paisDestino: 'paisDestino', equipo: 'equipo' }
 
-export function TableHeader({ sortCol, sortDir, onSort }: TableHeaderProps) {
+export function TableHeader({ layout, sortCol, sortDir, onSort }: TableHeaderProps) {
   return (
     <thead>
       <tr>
-        {STICKY_COLS.map((c, si) => {
-          const sortKey = SORT_KEYS[si]
-          const isLast = si === STICKY_COLS.length - 1
+        {layout.cols.map((c, si) => {
+          const sortKey = SORT_KEYS[c.key]
+          const isLast = si === layout.cols.length - 1
           return (
             <th
-              key={`sh${si}`}
+              key={c.key}
               rowSpan={2}
-              style={{ left: STICKY_LEFT[si], width: c.width, minWidth: c.width }}
+              style={{ left: layout.left[si], width: c.width, minWidth: c.width }}
               className={`sticky z-[4] whitespace-nowrap border-b-2 border-border bg-white px-2 py-2 text-[10.5px] font-bold tracking-wide text-muted-foreground uppercase align-middle ${si === 0 ? 'text-center' : 'text-left'} ${isLast ? 'shadow-[3px_0_8px_rgba(0,0,0,0.07)]' : ''}`}
             >
               {sortKey ? (

@@ -1,4 +1,5 @@
 export type CurrencyView = 'origen' | 'destino' | 'dolar'
+export type MetricMode = 'ipc' | 'target'
 
 export interface CountryBudget {
   pais: string
@@ -15,11 +16,19 @@ export interface AnalysisChild {
   plan: number
   fBase: number
   fIPC: number
+  pais?: string
 }
 
 export interface AnalysisGroup {
   nombre: string
   children: AnalysisChild[]
+  pais?: string[]
+}
+
+export interface PaisMacroData {
+  monedaLocal: string
+  tasaCambio: { tasa: number }[]
+  ipc: { valor: number }[]
 }
 
 export interface PepN7Row {

@@ -1,5 +1,6 @@
-import { countryFlags, type CountryBudget } from '@/data/reporteria'
-import { formatTableAmount } from '@/shared/lib/format'
+import { countryFlags, type CountryBudget, type MetricMode } from '@/data/reporteria'
+import { formatTableAmount, formatTableAmountUSD } from '@/shared/lib/format'
+import { cn } from '@/shared/lib/utils'
 
 type Tone = 'increase' | 'decrease' | 'hl' | 'muted'
 
@@ -16,30 +17,48 @@ function MetricRow({ label, value, tone }: { label: string; value: React.ReactNo
 
 const EmptyValue = () => <span className="inline-block h-0 w-[22px] border-b-2 border-[#C2C8D4] align-middle" />
 
-export function CountrySummaryCard({ c }: { c: CountryBudget }) {
+interface CountrySummaryCardProps {
+  c: CountryBudget
+  metricMode: MetricMode
+  isDolar?: boolean
+  active: boolean
+  selected: boolean
+  onClick: () => void
+}
+
+export function CountrySummaryCard({ c, metricMode, isDolar = false, active, selected, onClick }: CountrySummaryCardProps) {
+  const fmt = isDolar ? formatTableAmountUSD : formatTableAmount
+  const secondaryLabel = metricMode === 'target' ? 'Target' : 'Forecast + IPC'
+  const secondaryVal = metricMode === 'target' ? Math.round(c.fIPC * 0.975) : c.fIPC
   const varAbs = c.empty ? 0 : c.fBase - c.plan
   const varPct = c.plan && !c.empty ? (varAbs / c.plan) * 100 : 0
-  const varIpc = c.empty ? 0 : c.fBase - c.fIPC
-  const varIpcPct = c.fIPC && !c.empty ? (varIpc / c.fIPC) * 100 : 0
+  const varSecondary = c.empty ? 0 : c.fBase - secondaryVal
+  const varSecondaryPct = secondaryVal && !c.empty ? (varSecondary / secondaryVal) * 100 : 0
   const varTone: Tone | undefined = c.empty ? undefined : varAbs > 0 ? 'increase' : 'decrease'
-  const varIpcTone: Tone | undefined = c.empty ? undefined : varIpc > 0 ? 'increase' : 'decrease'
+  const varSecondaryTone: Tone | undefined = c.empty ? undefined : varSecondary > 0 ? 'increase' : 'decrease'
 
   return (
-    <div className="min-w-[165px] max-w-[220px] flex-1 rounded-2xl bg-white p-[11px_10px] shadow-[0_1px_2px_rgba(6,20,60,0.05),0_5px_14px_-6px_rgba(6,20,60,0.14)]">
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'min-w-[165px] max-w-[220px] flex-1 rounded-2xl bg-white p-[11px_10px] text-left shadow-[0_1px_2px_rgba(6,20,60,0.05),0_5px_14px_-6px_rgba(6,20,60,0.14)] transition-opacity',
+        selected && 'ring-2 ring-primary',
+        !active && 'opacity-55',
+      )}
+    >
       <div className="mb-1.5 flex items-center justify-between border-b border-primary/12 pb-1.5">
         <span className="truncate text-[10.5px] font-extrabold tracking-wide text-primary">
           {countryFlags[c.pais]} {c.pais}
         </span>
-        <span className="ml-1 shrink-0 text-[9px] font-bold tracking-wide text-[#8A90A2]">{c.empty ? '' : 'MM'}</span>
+        <span className="ml-1 shrink-0 text-[9px] font-bold tracking-wide text-[#8A90A2]">{c.empty ? '' : isDolar ? 'US$' : 'MM'}</span>
       </div>
       <div className="flex flex-col gap-1">
-        <MetricRow label="Plan" value={c.empty ? <EmptyValue /> : formatTableAmount(c.plan)} />
-        <MetricRow label="Forecast base" value={c.empty ? <EmptyValue /> : formatTableAmount(c.fBase)} tone="muted" />
-        <MetricRow label="Forecast + IPC" value={c.empty ? <EmptyValue /> : formatTableAmount(c.fIPC)} tone="hl" />
-        <div className="my-px h-px bg-border" />
+        <MetricRow label="Plan" value={c.empty ? <EmptyValue /> : fmt(c.plan)} />
+        <MetricRow label="Forecast base" value={c.empty ? <EmptyValue /> : fmt(c.fBase)} tone="muted" />
         <MetricRow
           label="Variación $"
-          value={c.empty ? <EmptyValue /> : `${varAbs > 0 ? '+' : ''}${formatTableAmount(Math.abs(varAbs))}`}
+          value={c.empty ? <EmptyValue /> : `${varAbs > 0 ? '+' : ''}${fmt(Math.abs(varAbs))}`}
           tone={varTone}
         />
         <MetricRow
@@ -48,15 +67,16 @@ export function CountrySummaryCard({ c }: { c: CountryBudget }) {
           tone={varTone}
         />
         <div className="my-px h-px bg-border" />
+        <MetricRow label={secondaryLabel} value={c.empty ? <EmptyValue /> : fmt(secondaryVal)} tone="hl" />
         <MetricRow
-          label="Var. $ vs F+IPC"
-          value={c.empty ? <EmptyValue /> : `${varIpc > 0 ? '+' : ''}${formatTableAmount(Math.abs(varIpc))}`}
-          tone={varIpcTone}
+          label="Variación $"
+          value={c.empty ? <EmptyValue /> : `${varSecondary > 0 ? '+' : ''}${fmt(Math.abs(varSecondary))}`}
+          tone={varSecondaryTone}
         />
         <MetricRow
-          label="Var. % vs F+IPC"
-          value={c.empty ? <EmptyValue /> : `${varIpcPct > 0 ? '+' : ''}${Math.abs(varIpcPct).toFixed(1)}%`}
-          tone={varIpcTone}
+          label="Variación %"
+          value={c.empty ? <EmptyValue /> : `${varSecondaryPct > 0 ? '+' : ''}${Math.abs(varSecondaryPct).toFixed(1)}%`}
+          tone={varSecondaryTone}
         />
         <div className="my-px h-px bg-border" />
         <MetricRow label="HC Plan" value={c.hcPlan > 0 ? c.hcPlan.toLocaleString('es-CL') : <EmptyValue />} />
@@ -67,6 +87,6 @@ export function CountrySummaryCard({ c }: { c: CountryBudget }) {
           Sin presupuesto cargado
         </div>
       )}
-    </div>
+    </button>
   )
 }

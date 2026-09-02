@@ -1,6 +1,9 @@
+import type { MetricMode } from '@/data/reporteria'
+
 const thBase = 'bg-[#F8FAFC] p-[5px_8px] text-[10px] font-bold tracking-[0.06em] text-muted-foreground uppercase whitespace-nowrap'
 
-export function AnalysisTableHeader() {
+export function AnalysisTableHeader({ metricMode }: { metricMode: MetricMode }) {
+  const metricLabel = metricMode === 'target' ? 'Target' : 'Forecast + IPC'
   return (
     <thead>
       <tr>
@@ -10,9 +13,11 @@ export function AnalysisTableHeader() {
         <th className={`${thBase} text-right`}>Forecast</th>
         <th className={`${thBase} text-right`}>Var%</th>
         <th className={`${thBase} text-right`}>Var$</th>
-        <th className={`${thBase} min-w-[72px] border-l border-[#E2E8F0] text-right whitespace-normal`}>Forecast + IPC</th>
+        <th className={`${thBase} min-w-[72px] border-l border-[#E2E8F0] text-right whitespace-normal`}>{metricLabel}</th>
         <th className={`${thBase} text-right`}>Var%</th>
         <th className={`${thBase} text-right`}>Var$</th>
+        <th className={`${thBase} min-w-[58px] border-l border-[#E2E8F0] text-right whitespace-normal`}>HC Plan</th>
+        <th className={`${thBase} min-w-[72px] text-right whitespace-normal`}>HC forecast base</th>
       </tr>
     </thead>
   )

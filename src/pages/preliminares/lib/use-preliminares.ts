@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
-import { preliminaresRows, type PreliminarN4Row, type PreliminarRow } from '@/data/preliminares'
-import { EMPTY_PRELIM_FILTERS, type PrelimFilterOptions, type PrelimFilters } from './preliminares-filters-types'
+import type { PreliminarN4Row, PreliminarRow } from '@/data/preliminares'
+import type { PrelimFilterOptions, PrelimFilters } from './preliminares-filters-types'
+import { usePreliminaresStore } from './use-preliminares-store'
+import { allSelectable, toggleGroupInSet, toggleInSet } from './selection-helpers'
 
 const ROWS_PER_PAGE = 10
 
@@ -28,18 +30,18 @@ function matchN7Filters(c: PreliminarRow, f: PrelimFilters) {
   return true
 }
 
-function buildFilterOptions(): PrelimFilterOptions {
+function buildFilterOptions(rows: PreliminarN4Row[]): PrelimFilterOptions {
   return {
-    pais: uniqSorted(preliminaresRows.map((r) => r.pais)),
-    gerenciaPadre: uniqSorted(preliminaresRows.map((r) => r.gerenciaPadre)),
-    gerencia: uniqSorted(preliminaresRows.map((r) => r.gerencia)),
-    equipo: uniqSorted(preliminaresRows.map((r) => r.equipo)),
-    centroCosto: uniqSorted(preliminaresRows.flatMap((r) => r.children.map((c) => c.centroCosto))),
-    asignacion: uniqSorted(preliminaresRows.flatMap((r) => r.children.map((c) => c.asignacion))),
-    bandera: uniqSorted(preliminaresRows.flatMap((r) => r.children.map((c) => c.bandera))),
-    cuentaContable: uniqSorted(preliminaresRows.map((r) => r.cuentaContable)),
-    moneda: uniqSorted(preliminaresRows.map((r) => r.moneda)),
-    pep: uniqSorted(preliminaresRows.flatMap((r) => r.children.map((c) => c.codigo))),
+    pais: uniqSorted(rows.map((r) => r.pais)),
+    gerenciaPadre: uniqSorted(rows.map((r) => r.gerenciaPadre)),
+    gerencia: uniqSorted(rows.map((r) => r.gerencia)),
+    equipo: uniqSorted(rows.map((r) => r.equipo)),
+    centroCosto: uniqSorted(rows.flatMap((r) => r.children.map((c) => c.centroCosto))),
+    asignacion: uniqSorted(rows.flatMap((r) => r.children.map((c) => c.asignacion))),
+    bandera: uniqSorted(rows.flatMap((r) => r.children.map((c) => c.bandera))),
+    cuentaContable: uniqSorted(rows.map((r) => r.cuentaContable)),
+    moneda: uniqSorted(rows.map((r) => r.moneda)),
+    pep: uniqSorted(rows.flatMap((r) => r.children.map((c) => c.codigo))),
   }
 }
 
@@ -68,28 +70,29 @@ function calcKpi(filteredN4: PreliminarN4Row[]) {
 }
 
 export function usePreliminares() {
-  const [tab, setTab] = useState<'n4' | 'n7'>('n4')
-  const [filters, setFilters] = useState<PrelimFilters>(EMPTY_PRELIM_FILTERS)
-  const [filtersOpen, setFiltersOpen] = useState(false)
+  const store = usePreliminaresStore()
+  const { rows, tab, setTab, filters, filtersOpen, setFiltersOpen } = store
   const [page, setPage] = useState(1)
+  const [selected, setSelected] = useState<Set<string>>(new Set())
   const [showConfirm, setShowConfirm] = useState(false)
-  const [showToast, setShowToast] = useState(false)
+  const [showToast, setShowToast] = useState<string | null>(null)
 
   const isN7 = tab === 'n7'
 
-  const filteredN4 = useMemo(() => preliminaresRows.filter((r) => matchN4Filters(r, filters)), [filters])
+  const filteredN4 = useMemo(() => rows.filter((r) => matchN4Filters(r, filters)), [rows, filters])
   const n7Flat = useMemo(
     () => filteredN4.flatMap((r) => r.children.filter((c) => matchN7Filters(c, filters)).map((c) => ({ ...c, parentServicio: r.servicio, parentCodigo: r.codigo }))),
     [filteredN4, filters],
   )
   const activeData = isN7 ? n7Flat : filteredN4
 
-  const options: PrelimFilterOptions = useMemo(buildFilterOptions, [])
+  const options: PrelimFilterOptions = useMemo(() => buildFilterOptions(rows), [rows])
 
   useEffect(() => setPage(1), [filters, tab])
+  useEffect(() => setSelected(new Set()), [tab, filters])
   useEffect(() => {
     if (!showToast) return
-    const t = setTimeout(() => setShowToast(false), 4000)
+    const t = setTimeout(() => setShowToast(null), 4000)
     return () => clearTimeout(t)
   }, [showToast])
 
@@ -100,18 +103,30 @@ export function usePreliminares() {
   const activeFilterCount = countActiveFilters(filters)
   const kpi = calcKpi(filteredN4)
 
+  const toggleSelected = (codigo: string) => setSelected((prev) => toggleInSet(prev, codigo))
+
+  const toggleSelectedN4 = (n4: PreliminarN4Row) => {
+    const n7Codigos = n4.children.filter((c) => c.estado === 'preliminar').map((c) => c.codigo)
+    setSelected((prev) => toggleGroupInSet(prev, n7Codigos))
+  }
+
+  const allSelectableCodigos = allSelectable(isN7, filteredN4, n7Flat)
+  const allSelected = allSelectableCodigos.length > 0 && allSelectableCodigos.every((c) => selected.has(c))
+  const toggleSelectAll = () => setSelected(new Set(allSelected ? [] : allSelectableCodigos))
+
   return {
     tab,
     setTab,
     isN7,
     filters,
-    onChangeFilter: <K extends keyof PrelimFilters>(key: K, value: PrelimFilters[K]) => setFilters((f) => ({ ...f, [key]: value })),
-    clearFilters: () => setFilters(EMPTY_PRELIM_FILTERS),
+    onChangeFilter: store.onChangeFilter,
+    clearFilters: store.clearFilters,
     filtersOpen,
     setFiltersOpen,
     activeFilterCount,
     options,
     filteredN4,
+    activeData,
     paged,
     totalFiltered: activeData.length,
     page: pageSafe,
@@ -120,14 +135,25 @@ export function usePreliminares() {
     setPage,
     kpi,
     totalServicio: filteredN4.length,
-    conPrelim: filteredN4.filter((r) => r.preliminarMes > 0).length,
-    definitivos: filteredN4.filter((r) => r.definitivo).length,
+    conPrelim: filteredN4.filter((r) => r.children.some((c) => c.estado === 'preliminar')).length,
+    definitivos: filteredN4.filter((r) => r.children.every((c) => c.estado === 'definitivo')).length,
+    selected,
+    toggleSelected,
+    toggleSelectedN4,
+    allSelected,
+    toggleSelectAll,
     showConfirm,
     setShowConfirm,
     showToast,
     onConfirmGuardar: () => {
+      store.markDefinitivo([...selected])
       setShowConfirm(false)
-      setShowToast(true)
+      setShowToast(`${selected.size} líneas pasadas a Definitivo correctamente`)
+      setSelected(new Set())
+    },
+    onBulkUploadApplied: (count: number) => {
+      store.applyBulkUpload(count)
+      setShowToast(`${count} líneas actualizadas correctamente`)
     },
   }
 }

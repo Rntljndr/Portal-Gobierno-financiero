@@ -15,3 +15,15 @@ export function formatTableAmount(v: number): string {
   const n = Math.round(Math.abs(v))
   return n >= 1000 ? `${n.toLocaleString('es-CL')} MM` : `${n.toLocaleString('es-CL')} M`
 }
+
+const USD_RATE = 950
+
+/** Convierte un monto en millones (moneda local) a USD, con sufijo M / MM US$. */
+export function formatTableAmountUSD(v: number): string {
+  const n = Math.round(Math.abs(v) / USD_RATE)
+  return n >= 1000 ? `${n.toLocaleString('es-CL')} MM US$` : `${n.toLocaleString('es-CL')} M US$`
+}
+
+export function toUSD(v: number): number {
+  return Math.round(v / USD_RATE)
+}

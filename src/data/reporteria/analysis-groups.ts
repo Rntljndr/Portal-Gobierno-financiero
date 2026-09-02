@@ -1,7 +1,7 @@
 import type { AnalysisChild, AnalysisGroup } from './types'
 
-function withIpc(nombre: string, plan: number, proy: number): AnalysisChild {
-  return { nombre, plan, fBase: proy, fIPC: Math.round(proy * 1.04) }
+function withIpc(nombre: string, plan: number, proy: number, pais?: string): AnalysisChild {
+  return { nombre, plan, fBase: proy, fIPC: Math.round(proy * 1.04), pais }
 }
 
 export const divisionData: AnalysisGroup[] = [
@@ -38,6 +38,24 @@ export const divisionData: AnalysisGroup[] = [
       withIpc('Argentina-Corporación', 3700, 3600),
     ],
   },
+  {
+    nombre: 'Medios de Pago',
+    children: [
+      withIpc('Chile-SM CHI', 5100, 5200),
+      withIpc('Argentina-SM ARG', 3900, 3800),
+      withIpc('Brasil-SM BRA', 3100, 3200),
+      withIpc('Colombia-SM COL', 2500, 2600),
+      withIpc('Perú-SM PER', 2100, 1900),
+    ],
+  },
+  {
+    nombre: 'Corporación',
+    children: [
+      withIpc('Chile-TXD CHI', 3600, 3800),
+      withIpc('Chile-SISTEMAS CROSS CHI', 2800, 2900),
+      withIpc('Argentina-SISTEMAS CROSS ARG', 2100, 2200),
+    ],
+  },
 ]
 
 export const rubroCuentaData: AnalysisGroup[] = [
@@ -62,20 +80,44 @@ export const rubroCuentaData: AnalysisGroup[] = [
     nombre: 'Amortizaciones',
     children: [withIpc('Proyectos', 13500, 14200), withIpc('Trascaja', 7700, 8200)],
   },
+  {
+    nombre: 'Otros',
+    children: [withIpc('Nueva cuenta contable', 5500, 5800), withIpc('Sin PEP', 5000, 5300)],
+  },
 ]
 
 export const gerenciaEquipoData: AnalysisGroup[] = [
   {
     nombre: 'IT',
+    pais: ['Chile', 'Argentina', 'Brasil', 'Colombia', 'Perú'],
     children: [
-      withIpc('Governance', 18000, 18500),
-      withIpc('Gerencia IT Tech', 12400, 12800),
-      withIpc('Productividad', 6800, 7100),
-      withIpc('PMO', 9000, 9200),
+      withIpc('Governance', 18000, 18500, 'Chile'),
+      withIpc('Gerencia IT Tech', 12400, 12800, 'Chile'),
+      withIpc('Productividad', 6800, 7100, 'Argentina'),
+      withIpc('PMO', 9000, 9200, 'Brasil'),
+      withIpc('Plataformas', 6600, 6400, 'Colombia'),
     ],
   },
   {
     nombre: 'Digital Factory',
-    children: [withIpc('Loyalty y Media', 13200, 12800), withIpc('Omnicanalidad', 10200, 9500)],
+    pais: ['Chile', 'Argentina', 'Colombia'],
+    children: [
+      withIpc('Loyalty y Media', 13200, 12800, 'Chile'),
+      withIpc('Omnicanalidad', 10200, 9500, 'Chile'),
+      withIpc('Gerencia IT Regional de Personas', 7100, 6800, 'Argentina'),
+    ],
+  },
+  {
+    nombre: 'Estrategia',
+    pais: ['Chile', 'Perú'],
+    children: [withIpc('Gerencia IT Perú', 13800, 14200, 'Perú'), withIpc('Transversal', 11000, 11300, 'Chile')],
+  },
+  {
+    nombre: 'Seguridad de la Información',
+    pais: ['Chile', 'Argentina', 'Brasil'],
+    children: [
+      withIpc('Seguridad de la Información', 5800, 6200, 'Chile'),
+      withIpc('Otros', 4200, 4100, 'Argentina'),
+    ],
   },
 ]

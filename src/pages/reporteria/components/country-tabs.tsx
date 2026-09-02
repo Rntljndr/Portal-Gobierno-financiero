@@ -6,9 +6,10 @@ interface CountryTabsProps {
   active: string
   onChange: (tab: string) => void
   showConsolidado?: boolean
+  onColumnasClick?: () => void
 }
 
-export function CountryTabs({ active, onChange, showConsolidado }: CountryTabsProps) {
+export function CountryTabs({ active, onChange, showConsolidado, onColumnasClick }: CountryTabsProps) {
   const tabs = [...(showConsolidado ? ['Consolidado'] : []), ...countryTabs, 'Tablón']
   return (
     <div className="mx-8 mb-4 flex flex-wrap items-end justify-between gap-3 border-b-2 border-border">
@@ -27,9 +28,11 @@ export function CountryTabs({ active, onChange, showConsolidado }: CountryTabsPr
           </button>
         ))}
       </div>
-      <Button variant="outline" size="sm" disabled className="mb-2 opacity-50">
-        <Icon name="download" size={14} color="#0047B0" /> Descargar
-      </Button>
+      {active === 'Tablón' && (
+        <Button variant="outline" size="sm" className="mb-2" onClick={onColumnasClick}>
+          <Icon name="config" size={14} color="#0047B0" /> Columnas
+        </Button>
+      )}
     </div>
   )
 }

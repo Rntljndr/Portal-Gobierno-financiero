@@ -1,8 +1,9 @@
 import { countryFlags } from '@/data/reporteria'
 import { Icon } from '@/shared/ui'
-import { STICKY_LEFT } from '../../lib/pep-n4-table-cols'
+import type { StickyLayout } from '../../lib/pep-n4-table-cols'
 
 interface RowIdentityCellsProps {
+  layout: StickyLayout
   codigo: string
   nombre: string
   pais: string
@@ -14,35 +15,60 @@ interface RowIdentityCellsProps {
   onToggle?: () => void
 }
 
-export function RowIdentityCells({ codigo, nombre, pais, paisDestino, equipo, bg, isChild, isExpanded, onToggle }: RowIdentityCellsProps) {
-  const sticky = (left: number) => ({ position: 'sticky' as const, left, background: bg })
-  const tdBase = 'z-[3] whitespace-nowrap border-b border-border px-2 py-[7px]'
+export function RowIdentityCells({ layout, codigo, nombre, pais, paisDestino, equipo, bg, isChild, isExpanded, onToggle }: RowIdentityCellsProps) {
   const destino = paisDestino || pais
+  const tdBase = 'z-[3] whitespace-nowrap border-b border-border px-2 py-[7px]'
+  const cellFor = (key: string) => {
+    const idx = layout.cols.findIndex((c) => c.key === key)
+    if (idx === -1) return null
+    const isLast = idx === layout.cols.length - 1
+    const sticky = { position: 'sticky' as const, left: layout.left[idx], background: bg }
+    return { sticky, isLast }
+  }
+
+  const spacer = cellFor('spacer')
+  const pep = cellFor('pep')
+  const nombreCell = cellFor('nombre')
+  const paisOrigen = cellFor('paisOrigen')
+  const paisDestinoCell = cellFor('paisDestino')
+  const equipoCell = cellFor('equipo')
 
   return (
     <>
-      <td style={sticky(STICKY_LEFT[0])} className={`${tdBase} text-center`}>
-        {onToggle && (
-          <button type="button" onClick={onToggle} className="inline-flex items-center justify-center text-muted-foreground">
-            <Icon name={isExpanded ? 'chevron_left' : 'chevron_right'} size={11} color="currentColor" />
-          </button>
-        )}
-      </td>
-      <td style={{ ...sticky(STICKY_LEFT[1]), paddingLeft: isChild ? 24 : 8 }} className={`${tdBase} ${isChild ? 'text-xs text-muted-foreground' : 'text-[12.5px] font-semibold'}`}>
-        {codigo}
-      </td>
-      <td style={sticky(STICKY_LEFT[2])} className={`${tdBase} ${isChild ? 'text-xs font-medium text-muted-foreground' : 'font-semibold'}`}>
-        {nombre}
-      </td>
-      <td style={sticky(STICKY_LEFT[3])} className={`${tdBase} ${isChild ? 'text-xs' : ''}`}>
-        {countryFlags[pais] || ''} {pais}
-      </td>
-      <td style={sticky(STICKY_LEFT[4])} className={`${tdBase} ${isChild ? 'text-xs' : ''}`}>
-        {countryFlags[destino] || ''} {destino}
-      </td>
-      <td style={sticky(STICKY_LEFT[5])} className={`${tdBase} ${isChild ? 'text-xs' : ''} shadow-[4px_0_6px_-2px_rgba(0,0,0,0.10)]`}>
-        {equipo}
-      </td>
+      {spacer && (
+        <td style={spacer.sticky} className={`${tdBase} text-center`}>
+          {onToggle && (
+            <button type="button" onClick={onToggle} className="inline-flex items-center justify-center text-muted-foreground">
+              <Icon name={isExpanded ? 'chevron_left' : 'chevron_right'} size={11} color="currentColor" />
+            </button>
+          )}
+        </td>
+      )}
+      {pep && (
+        <td style={{ ...pep.sticky, paddingLeft: isChild ? 24 : 8 }} className={`${tdBase} ${isChild ? 'text-xs text-muted-foreground' : 'text-[12.5px] font-semibold'} ${pep.isLast ? 'shadow-[4px_0_6px_-2px_rgba(0,0,0,0.10)]' : ''}`}>
+          {codigo}
+        </td>
+      )}
+      {nombreCell && (
+        <td style={nombreCell.sticky} className={`${tdBase} ${isChild ? 'text-xs font-medium text-muted-foreground' : 'font-semibold'} ${nombreCell.isLast ? 'shadow-[4px_0_6px_-2px_rgba(0,0,0,0.10)]' : ''}`}>
+          {nombre}
+        </td>
+      )}
+      {paisOrigen && (
+        <td style={paisOrigen.sticky} className={`${tdBase} ${isChild ? 'text-xs' : ''} ${paisOrigen.isLast ? 'shadow-[4px_0_6px_-2px_rgba(0,0,0,0.10)]' : ''}`}>
+          {countryFlags[pais] || ''} {pais}
+        </td>
+      )}
+      {paisDestinoCell && (
+        <td style={paisDestinoCell.sticky} className={`${tdBase} ${isChild ? 'text-xs' : ''} ${paisDestinoCell.isLast ? 'shadow-[4px_0_6px_-2px_rgba(0,0,0,0.10)]' : ''}`}>
+          {countryFlags[destino] || ''} {destino}
+        </td>
+      )}
+      {equipoCell && (
+        <td style={equipoCell.sticky} className={`${tdBase} ${isChild ? 'text-xs' : ''} ${equipoCell.isLast ? 'shadow-[4px_0_6px_-2px_rgba(0,0,0,0.10)]' : ''}`}>
+          {equipo}
+        </td>
+      )}
     </>
   )
 }
