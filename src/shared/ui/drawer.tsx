@@ -32,7 +32,7 @@ export function Drawer({ open, onClose, title, eyebrow, subtitle, wide, footer, 
               {subtitle && <div className="mt-0.5 text-[11px] text-muted-foreground">{subtitle}</div>}
             </div>
             <Dialog.Close asChild>
-              <button type="button" aria-label="Cerrar" className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-[#F1F4FA]">
+              <button type="button" aria-label="Cerrar" className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-surface-hover">
                 <Icon name="x_close" size={16} color="currentColor" />
               </button>
             </Dialog.Close>

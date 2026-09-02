@@ -19,6 +19,7 @@
   --color-err-line: #fca5a5;
   --color-ok-bg: #e3f9ec;
   --color-ok-fg: #067647;
+  --color-ok-line: #abefc6;
 
   --font-sans: 'Montserrat', system-ui, -apple-system, sans-serif;
 }
@@ -42,6 +43,7 @@
   --success: var(--color-ok-fg);
   --success-foreground: var(--color-white);
   --success-surface: var(--color-ok-bg);
+  --success-line: var(--color-ok-line);
 
   --warning: var(--color-warn-fg);
   --warning-foreground: var(--color-white);
@@ -50,12 +52,15 @@
 
   --border: rgb(6 20 148 / 0.1);
   --border-strong: rgb(6 20 148 / 0.18);
+  --border-table: #f1f3f8;
+  --border-table-strong: #e4eaf6;
+  --surface-hover: #f0f6ff;
   --ring: var(--color-cs-azul);
 
   /* Subgrupo específico de superficie: el sidebar es azul oscuro, no reusa los tokens de UI clara */
   --sidebar-bg: var(--color-cs-azul);
   --sidebar-bg-2: #003685;
-  --sidebar-foreground: rgb(255 255 255 / 0.82);
+  --sidebar-foreground: rgb(255 255 255 / 0.75);
   --sidebar-active: #1e47b8;
   --sidebar-border: rgb(255 255 255 / 0.1);
 }
@@ -78,6 +83,7 @@
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
   --color-success-surface: var(--success-surface);
+  --color-success-line: var(--success-line);
 
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
@@ -86,6 +92,9 @@
 
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
+  --color-border-table: var(--border-table);
+  --color-border-table-strong: var(--border-table-strong);
+  --color-surface-hover: var(--surface-hover);
   --color-ring: var(--ring);
 
   --color-sidebar-bg: var(--sidebar-bg);

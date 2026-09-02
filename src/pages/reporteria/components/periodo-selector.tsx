@@ -8,7 +8,7 @@ function TriStateCheck({ state }: { state: 'all' | 'none' | 'partial' }) {
   return (
     <span
       className={cn(
-        'flex size-3.5 shrink-0 items-center justify-center rounded-[3px] border text-[10px] text-white',
+        'flex size-3.5 shrink-0 items-center justify-center rounded-sm border text-[10px] text-white',
         state === 'all' ? 'border-primary bg-primary' : state === 'partial' ? 'border-primary bg-primary' : 'border-border-strong bg-white',
       )}
     >
@@ -46,14 +46,14 @@ export function PeriodoSelector({ value, onChange }: PeriodoSelectorProps) {
       <Popover.Trigger asChild>
         <button
           type="button"
-          className="flex h-9 min-w-[220px] items-center justify-between gap-2 rounded-lg border border-primary bg-[#E4F0FF] px-2.5 text-[12.5px] font-medium text-foreground"
+          className="flex h-9 min-w-[220px] items-center justify-between gap-2 rounded-lg border border-primary bg-[#EFF4FF] px-2.5 text-[12.5px] font-medium text-foreground"
         >
           <span className="overflow-hidden text-ellipsis whitespace-nowrap">{periodoLabel(value)}</span>
           <Icon name="chevron_down" size={12} color="#0073FF" />
         </button>
       </Popover.Trigger>
       <Popover.Portal>
-        <Popover.Content align="start" sideOffset={4} className="z-[9100] min-w-[240px] max-h-[300px] overflow-y-auto rounded-[10px] border border-border bg-white shadow-[0_4px_20px_rgba(0,0,0,0.12)]">
+        <Popover.Content align="start" sideOffset={4} className="z-[9100] min-w-[240px] max-h-[300px] overflow-y-auto rounded-lg border border-border bg-white shadow-[0_2px_15px_-3px_#0006]">
           <div className="flex cursor-pointer items-center gap-2 border-b border-border p-[8px_12px]" onClick={toggleAll}>
             <TriStateCheck state={allSelected ? 'all' : 'none'} />
             <span className="text-[12.5px] font-semibold text-foreground select-none">Seleccionar todo</span>

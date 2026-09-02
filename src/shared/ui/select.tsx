@@ -27,7 +27,7 @@ export function Select({ value, onChange, options, placeholder = 'Seleccionar...
     <SelectPrimitive.Root value={value} onValueChange={onChange} disabled={disabled}>
       <SelectPrimitive.Trigger
         className={cn(
-          'flex h-[38px] w-full items-center justify-between gap-2 rounded-[10px] border-[1.5px] border-border bg-white px-3 text-left text-[12.5px] text-foreground outline-none hover:border-border-strong data-[placeholder]:text-muted-foreground data-[disabled]:cursor-not-allowed data-[disabled]:opacity-60',
+          'flex h-[38px] w-full items-center justify-between gap-2 rounded-lg border border-border bg-white px-3 text-left text-[12.5px] text-foreground outline-none hover:border-border-strong data-[placeholder]:text-muted-foreground data-[disabled]:cursor-not-allowed data-[disabled]:opacity-60',
           className,
         )}
       >
@@ -40,14 +40,14 @@ export function Select({ value, onChange, options, placeholder = 'Seleccionar...
         <SelectPrimitive.Content
           position="popper"
           sideOffset={4}
-          className="z-[9100] w-(--radix-select-trigger-width) overflow-hidden rounded-[10px] border border-border bg-white shadow-[0_8px_24px_rgba(6,20,148,0.12)]"
+          className="z-[9100] w-(--radix-select-trigger-width) overflow-hidden rounded-lg border border-border bg-white shadow-[0_8px_24px_rgba(6,20,148,0.12)]"
         >
           <SelectPrimitive.Viewport className="max-h-[280px] p-1">
             {normalized.map((opt) => (
               <SelectPrimitive.Item
                 key={opt.value}
                 value={opt.value}
-                className="flex cursor-pointer items-center justify-between gap-2 rounded-[7px] px-2.5 py-2 text-[12.5px] text-foreground outline-none data-[highlighted]:bg-[#F1F4FA] data-[state=checked]:bg-primary/10 data-[state=checked]:font-semibold data-[state=checked]:text-primary"
+                className="flex cursor-pointer items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-[12.5px] text-foreground outline-none data-[highlighted]:bg-surface-hover data-[state=checked]:bg-primary/10 data-[state=checked]:font-semibold data-[state=checked]:text-primary"
               >
                 <SelectPrimitive.ItemText>{opt.label}</SelectPrimitive.ItemText>
                 <SelectPrimitive.ItemIndicator>

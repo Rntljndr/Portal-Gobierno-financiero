@@ -31,7 +31,7 @@ export function MultiSelect({ placeholder, options, values, onChange }: MultiSel
       <Popover.Trigger asChild>
         <button
           type="button"
-          className="flex h-[38px] w-full items-center gap-2 rounded-[10px] border-[1.5px] border-border bg-white px-3 text-left text-[12.5px] text-foreground hover:border-border-strong"
+          className="flex h-[38px] w-full items-center gap-2 rounded-lg border border-border bg-white px-3 text-left text-[12.5px] text-foreground hover:border-border-strong"
         >
           <div className="flex min-w-0 flex-1 flex-wrap gap-1 overflow-hidden">
             {values.length === 0 ? (
@@ -40,7 +40,7 @@ export function MultiSelect({ placeholder, options, values, onChange }: MultiSel
               values.map((v) => (
                 <span
                   key={v}
-                  className="relative inline-flex items-center gap-1 rounded-md bg-[#E8EEFB] py-[3px] pr-1.5 pl-2 text-[11px] font-semibold text-primary"
+                  className="relative inline-flex items-center gap-1 rounded-full bg-[#EFF4FF] py-[3px] pr-1.5 pl-2 text-[11px] font-semibold text-primary"
                 >
                   {v}
                   <Icon name="x_close" size={10} color="#0047B0" />

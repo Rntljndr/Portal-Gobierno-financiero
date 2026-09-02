@@ -17,10 +17,10 @@ export function MultiSelectMenu({ placeholder, options, values, query, onQueryCh
     <Popover.Content
       align="start"
       sideOffset={4}
-      className="z-[9100] w-(--radix-popover-trigger-width) rounded-[10px] border border-border bg-white p-1 shadow-[0_8px_24px_rgba(6,20,148,0.12)]"
+      className="z-[9100] w-(--radix-popover-trigger-width) rounded-lg border border-border bg-white p-1 shadow-[0_8px_24px_rgba(6,20,148,0.12)]"
     >
       <div className="p-1.5">
-        <div className="flex h-8 items-center gap-2 rounded-lg border border-border bg-[#F8FAFD] px-2.5">
+        <div className="flex h-8 items-center gap-2 rounded-lg border border-border bg-background px-2.5">
           <Icon name="search" size={13} color="#8A90A2" />
           <input
             autoFocus
@@ -38,7 +38,7 @@ export function MultiSelectMenu({ placeholder, options, values, query, onQueryCh
           visible.map((option) => (
             <label
               key={option}
-              className="flex cursor-pointer items-center gap-2 rounded-[7px] px-2.5 py-2 text-[12.5px] text-foreground hover:bg-[#F1F4FA]"
+              className="flex cursor-pointer items-center gap-2 rounded-lg px-2.5 py-2 text-[12.5px] text-foreground hover:bg-surface-hover"
             >
               <input
                 type="checkbox"

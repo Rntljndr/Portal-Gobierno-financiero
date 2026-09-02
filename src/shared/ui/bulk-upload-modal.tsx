@@ -71,13 +71,13 @@ export function BulkUploadModal({ open, onClose, onApplied, title, applyLabel }:
       )}
 
       {status === 'success' && (
-        <div className="mt-4 rounded-lg border border-[#B6E7CC] bg-[#E1FBEF] p-3.5">
-          <div className="flex items-center gap-1.5 text-[13px] font-bold text-[#067647]">
+        <div className="mt-4 rounded-lg border border-success-line bg-success-surface p-3.5">
+          <div className="flex items-center gap-1.5 text-[13px] font-bold text-success">
             <Icon name="check" size={14} color="#067647" /> 8 filas procesadas correctamente
           </div>
-          <div className="mt-2 space-y-1 border-t border-[#B6E7CC] pt-2">
+          <div className="mt-2 space-y-1 border-t border-success-line pt-2">
             {FAKE_ERRORS.map((e) => (
-              <div key={e.line} className="text-xs text-[#B45309]">
+              <div key={e.line} className="text-xs text-warning">
                 Línea {e.line}: {e.msg}
               </div>
             ))}

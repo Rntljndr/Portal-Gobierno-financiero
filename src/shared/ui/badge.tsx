@@ -1,7 +1,7 @@
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/shared/lib/utils'
 
-const badgeVariants = cva('inline-flex items-center gap-1 px-2.5 py-0.5 text-[11px] font-bold whitespace-nowrap', {
+const badgeVariants = cva('inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-medium whitespace-nowrap', {
   variants: {
     variant: {
       neutral: 'bg-muted text-muted-foreground',
@@ -12,7 +12,7 @@ const badgeVariants = cva('inline-flex items-center gap-1 px-2.5 py-0.5 text-[11
     },
     shape: {
       pill: 'rounded-full',
-      chip: 'rounded-md border-0',
+      chip: 'rounded-full border-0',
     },
   },
   defaultVariants: { variant: 'neutral', shape: 'pill' },

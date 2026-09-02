@@ -3,20 +3,20 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/shared/lib/utils'
 
 const buttonVariants = cva(
-  'inline-flex items-center gap-2 rounded-[10px] text-[13px] font-semibold leading-none whitespace-nowrap cursor-pointer transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60',
+  'inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium leading-none whitespace-nowrap cursor-pointer transition-colors active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60',
   {
     variants: {
       variant: {
-        primary: 'rounded-[14px] bg-cs-azul text-white hover:bg-[#003685]',
-        outline: 'border-[1.5px] border-border-strong bg-white text-primary hover:bg-[#F3F5FC] hover:border-cs-azul',
+        primary: 'bg-cs-azul text-white hover:bg-[#003685]',
+        outline: 'border border-[#B6CCF7] bg-white text-primary hover:bg-surface-hover',
         onBlue: 'border border-white/28 bg-white/14 text-white hover:bg-white/22',
-        onGreenCard: 'border border-[#A8D2B7] bg-white text-[#1F6F47] hover:bg-[#F4FAF6] hover:border-[#1F6F47]',
-        ghost: 'bg-transparent px-3 py-2 text-primary hover:bg-primary/6',
+        onGreenCard: 'border border-success-line bg-white text-success hover:border-success',
+        ghost: 'bg-transparent text-primary hover:bg-transparent hover:text-cs-azul-oscuro',
       },
       size: {
-        default: 'px-[18px] py-2.5',
-        sm: 'px-3 py-[7px] text-xs',
-        lg: 'px-[22px] py-3 text-sm',
+        default: 'h-[41px] px-3',
+        sm: 'h-8 px-2.5 text-xs',
+        lg: 'h-11 px-5',
       },
     },
     defaultVariants: {

@@ -36,7 +36,7 @@ export function Pagination({ page, totalPages, totalItems, pageSize, onPageChang
           type="button"
           disabled={page === 1}
           onClick={() => onPageChange(page - 1)}
-          className="rounded-[7px] border border-[#E2E5EE] bg-white px-3.5 py-[7px] text-xs font-semibold text-primary disabled:cursor-not-allowed disabled:text-muted-foreground"
+          className="rounded-lg border border-border-table bg-white px-3.5 py-[7px] text-xs font-semibold text-primary disabled:cursor-not-allowed disabled:text-muted-foreground"
         >
           Anterior
         </button>
@@ -51,7 +51,7 @@ export function Pagination({ page, totalPages, totalItems, pageSize, onPageChang
               type="button"
               onClick={() => onPageChange(n)}
               className={cn(
-                'rounded-[7px] border border-[#E2E5EE] bg-white px-3.5 py-[7px] text-xs font-semibold text-muted-foreground hover:border-primary hover:text-primary',
+                'rounded-lg border border-border-table bg-white px-3.5 py-[7px] text-xs font-semibold text-muted-foreground hover:border-primary hover:text-primary',
                 n === page && 'border-primary bg-primary text-white hover:text-white',
               )}
             >
@@ -63,7 +63,7 @@ export function Pagination({ page, totalPages, totalItems, pageSize, onPageChang
           type="button"
           disabled={page === totalPages}
           onClick={() => onPageChange(page + 1)}
-          className="rounded-[7px] border border-[#E2E5EE] bg-white px-3.5 py-[7px] text-xs font-semibold text-primary disabled:cursor-not-allowed disabled:text-muted-foreground"
+          className="rounded-lg border border-border-table bg-white px-3.5 py-[7px] text-xs font-semibold text-primary disabled:cursor-not-allowed disabled:text-muted-foreground"
         >
           Siguiente
         </button>

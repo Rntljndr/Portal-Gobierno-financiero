@@ -8,7 +8,7 @@ interface SegmentedTabsProps<T extends string> {
 
 export function SegmentedTabs<T extends string>({ value, onChange, options }: SegmentedTabsProps<T>) {
   return (
-    <div className="flex gap-0.5 rounded-[11px] border border-primary/22 bg-primary/8 p-[3px]">
+    <div className="flex gap-0.5 rounded-xl border border-primary/22 bg-primary/8 p-[3px]">
       {options.map((opt) => (
         <button
           key={opt.value}

@@ -9,9 +9,9 @@ interface EmptyStateProps {
   className?: string
 }
 
-export function EmptyState({ icon, iconColor = '#CBD5E1', title, text, className }: EmptyStateProps) {
+export function EmptyState({ icon, iconColor = '#8A90A2', title, text, className }: EmptyStateProps) {
   return (
-    <div className={cn('rounded-[14px] border border-dashed border-border-strong bg-white p-10 text-center', className)}>
+    <div className={cn('rounded-2xl border border-dashed border-border-strong bg-white p-10 text-center', className)}>
       <div className="flex justify-center">
         <Icon name={icon} size={28} color={iconColor} />
       </div>

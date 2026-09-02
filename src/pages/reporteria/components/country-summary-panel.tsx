@@ -18,7 +18,7 @@ export function CountrySummaryPanel({ paisSel, metricMode, onMetricModeChange, v
   const [selectedPais, setSelectedPais] = useState<string | null>(null)
 
   return (
-    <div className="mx-8 mb-6 rounded-[18px] bg-[linear-gradient(180deg,var(--color-cs-azul)_0%,#003685_100%)] p-5.5">
+    <div className="mx-8 mb-6 rounded-2xl bg-[linear-gradient(180deg,var(--color-cs-azul)_0%,#003685_100%)] p-5.5">
       <div className="flex w-full flex-wrap items-center justify-between gap-3">
         <button type="button" onClick={() => setOpen((v) => !v)} className="text-left">
           <div className="text-[17px] leading-tight font-extrabold tracking-tight text-white">Resumen presupuesto 2027</div>
