@@ -18,13 +18,13 @@ export function TableHeader({ layout, sortCol, sortDir, onSort }: TableHeaderPro
       <tr>
         {layout.cols.map((c, si) => {
           const sortKey = SORT_KEYS[c.key]
-          const isLast = si === layout.cols.length - 1
+          const isEdge = si === layout.lastStickyIndex
           return (
             <th
               key={c.key}
               rowSpan={2}
-              style={{ left: layout.left[si], width: c.width, minWidth: c.width }}
-              className={`sticky z-[4] whitespace-nowrap border-b-2 border-border bg-white px-2 py-2 text-[10.5px] font-bold tracking-wide text-muted-foreground uppercase align-middle ${si === 0 ? 'text-center' : 'text-left'} ${isLast ? 'shadow-[3px_0_8px_rgba(0,0,0,0.07)]' : ''}`}
+              style={{ position: c.sticky ? 'sticky' : undefined, left: c.sticky ? layout.left[si] : undefined, width: c.width, minWidth: c.width }}
+              className={`${c.sticky ? 'sticky z-[4]' : ''} whitespace-nowrap border-b-2 border-border bg-white px-2 py-2 text-[10.5px] font-bold tracking-wide text-muted-foreground uppercase align-middle ${si === 0 ? 'text-center' : 'text-left'} ${isEdge ? 'shadow-[3px_0_8px_rgba(0,0,0,0.07)]' : ''}`}
             >
               {sortKey ? (
                 <button type="button" onClick={() => onSort(sortKey)} className="inline-flex items-center gap-0.5">

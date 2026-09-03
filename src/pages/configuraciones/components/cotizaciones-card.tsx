@@ -1,4 +1,4 @@
-import { Icon } from '@/shared/ui'
+import { Button, Icon } from '@/shared/ui'
 import { meses, paisesCotizacion, type CotizacionesPorPais } from '@/data/configuraciones'
 import { CotizacionesRow } from './cotizaciones-row'
 
@@ -22,9 +22,9 @@ export function CotizacionesCard({ cotizaciones, onSaveRow, onImportar }: Cotiza
           <button type="button" onClick={onImportar} className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-[12.5px] font-semibold text-primary hover:bg-primary/6">
             <Icon name="upload" size={13} color="#0047B0" /> Importar
           </button>
-          <button type="button" className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-[12.5px] font-semibold text-primary hover:bg-primary/6">
-            <Icon name="download" size={13} color="#0047B0" /> Descargar
-          </button>
+          <Button variant="outline" size="sm">
+            <Icon name="download" size={12} color="#0047B0" /> Descargar
+          </Button>
         </div>
       </div>
       <div className="overflow-x-auto">

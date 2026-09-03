@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { ForecastTipo } from '@/data/forecast'
+import { buildDefaultTasas, type ForecastTipo } from '@/data/forecast'
 
 export interface CrearForecastForm {
   titulo: string
@@ -34,6 +34,10 @@ export function useCrearForecast() {
   const [form, setForm] = useState<CrearForecastForm>(EMPTY_FORM)
   const [selPeps, setSelPeps] = useState<Set<string>>(new Set())
   const [submitted, setSubmitted] = useState(false)
+  const [tasas, setTasas] = useState<Record<string, string[]>>(buildDefaultTasas)
+
+  const setTasaValor = (moneda: string, mesIndex: number, valor: string) =>
+    setTasas((prev) => ({ ...prev, [moneda]: prev[moneda].map((v, i) => (i === mesIndex ? valor : v)) }))
 
   const setField = <K extends keyof CrearForecastForm>(field: K, value: CrearForecastForm[K]) => setForm((f) => ({ ...f, [field]: value }))
 
@@ -49,5 +53,5 @@ export function useCrearForecast() {
   const errors: FormErrors = form.tipo === 'parcial' && submitted && selPeps.size === 0 ? { ...baseErrors, peps: 'Selecciona al menos un PEP para un Forecast Parcial' } : baseErrors
   const isValid = Object.keys(validate(form)).length === 0 && (form.tipo !== 'parcial' || selPeps.size > 0)
 
-  return { form, setField, selPeps, togglePep, submitted, setSubmitted, errors, isValid }
+  return { form, setField, selPeps, togglePep, submitted, setSubmitted, errors, isValid, tasas, setTasaValor }
 }

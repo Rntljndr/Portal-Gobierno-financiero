@@ -10,7 +10,7 @@ const tdNum = `${td} text-right bg-primary/[0.03]`
 const tdSubPep = 'sticky left-0 z-[1] bg-white font-semibold text-foreground'
 
 interface PreliminaresTableRowProps {
-  row: PreliminarRow & { parentServicio?: string }
+  row: PreliminarRow & { parentServicio?: string; parentCodigo?: string }
   isN7: boolean
   onRowClick?: (row: PreliminarRow) => void
   selectable: boolean
@@ -18,7 +18,6 @@ interface PreliminaresTableRowProps {
   indeterminate?: boolean
   checkDisabled?: boolean
   onToggleSelect?: () => void
-  onOpenSubPeps?: (row: PreliminarRow) => void
 }
 
 export function PreliminaresTableRow({
@@ -30,16 +29,16 @@ export function PreliminaresTableRow({
   indeterminate,
   checkDisabled,
   onToggleSelect,
-  onOpenSubPeps,
 }: PreliminaresTableRowProps) {
   const dif = row.preliminarMes > 0 ? row.forecastMes - row.preliminarMes : null
   const pct = row.preliminarMes > 0 ? prelimPct(row.preliminarMes, row.forecastMes) : null
   const hasPrelim = row.preliminarMes > 0
   const hasSubPeps = isN7 && !!row.subPeps?.length
-  const rowOnClick = onRowClick ? () => onRowClick(row) : hasSubPeps ? () => onOpenSubPeps?.(row) : undefined
+  const clickable = isN7 ? hasSubPeps : true
+  const rowOnClick = onRowClick && clickable ? () => onRowClick(row) : undefined
 
   return (
-    <tr className={cn('border-t border-border', rowOnClick && 'cursor-pointer hover:bg-[#FBFCFE]')} onClick={rowOnClick} title={hasSubPeps ? 'Ver SubPEPs' : undefined}>
+    <tr className={cn('border-t border-border', rowOnClick && 'cursor-pointer hover:bg-[#FBFCFE]')} onClick={rowOnClick} title={rowOnClick ? (isN7 ? 'Ver SubPEPs' : 'Ver PEPs N7') : undefined}>
       {selectable && (
         <td className={cn(td, 'text-center')} onClick={(e) => e.stopPropagation()}>
           <TriCheckbox

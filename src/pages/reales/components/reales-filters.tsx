@@ -48,7 +48,7 @@ export function RealesFiltersPanel({ open, isN7, filters, options, onChange, onC
           <input className={inputClass} placeholder="N4-2027-..." value={filters.codigo} onChange={(e) => onChange('codigo', e.target.value)} />
         </div>
         <div>
-          <label className={labelClass}>País</label>
+          <label className={labelClass}>País Origen</label>
           <MultiSelect placeholder="Todos los países" options={options.pais} values={filters.pais} onChange={(v) => onChange('pais', v)} />
         </div>
         <div>

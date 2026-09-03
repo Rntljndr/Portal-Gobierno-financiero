@@ -3,6 +3,7 @@ import { EmptyState } from '@/shared/ui'
 import { monthKeys, REALES_LAST_CLOSED } from '@/data/reales'
 import type { RealesN7Row, RealesRow } from '@/data/reales'
 import { calcMonths, calcTotals, fmtReales, type ComparisonSeries } from '../lib/reales-calc'
+import { realesColsForMode, REALES_N4_COL_KEYS, REALES_N7_COL_KEYS } from '../lib/reales-table-cols'
 import { RealesTableHeader } from './reales-table-header'
 import { RealesTableRow } from './reales-table-row'
 import { DesvioChip } from './desvio-chip'
@@ -10,6 +11,7 @@ import { DesvioChip } from './desvio-chip'
 interface RealesTableProps {
   rows: (RealesRow | RealesN7Row)[]
   mode: 'n4' | 'n7'
+  visibleCols?: string[]
   currency: string
   comparisons: ComparisonSeries['key'][]
   onRowClick?: (row: RealesRow | RealesN7Row) => void
@@ -17,7 +19,8 @@ interface RealesTableProps {
   showFooter?: boolean
 }
 
-export function RealesTable({ rows, mode, currency, comparisons, onRowClick, itemLabel, showFooter = true }: RealesTableProps) {
+export function RealesTable({ rows, mode, visibleCols, currency, comparisons, onRowClick, itemLabel, showFooter = true }: RealesTableProps) {
+  const cols = visibleCols ?? (mode === 'n7' ? REALES_N7_COL_KEYS : REALES_N4_COL_KEYS)
   if (rows.length === 0) {
     return (
       <div className="mx-8 mb-6">
@@ -36,15 +39,15 @@ export function RealesTable({ rows, mode, currency, comparisons, onRowClick, ite
   )
   const pctDesvio = grandTotals.plan > 0 ? (grandTotals.desvio / grandTotals.plan) * 100 : 0
   const fmt = (n: number) => fmtReales(n, currency)
-  const identityColSpan = mode === 'n7' ? 12 : 8
+  const identityColSpan = realesColsForMode(mode).filter((c) => cols.includes(c.key)).length
 
   return (
     <div className="mx-8 mb-6 overflow-x-auto rounded-xl border border-border shadow-[0_1px_4px_rgba(0,20,60,0.06)]">
       <table className="w-full border-collapse text-xs">
-        <RealesTableHeader mode={mode} />
+        <RealesTableHeader mode={mode} visibleCols={cols} />
         <tbody>
           {rows.map((row) => (
-            <RealesTableRow key={row.codigo} row={row} mode={mode} currency={currency} comparisons={comparisons} onClick={onRowClick ? () => onRowClick(row) : undefined} />
+            <RealesTableRow key={row.codigo} row={row} mode={mode} visibleCols={cols} currency={currency} comparisons={comparisons} onClick={onRowClick ? () => onRowClick(row) : undefined} />
           ))}
         </tbody>
         {showFooter && (

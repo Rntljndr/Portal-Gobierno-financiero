@@ -7,9 +7,10 @@ const PAGE_SIZE = 8
 interface PepSelectionTableProps {
   selected: Set<string>
   onToggle: (codigo: string) => void
+  readOnly?: boolean
 }
 
-export function PepSelectionTable({ selected, onToggle }: PepSelectionTableProps) {
+export function PepSelectionTable({ selected, onToggle, readOnly = false }: PepSelectionTableProps) {
   const [filters, setFilters] = useState({ pep: '', pais: '', area: '', desc: '' })
   const [page, setPage] = useState(1)
 
@@ -28,7 +29,10 @@ export function PepSelectionTable({ selected, onToggle }: PepSelectionTableProps
   const pageData = filtered.slice((pageSafe - 1) * PAGE_SIZE, pageSafe * PAGE_SIZE)
   const pageAllSelected = pageData.length > 0 && pageData.every((p) => selected.has(p.codigo))
 
-  const togglePageAll = () => pageData.forEach((p) => (pageAllSelected ? selected.has(p.codigo) && onToggle(p.codigo) : !selected.has(p.codigo) && onToggle(p.codigo)))
+  const togglePageAll = () => {
+    if (readOnly) return
+    pageData.forEach((p) => (pageAllSelected ? selected.has(p.codigo) && onToggle(p.codigo) : !selected.has(p.codigo) && onToggle(p.codigo)))
+  }
 
   const inputClass = 'h-9 rounded-lg border border-border bg-white px-2.5 text-[12px] outline-none placeholder:text-muted-foreground focus:border-primary'
   const th = 'p-[9px_10px] text-left text-[11px] font-bold text-cs-gris-oscuro bg-[#F4F6FB] border-b border-border whitespace-nowrap'
@@ -47,7 +51,7 @@ export function PepSelectionTable({ selected, onToggle }: PepSelectionTableProps
           <thead>
             <tr>
               <th className={`${th} w-9 text-center`}>
-                <input type="checkbox" checked={pageAllSelected} onChange={togglePageAll} className="accent-primary" />
+                <input type="checkbox" checked={pageAllSelected} disabled={readOnly} onChange={togglePageAll} className="accent-primary" />
               </th>
               <th className={th}>PEP</th>
               <th className={th}>País</th>
@@ -67,9 +71,14 @@ export function PepSelectionTable({ selected, onToggle }: PepSelectionTableProps
               pageData.map((p) => {
                 const checked = selected.has(p.codigo)
                 return (
-                  <tr key={p.codigo} className="cursor-pointer" style={{ background: checked ? '#D6E4F7' : '#fff' }} onClick={() => onToggle(p.codigo)}>
+                  <tr
+                    key={p.codigo}
+                    className={readOnly ? undefined : 'cursor-pointer'}
+                    style={{ background: checked ? '#D6E4F7' : '#fff' }}
+                    onClick={readOnly ? undefined : () => onToggle(p.codigo)}
+                  >
                     <td className={`${td} text-center`} onClick={(e) => e.stopPropagation()}>
-                      <input type="checkbox" checked={checked} onChange={() => onToggle(p.codigo)} className="accent-primary" />
+                      <input type="checkbox" checked={checked} disabled={readOnly} onChange={() => onToggle(p.codigo)} className="accent-primary" />
                     </td>
                     <td className={`${td} font-semibold text-primary`}>{p.codigo}</td>
                     <td className={td}>{p.pais}</td>

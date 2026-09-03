@@ -1,15 +1,21 @@
 import { useEffect, useState } from 'react'
-import { Button, Drawer } from '@/shared/ui'
-import { ALL_STICKY_COLS } from '../lib/pep-n4-table-cols'
+import { Button } from './button'
+import { Drawer } from './drawer'
+
+export interface ColumnsDrawerColDef {
+  key: string
+  label: string
+}
 
 interface ColumnsDrawerProps {
   open: boolean
+  cols: ColumnsDrawerColDef[]
   visibleCols: string[]
   onApply: (cols: string[]) => void
   onClose: () => void
 }
 
-export function ColumnsDrawer({ open, visibleCols, onApply, onClose }: ColumnsDrawerProps) {
+export function ColumnsDrawer({ open, cols, visibleCols, onApply, onClose }: ColumnsDrawerProps) {
   const [draft, setDraft] = useState(visibleCols)
   const [minError, setMinError] = useState(false)
 
@@ -18,6 +24,8 @@ export function ColumnsDrawer({ open, visibleCols, onApply, onClose }: ColumnsDr
   }, [open, visibleCols])
 
   if (!open) return null
+
+  const allSelected = cols.every((c) => draft.includes(c.key))
 
   const toggle = (key: string) => {
     if (draft.includes(key)) {
@@ -51,7 +59,7 @@ export function ColumnsDrawer({ open, visibleCols, onApply, onClose }: ColumnsDr
       }
     >
       <div className="flex flex-col gap-3">
-        {ALL_STICKY_COLS.filter((c) => c.toggleable).map((c) => (
+        {cols.map((c) => (
           <label key={c.key} className="flex cursor-pointer items-center gap-2.5 text-sm text-foreground">
             <input type="checkbox" checked={draft.includes(c.key)} onChange={() => toggle(c.key)} className="size-4 accent-primary" />
             {c.label}
@@ -59,8 +67,16 @@ export function ColumnsDrawer({ open, visibleCols, onApply, onClose }: ColumnsDr
         ))}
       </div>
       {minError && <div className="mt-2.5 text-xs text-destructive">Debe haber al menos una columna seleccionada.</div>}
-      <Button variant="outline" size="sm" className="mt-4" onClick={() => setDraft([ALL_STICKY_COLS.find((c) => c.toggleable)!.key])}>
-        Deseleccionar todo
+      <Button
+        variant="outline"
+        size="sm"
+        className="mt-4"
+        onClick={() => {
+          setDraft(allSelected ? [cols[0].key] : cols.map((c) => c.key))
+          setMinError(false)
+        }}
+      >
+        {allSelected ? 'Deseleccionar todo' : 'Seleccionar todo'}
       </Button>
     </Drawer>
   )

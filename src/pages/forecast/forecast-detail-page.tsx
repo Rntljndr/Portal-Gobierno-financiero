@@ -4,6 +4,8 @@ import { Breadcrumb, Button, EmptyState, Icon } from '@/shared/ui'
 import { useForecastStore } from './lib/use-forecast-store'
 import { EstadoBadge } from './components/estado-badge'
 import { CerrarForecastModal } from './components/cerrar-forecast-modal'
+import { CrearForecastFormFields } from './components/crear-forecast-form'
+import { TasasCambioTable } from './components/tasas-cambio-table'
 import { formatFechaCorta } from './lib/format-date'
 
 export function ForecastDetailPage() {
@@ -20,6 +22,8 @@ export function ForecastDetailPage() {
       </div>
     )
   }
+
+  const selPeps = new Set(round.selPeps)
 
   return (
     <div className="h-full overflow-y-auto">
@@ -46,9 +50,29 @@ export function ForecastDetailPage() {
         </div>
       </div>
 
-      <div className="mx-8 mb-8 rounded-xl border border-dashed border-border-strong bg-white p-10 text-center">
-        <div className="text-[13px] text-cs-gris-oscuro">Vista de detalle con tabla de líneas presupuestarias</div>
-        <div className="mt-2 text-[11.5px] text-muted-foreground">Integración con backend pendiente de coordinación con Control de Gestión</div>
+      <div className="mx-8 mb-2 text-[11.5px] text-muted-foreground">Este forecast ya fue creado — los datos a continuación no se pueden modificar.</div>
+
+      <div className="mx-8 mb-4">
+        <CrearForecastFormFields
+          form={{
+            titulo: round.titulo,
+            descripcion: round.descripcion,
+            fechaInicio: round.fechaInicio,
+            fechaTermino: round.fechaTermino,
+            desvio: String(round.desvio),
+            tipo: round.tipo,
+            notificar: round.notificar,
+          }}
+          setField={() => {}}
+          errors={{}}
+          selPeps={selPeps}
+          onTogglePep={() => {}}
+          readOnly
+        />
+      </div>
+
+      <div className="mx-8 mb-8">
+        <TasasCambioTable value={round.tasasCambio} readOnly />
       </div>
 
       <CerrarForecastModal

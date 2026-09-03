@@ -4,7 +4,7 @@ import { calcMonths, calcTotals } from './reales-calc'
 
 export function downloadRealesCsv(rows: RealesRow[], filename: string) {
   const monthHeaders = monthLabels.map((n, i) => `${n} (${i < REALES_LAST_CLOSED ? 'Real' : 'Forecast'})`)
-  const header = ['Código', 'Nombre', 'País', 'Gerencia Padre', 'Gerencia', 'Equipo', 'C. Costo', 'Asignación', 'Bandera', 'Cta. Contable', 'Moneda']
+  const header = ['Código', 'Nombre', 'País Origen', 'Gerencia Padre', 'Gerencia', 'Equipo', 'C. Costo', 'Asignación', 'Bandera', 'Cta. Contable', 'Moneda']
     .concat(monthHeaders)
     .concat(['Plan Total', 'Acum Real', 'Disponible', 'Real+FC', 'Desvío', '%Desvío'])
     .join(',')

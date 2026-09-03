@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { realesN7Rows, realesRows, type RealesN7Row, type RealesN4Row } from '@/data/reales'
 import { EMPTY_REALES_FILTERS, type RealesFilterOptions, type RealesFilters } from './reales-filters-types'
 import { EMPTY_COMPARISONS, activeComparisonKeys, type Comparisons } from './comparisons'
+import { REALES_N4_COL_KEYS, REALES_N7_COL_KEYS } from './reales-table-cols'
 
 const ROWS_PER_PAGE = 10
 
@@ -32,6 +33,9 @@ export function useReales() {
   const [comparisons, setComparisons] = useState<Comparisons>(EMPTY_COMPARISONS)
   const [compDrawerOpen, setCompDrawerOpen] = useState(false)
   const [page, setPage] = useState(1)
+  const [visibleColsN4, setVisibleColsN4] = useState<string[]>(REALES_N4_COL_KEYS)
+  const [visibleColsN7, setVisibleColsN7] = useState<string[]>(REALES_N7_COL_KEYS)
+  const [columnsDrawerOpen, setColumnsDrawerOpen] = useState(false)
 
   const isN7 = tab === 'n7'
 
@@ -98,5 +102,9 @@ export function useReales() {
     totalPages,
     pageSize: ROWS_PER_PAGE,
     setPage,
+    visibleCols: isN7 ? visibleColsN7 : visibleColsN4,
+    setVisibleCols: isN7 ? setVisibleColsN7 : setVisibleColsN4,
+    columnsDrawerOpen,
+    setColumnsDrawerOpen,
   }
 }

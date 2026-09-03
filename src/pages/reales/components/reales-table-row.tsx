@@ -2,6 +2,7 @@ import { cn } from '@/shared/lib/utils'
 import { REALES_LAST_CLOSED } from '@/data/reales'
 import type { RealesN7Row, RealesRow } from '@/data/reales'
 import { calcMonths, calcTotals, fmtReales, type ComparisonSeries } from '../lib/reales-calc'
+import { realesColsForMode } from '../lib/reales-table-cols'
 import { DesvioChip } from './desvio-chip'
 import { RealesComparisonRow } from './reales-comparison-row'
 
@@ -19,33 +20,28 @@ function monthCellClass(closed: boolean, i: number) {
 interface RealesTableRowProps {
   row: RealesRow | RealesN7Row
   mode: 'n4' | 'n7'
+  visibleCols: string[]
   currency: string
   comparisons: ComparisonSeries['key'][]
   onClick?: () => void
 }
 
-export function RealesTableRow({ row, mode, currency, comparisons, onClick }: RealesTableRowProps) {
+export function RealesTableRow({ row, mode, visibleCols, currency, comparisons, onClick }: RealesTableRowProps) {
   const months = calcMonths(row)
   const totals = calcTotals(row)
   const fmt = (n: number) => fmtReales(n, currency)
-  const identityColSpan = mode === 'n7' ? 12 : 8
+  const cols = realesColsForMode(mode).filter((c) => visibleCols.includes(c.key))
+  const identityColSpan = cols.length
 
   return (
     <>
       <tr className={cn('border-t border-border', onClick && 'cursor-pointer hover:bg-[#FBFCFE]')} onClick={onClick}>
         <td className={cn(td, 'sticky left-0 z-[1] bg-white font-semibold text-foreground')}>{mode === 'n7' ? (row as RealesN7Row).parentNombre : row.nombre}</td>
-        {mode === 'n7' && <td className={cn(td, 'font-semibold text-foreground')}>{row.nombre}</td>}
-        <td className={td}>{row.codigo}</td>
-        <td className={td}>{row.pais}</td>
-        <td className={td}>{row.gerenciaPadre}</td>
-        <td className={td}>{row.gerencia}</td>
-        <td className={td}>{row.equipo}</td>
-        {mode === 'n7' && <td className={td}>{row.centroCosto}</td>}
-        {mode === 'n7' && <td className={td}>{row.asignacion}</td>}
-        {mode === 'n7' && <td className={td}>{row.bandera}</td>}
-        <td className={td}>{row.cuentaContable}</td>
-        <td className={td}>{row.paisDestino}</td>
-        <td className={td}>{row.moneda}</td>
+        {cols.map((c) => (
+          <td key={c.key} className={cn(td, c.key === 'nombre' && 'font-semibold text-foreground')}>
+            {c.render(row)}
+          </td>
+        ))}
         {months.map((v, i) => (
           <td key={i} className={monthCellClass(i < REALES_LAST_CLOSED, i)}>
             {fmt(v)}

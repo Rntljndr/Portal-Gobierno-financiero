@@ -30,7 +30,7 @@ export function CountryTabs({ active, onChange, showConsolidado, onColumnasClick
       </div>
       {active === 'Tablón' && (
         <Button variant="outline" size="sm" className="mb-2" onClick={onColumnasClick}>
-          <Icon name="config" size={14} color="#0047B0" /> Columnas
+          <Icon name="eye" size={14} color="#0047B0" /> Columnas
         </Button>
       )}
     </div>

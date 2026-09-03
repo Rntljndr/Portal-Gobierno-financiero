@@ -25,6 +25,9 @@ export function ForecastCreatePage() {
       fechaTermino: s.form.fechaTermino,
       desvio: Number(s.form.desvio),
       pepsCount: s.form.tipo === 'parcial' ? s.selPeps.size : null,
+      selPeps: s.form.tipo === 'parcial' ? [...s.selPeps] : [],
+      notificar: s.form.notificar,
+      tasasCambio: s.tasas,
     }
     addRound(round)
     navigate('/forecast')
@@ -49,7 +52,7 @@ export function ForecastCreatePage() {
       </div>
 
       <div className="mx-8 mb-8">
-        <TasasCambioTable />
+        <TasasCambioTable value={s.tasas} onChange={s.setTasaValor} />
       </div>
     </div>
   )

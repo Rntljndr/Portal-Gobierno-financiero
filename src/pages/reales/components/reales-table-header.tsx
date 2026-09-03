@@ -1,24 +1,23 @@
 import { cn } from '@/shared/lib/utils'
 import { REALES_LAST_CLOSED, monthLabels } from '@/data/reales'
+import { realesColsForMode } from '../lib/reales-table-cols'
 
 const thGroup = 'p-[6px_8px] text-center text-[10.5px] font-bold whitespace-nowrap border-b border-border'
 const th = 'p-[9px_8px] text-left text-[10.5px] font-bold tracking-[0.04em] text-muted-foreground uppercase whitespace-nowrap border-b-2 border-border bg-[#F4F6FB]'
 
-const identityColsN4 = ['Código', 'País', 'Ger. Padre', 'Gerencia', 'Equipo', 'Cta. Contable', 'País Destino', 'Moneda']
-const identityColsN7 = ['PEP N7', 'Código', 'País', 'Ger. Padre', 'Gerencia', 'Equipo', 'C. Costo', 'Asignación', 'Bandera', 'Cta. Cont.', 'País Destino', 'Moneda']
-
 interface RealesTableHeaderProps {
   mode: 'n4' | 'n7'
+  visibleCols: string[]
 }
 
-export function RealesTableHeader({ mode }: RealesTableHeaderProps) {
-  const identityCols = mode === 'n7' ? identityColsN7 : identityColsN4
+export function RealesTableHeader({ mode, visibleCols }: RealesTableHeaderProps) {
+  const cols = realesColsForMode(mode).filter((c) => visibleCols.includes(c.key))
 
   return (
     <thead>
       <tr>
         <th className={cn(th, 'sticky left-0 z-[2]')}>{mode === 'n7' ? 'Sub PEP' : 'Servicio'}</th>
-        <th colSpan={identityCols.length} className="border-b border-border bg-[#F4F6FB]" />
+        <th colSpan={cols.length} className="border-b border-border bg-[#F4F6FB]" />
         <th colSpan={REALES_LAST_CLOSED} className={cn(thGroup, 'border-l-2 border-l-[#C4DFFF] bg-[#EEF4FF] text-primary')}>
           Real · Ene-Jul (meses cerrados)
         </th>
@@ -31,9 +30,9 @@ export function RealesTableHeader({ mode }: RealesTableHeaderProps) {
       </tr>
       <tr>
         <th className={cn(th, 'sticky left-0 z-[2] min-w-[140px]')}>{mode === 'n7' ? 'Sub PEP' : 'Servicio N4'}</th>
-        {identityCols.map((label) => (
-          <th key={label} className={cn(th, 'min-w-[85px]')}>
-            {label}
+        {cols.map((c) => (
+          <th key={c.key} className={cn(th, 'min-w-[85px]')}>
+            {c.label}
           </th>
         ))}
         {monthLabels.map((label, i) => {

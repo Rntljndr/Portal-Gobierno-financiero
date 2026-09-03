@@ -21,6 +21,10 @@ export function PreliminaresPage() {
   const [showBulkUpload, setShowBulkUpload] = useState(false)
 
   const goToN7 = (row: PreliminarN4Row | PreliminarRow) => navigate(`/preliminares/${encodeURIComponent(row.codigo)}`)
+  const goToSubPep = (row: PreliminarRow & { parentCodigo?: string }) => {
+    if (!row.parentCodigo) return
+    navigate(`/preliminares/${encodeURIComponent(row.parentCodigo)}/${encodeURIComponent(row.codigo)}`)
+  }
 
   return (
     <div className="h-full overflow-y-auto">
@@ -45,7 +49,7 @@ export function PreliminaresPage() {
         isN7={s.isN7}
         itemLabel={s.isN7 ? 'PEPs N7' : 'servicios'}
         mesLabel={PRELIM_MES_OPEN_LABEL.split(' ')[0]}
-        onRowClick={s.isN7 ? undefined : goToN7}
+        onRowClick={s.isN7 ? goToSubPep : goToN7}
         selectable={isCdG}
         selected={s.selected}
         onToggleSelect={s.toggleSelected}

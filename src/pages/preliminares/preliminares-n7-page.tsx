@@ -9,7 +9,7 @@ import { RealesTable } from '../reales/components/reales-table'
 import { usePreliminaresStore } from './lib/use-preliminares-store'
 import { PreliminarDetalleSection } from './components/preliminar-detalle-section'
 
-export function PreliminaresDetallePage() {
+export function PreliminaresN7Page() {
   const { codigo } = useParams()
   const navigate = useNavigate()
   const store = usePreliminaresStore()

@@ -5,9 +5,10 @@ interface PepSelectionSectionProps {
   selPeps: Set<string>
   onTogglePep: (codigo: string) => void
   error?: string
+  readOnly?: boolean
 }
 
-export function PepSelectionSection({ selPeps, onTogglePep, error }: PepSelectionSectionProps) {
+export function PepSelectionSection({ selPeps, onTogglePep, error, readOnly = false }: PepSelectionSectionProps) {
   return (
     <div className="mt-1 mb-4 border-t border-border pt-4">
       <div className="mb-2.5 flex items-center justify-between">
@@ -16,8 +17,10 @@ export function PepSelectionSection({ selPeps, onTogglePep, error }: PepSelectio
           {selPeps.size} PEP{selPeps.size !== 1 ? 's' : ''} seleccionado{selPeps.size !== 1 ? 's' : ''}
         </div>
       </div>
-      <p className="mb-2.5 text-[11.5px] text-muted-foreground">Seleccioná los PEPs que tendrán permiso de edición en este forecast. Todos los PEPs seguirán siendo visibles.</p>
-      <PepSelectionTable selected={selPeps} onToggle={onTogglePep} />
+      <p className="mb-2.5 text-[11.5px] text-muted-foreground">
+        {readOnly ? 'PEPs con permiso de edición en este forecast.' : 'Seleccioná los PEPs que tendrán permiso de edición en este forecast. Todos los PEPs seguirán siendo visibles.'}
+      </p>
+      <PepSelectionTable selected={selPeps} onToggle={onTogglePep} readOnly={readOnly} />
       {error && <div className="mt-3 rounded-lg border border-[#FED7AA] bg-[#FFF7ED] p-[10px_14px] text-xs text-[#B45309]">{error}</div>}
     </div>
   )

@@ -22,7 +22,8 @@ import { PepsPage } from '@/pages/peps/peps-page'
 import { EditarPepN4Page } from '@/pages/peps/editar-pep-n4-page'
 import { PreliminaresLayout } from '@/pages/preliminares/preliminares-layout'
 import { PreliminaresPage } from '@/pages/preliminares/preliminares-page'
-import { PreliminaresDetallePage } from '@/pages/preliminares/preliminares-detalle-page'
+import { PreliminaresN7Page } from '@/pages/preliminares/preliminares-n7-page'
+import { PreliminaresSubPepPage } from '@/pages/preliminares/preliminares-subpep-page'
 
 const createRouter = import.meta.env.VITE_STANDALONE_EXPORT ? createHashRouter : createBrowserRouter
 
@@ -49,7 +50,8 @@ export const router = createRouter([
         element: <PreliminaresLayout />,
         children: [
           { index: true, element: <PreliminaresPage /> },
-          { path: ':codigo', element: <PreliminaresDetallePage /> },
+          { path: ':codigo', element: <PreliminaresN7Page /> },
+          { path: ':codigo/:n7codigo', element: <PreliminaresSubPepPage /> },
         ],
       },
       {

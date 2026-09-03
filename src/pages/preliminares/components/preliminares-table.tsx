@@ -1,13 +1,11 @@
-import { useState } from 'react'
 import { cn } from '@/shared/lib/utils'
 import { EmptyState } from '@/shared/ui'
 import type { PreliminarN4Row, PreliminarRow } from '@/data/preliminares'
 import { PreliminaresTableRow } from './preliminares-table-row'
 import { n4RowSelectState } from '../lib/n4-row-select-state'
-import { SubPepDrawer } from './subpep-drawer'
 import { PreliminaresTableHead } from './preliminares-table-head'
 
-type Row = (PreliminarRow & { parentServicio?: string }) | PreliminarN4Row
+type Row = (PreliminarRow & { parentServicio?: string; parentCodigo?: string }) | PreliminarN4Row
 
 interface PreliminaresTableProps {
   rows: Row[]
@@ -32,8 +30,6 @@ export function PreliminaresTable({
   onToggleSelect,
   onToggleSelectN4,
 }: PreliminaresTableProps) {
-  const [subPepRow, setSubPepRow] = useState<PreliminarRow | null>(null)
-
   if (rows.length === 0) {
     return (
       <div className="mx-8 mb-6">
@@ -61,7 +57,6 @@ export function PreliminaresTable({
                 indeterminate={triState?.indeterminate}
                 checkDisabled={triState ? triState.disabled : undefined}
                 onToggleSelect={() => (isN4WithChildren ? onToggleSelectN4?.(row) : onToggleSelect?.(row.codigo))}
-                onOpenSubPeps={setSubPepRow}
               />
             )
           })}
@@ -77,7 +72,6 @@ export function PreliminaresTable({
           </tr>
         </tfoot>
       </table>
-      <SubPepDrawer n7={subPepRow} onClose={() => setSubPepRow(null)} />
     </div>
   )
 }

@@ -1,3 +1,4 @@
+import { Button, ColumnsDrawer, Icon } from '@/shared/ui'
 import { ReporteriaHeader } from './components/page-header'
 import { FiltersPanel } from './components/filters-panel'
 import { CountrySummaryPanel } from './components/country-summary-panel'
@@ -7,8 +8,10 @@ import { ConsolidadoView } from './components/consolidado-view'
 import { TotalsKpiBar } from './components/totals-kpi-bar'
 import { PepN4Table } from './components/pep-n4-table/pep-n4-table'
 import { DescargarModal } from './components/descargar-modal'
-import { ColumnsDrawer } from './components/columns-drawer'
+import { ALL_STICKY_COLS } from './lib/pep-n4-table-cols'
 import { useReporteriaPageState } from './lib/use-reporteria-page-state'
+
+const TOGGLEABLE_STICKY_COLS = ALL_STICKY_COLS.filter((c) => c.toggleable)
 
 export function ReporteriaPage() {
   const s = useReporteriaPageState()
@@ -36,13 +39,9 @@ export function ReporteriaPage() {
 
       <div className="mx-8 mb-1.5 flex items-center justify-between">
         <div className="text-[15px] font-bold tracking-tight text-foreground">Explorar en detalle</div>
-        <button
-          type="button"
-          onClick={() => s.setShowDescargar(true)}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-border-strong bg-white px-3 py-[7px] text-xs font-semibold text-primary hover:bg-[#F4F7FE]"
-        >
-          Descargar
-        </button>
+        <Button variant="outline" size="sm" onClick={() => s.setShowDescargar(true)}>
+          <Icon name="download" size={12} color="#0047B0" /> Descargar
+        </Button>
       </div>
       <CountryTabs active={s.activeTab} onChange={s.setActiveTab} showConsolidado={s.vistaMoneda === 'dolar'} onColumnasClick={() => s.setShowColumnas(true)} />
 
@@ -57,7 +56,7 @@ export function ReporteriaPage() {
       )}
 
       <DescargarModal open={s.showDescargar} onClose={() => s.setShowDescargar(false)} />
-      <ColumnsDrawer open={s.showColumnas} visibleCols={s.visibleCols} onApply={s.setVisibleCols} onClose={() => s.setShowColumnas(false)} />
+      <ColumnsDrawer open={s.showColumnas} cols={TOGGLEABLE_STICKY_COLS} visibleCols={s.visibleCols} onApply={s.setVisibleCols} onClose={() => s.setShowColumnas(false)} />
     </div>
   )
 }

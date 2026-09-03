@@ -1,16 +1,17 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router'
 import { Button, Modal, Toast } from '@/shared/ui'
-import type { PreliminarN4Row } from '@/data/preliminares'
+import type { PreliminarN4Row, PreliminarRow } from '@/data/preliminares'
 import { PRELIM_MES_OPEN_LABEL } from '@/data/preliminares'
 import { useRole } from '@/shared/context/use-role'
 import { usePreliminaresStore } from '../lib/use-preliminares-store'
 import { PreliminaresKpis } from './preliminares-kpis'
 import { PreliminaresTable } from './preliminares-table'
-import { SubPepsTable } from './subpeps-table'
 import { HeadcountTable } from './headcount-table'
 
 export function PreliminarDetalleSection({ n4 }: { n4: PreliminarN4Row }) {
   const store = usePreliminaresStore()
+  const navigate = useNavigate()
   const { role } = useRole()
   const isCdG = role === 'cdg'
   const [selected, setSelected] = useState<Set<string>>(new Set())
@@ -34,6 +35,8 @@ export function PreliminarDetalleSection({ n4 }: { n4: PreliminarN4Row }) {
       else next.add(codigo)
       return next
     })
+
+  const goToSubPep = (row: PreliminarRow) => navigate(`/preliminares/${encodeURIComponent(n4.codigo)}/${encodeURIComponent(row.codigo)}`)
 
   const confirmGuardar = () => {
     store.markDefinitivo([...selected])
@@ -63,12 +66,8 @@ export function PreliminarDetalleSection({ n4 }: { n4: PreliminarN4Row }) {
         selectable={isCdG}
         selected={selected}
         onToggleSelect={toggleSelect}
+        onRowClick={goToSubPep}
       />
-
-      <div className="mx-8 mb-2 text-[13.5px] font-bold text-foreground">SubPEPs</div>
-      <div className="mx-8 mb-6">
-        <SubPepsTable n7Rows={n4.children} />
-      </div>
 
       <div className="mx-8 mb-2 text-[13.5px] font-bold text-foreground">Headcount</div>
       <div className="mx-8 mb-8">

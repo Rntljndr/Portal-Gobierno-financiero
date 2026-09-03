@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
-import { Badge, Breadcrumb, EmptyState, Icon } from '@/shared/ui'
+import { Badge, Breadcrumb, Button, EmptyState, Icon } from '@/shared/ui'
 import { realesRows } from '@/data/reales'
 import { calcTotals } from './lib/reales-calc'
 import { downloadRealesCsv } from './lib/download-csv'
@@ -62,13 +62,9 @@ export function RealesSubPepPage() {
           </Badge>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => downloadRealesCsv([n7], `Reales_N7_${n7.codigo}.csv`)}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-border-strong bg-white px-3 py-[7px] text-xs font-semibold text-primary hover:bg-[#F4F7FE]"
-          >
-            <Icon name="download" size={12} color="#0047B0" /> Descarga
-          </button>
+          <Button variant="outline" size="sm" onClick={() => downloadRealesCsv([n7], `Reales_N7_${n7.codigo}.csv`)}>
+            <Icon name="download" size={12} color="#0047B0" /> Descargar
+          </Button>
           <CompararButton count={activeComparisonKeys(comparisons).length} onClick={() => setCompOpen(true)} />
         </div>
       </div>

@@ -1,8 +1,9 @@
 import { useNavigate } from 'react-router'
-import { Breadcrumb, Pagination } from '@/shared/ui'
+import { Breadcrumb, ColumnsDrawer, Pagination } from '@/shared/ui'
 import { calcTotals } from './lib/reales-calc'
 import { downloadRealesCsv } from './lib/download-csv'
 import { useReales } from './lib/use-reales'
+import { realesColsForMode } from './lib/reales-table-cols'
 import { RealesPageHeader } from './components/reales-page-header'
 import { RealesKpis } from './components/reales-kpis'
 import { RealesToolbar } from './components/reales-toolbar'
@@ -37,11 +38,13 @@ export function RealesPage() {
         comparisonCount={s.comparisonKeys.length}
         onOpenComparar={() => s.setCompDrawerOpen(true)}
         onDownload={() => downloadRealesCsv(s.filteredN4, 'Reales_N4_2026.csv')}
+        onOpenColumnas={() => s.setColumnsDrawerOpen(true)}
       />
       <RealesFiltersPanel open={s.filtersOpen} isN7={s.isN7} filters={s.filters} options={s.options} onChange={s.onChangeFilter} onClear={s.clearFilters} activeCount={s.activeFilterCount} />
       <RealesTable
         rows={s.paged}
         mode={s.isN7 ? 'n7' : 'n4'}
+        visibleCols={s.visibleCols}
         currency={s.currency}
         comparisons={s.comparisonKeys}
         itemLabel={s.isN7 ? 'PEPs N7' : 'servicios'}
@@ -49,6 +52,13 @@ export function RealesPage() {
       />
       <Pagination page={s.page} totalPages={s.totalPages} totalItems={s.totalFiltered} pageSize={s.pageSize} onPageChange={s.setPage} itemLabel={s.isN7 ? 'PEPs N7' : 'servicios'} />
       <RealesComparisonDrawer open={s.compDrawerOpen} onClose={() => s.setCompDrawerOpen(false)} applied={s.comparisons} onApply={s.setComparisons} />
+      <ColumnsDrawer
+        open={s.columnsDrawerOpen}
+        cols={realesColsForMode(s.isN7 ? 'n7' : 'n4')}
+        visibleCols={s.visibleCols}
+        onApply={s.setVisibleCols}
+        onClose={() => s.setColumnsDrawerOpen(false)}
+      />
     </div>
   )
 }
