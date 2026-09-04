@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
-import { Breadcrumb, BulkUploadModal, Button, PageHeader, Toast } from '@/shared/ui'
+import { Breadcrumb, BulkUploadDrawer, Button, PageHeader, Toast } from '@/shared/ui'
 import { useToast } from '@/shared/lib/use-toast'
 import { PeriodoCard, ForecastCard } from './components/periodo-forecast-cards'
 import { IpcCard } from './components/ipc-card'
@@ -53,7 +53,7 @@ export function ConfiguracionesPage() {
         </Button>
       </div>
 
-      <BulkUploadModal
+      <BulkUploadDrawer
         open={showImportar}
         onClose={() => setShowImportar(false)}
         title="Importar cotizaciones"

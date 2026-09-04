@@ -1,4 +1,4 @@
-import { BulkUploadModal, EnviarCdGModal } from '@/shared/ui'
+import { BulkUploadDrawer, EnviarCdGModal } from '@/shared/ui'
 import type { Servicio } from '@/data/services'
 import { CrearServicioModal } from './crear-servicio-modal'
 import { DownloadModal } from './download-modal'
@@ -21,7 +21,7 @@ export function MisServiciosModals({
   return (
     <>
       <CrearServicioModal open={openModal === 'crear'} onClose={onClose} onCreated={onCreated} />
-      <BulkUploadModal
+      <BulkUploadDrawer
         open={openModal === 'cargaMasiva' || openModal === 'edicionMasiva'}
         title={openModal === 'edicionMasiva' ? 'Edición masiva' : 'Crear PEP N4 masivamente'}
         applyLabel={openModal === 'edicionMasiva' ? 'Aplicar edición masiva' : 'Aplicar carga masiva'}

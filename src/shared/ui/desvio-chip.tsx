@@ -1,6 +1,9 @@
-import { Badge, Icon } from '@/shared/ui'
+import { Badge } from './badge'
+import { Icon } from './icon'
 
-export function DesvioChip({ pct }: { pct: number }) {
+/** Badge de desvío %, reutilizado por Reales y Preliminares. */
+export function DesvioChip({ pct }: { pct: number | null }) {
+  if (pct === null) return <Badge variant="neutral">—</Badge>
   const over = pct > 0
   const warn = Math.abs(pct) > 5
   const variant = warn && over ? 'destructive' : over ? 'warning' : 'success'

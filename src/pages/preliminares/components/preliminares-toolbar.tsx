@@ -12,6 +12,8 @@ interface PreliminaresToolbarProps {
   onToggleSelectAll: () => void
   onOpenCargaMasiva: () => void
   onDownload: () => void
+  onCierreContable: () => void
+  mesCerrado: boolean
 }
 
 export function PreliminaresToolbar({
@@ -24,6 +26,8 @@ export function PreliminaresToolbar({
   onToggleSelectAll,
   onOpenCargaMasiva,
   onDownload,
+  onCierreContable,
+  mesCerrado,
 }: PreliminaresToolbarProps) {
   const { role } = useRole()
   const isCdG = role === 'cdg'
@@ -41,13 +45,24 @@ export function PreliminaresToolbar({
           <Icon name="download" size={12} color="#0047B0" /> Descargar
         </Button>
         {isCdG && (
-          <Button variant="outline" size="sm" onClick={onOpenCargaMasiva}>
+          <Button variant="outline" size="sm" onClick={onOpenCargaMasiva} disabled={mesCerrado} className="disabled:opacity-40">
             <Icon name="upload" size={12} color="#0047B0" /> Carga masiva
           </Button>
         )}
         {isCdG && (
-          <Button variant="primary" size="sm" onClick={onGuardarDefinitivo} disabled={selectedCount === 0} className="disabled:opacity-40">
+          <Button variant="primary" size="sm" onClick={onGuardarDefinitivo} disabled={selectedCount === 0 || mesCerrado} className="disabled:opacity-40">
             <Icon name="check" size={13} color="#fff" /> Guardar Definitivo {selectedCount > 0 && `(${selectedCount})`}
+          </Button>
+        )}
+        {isCdG && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onCierreContable}
+            disabled={mesCerrado}
+            className={mesCerrado ? 'disabled:opacity-40' : 'border-[#FECACA] text-[#B42318] hover:bg-[#FEE8E8]'}
+          >
+            <Icon name="lock" size={12} color={mesCerrado ? 'currentColor' : '#B42318'} /> {mesCerrado ? 'Mes cerrado' : 'Cierre Contable'}
           </Button>
         )}
       </div>

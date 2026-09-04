@@ -1,7 +1,6 @@
 import { createBrowserRouter, createHashRouter } from 'react-router'
 import { AppShell } from '@/shared/layout/app-shell'
 import { EjerciciosPage } from '@/pages/ejercicios/ejercicios-page'
-import { ForecastLayout } from '@/pages/forecast/forecast-layout'
 import { ForecastListPage } from '@/pages/forecast/forecast-list-page'
 import { ForecastCreatePage } from '@/pages/forecast/forecast-create-page'
 import { ForecastDetailPage } from '@/pages/forecast/forecast-detail-page'
@@ -54,15 +53,9 @@ export const router = createRouter([
           { path: ':codigo/:n7codigo', element: <PreliminaresSubPepPage /> },
         ],
       },
-      {
-        path: '/forecast',
-        element: <ForecastLayout />,
-        children: [
-          { index: true, element: <ForecastListPage /> },
-          { path: 'nuevo', element: <ForecastCreatePage /> },
-          { path: ':id', element: <ForecastDetailPage /> },
-        ],
-      },
+      { path: '/forecast', element: <ForecastListPage /> },
+      { path: '/forecast/nuevo', element: <ForecastCreatePage /> },
+      { path: '/forecast/:id', element: <ForecastDetailPage /> },
       { path: '/notificaciones', element: <NotificacionesPage /> },
       { path: '/reportes', element: <ReportesPage /> },
     ],

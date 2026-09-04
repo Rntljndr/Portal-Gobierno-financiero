@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Button, Drawer, Select } from '@/shared/ui'
+import { Button, Drawer } from '@/shared/ui'
+import { useForecastStore } from '@/pages/forecast/lib/use-forecast-store'
 import { EMPTY_COMPARISONS, type Comparisons } from '../lib/comparisons'
+import { defaultForecastRoundId, forecastComparisonOptions } from '../lib/forecast-comparison'
+import { RealesForecastCheck } from './reales-forecast-check'
 
 interface RealesComparisonDrawerProps {
   open: boolean
@@ -11,10 +14,18 @@ interface RealesComparisonDrawerProps {
 
 export function RealesComparisonDrawer({ open, onClose, applied, onApply }: RealesComparisonDrawerProps) {
   const [draft, setDraft] = useState<Comparisons>(applied)
+  const [lastRoundId, setLastRoundId] = useState<string | null>(null)
+  const { rounds } = useForecastStore()
+  const forecastOptions = forecastComparisonOptions(rounds)
+  const forecastChecked = draft.forecastRoundId !== null
 
   useEffect(() => {
-    if (open) setDraft(applied)
-  }, [open, applied])
+    if (open) {
+      setDraft(applied)
+      // El forecast activo (último cerrado) queda listo para elegir apenas se marca el checkbox (Ajuste R3).
+      setLastRoundId(applied.forecastRoundId ?? defaultForecastRoundId(rounds))
+    }
+  }, [open, applied, rounds])
 
   const handleAplicar = () => {
     onApply(draft)
@@ -25,6 +36,15 @@ export function RealesComparisonDrawer({ open, onClose, applied, onApply }: Real
     setDraft(EMPTY_COMPARISONS)
     onApply(EMPTY_COMPARISONS)
     onClose()
+  }
+
+  const toggleForecast = (checked: boolean) => {
+    if (checked) {
+      setDraft({ ...draft, forecastRoundId: lastRoundId ?? defaultForecastRoundId(rounds) })
+    } else {
+      setLastRoundId(draft.forecastRoundId)
+      setDraft({ ...draft, forecastRoundId: null })
+    }
   }
 
   return (
@@ -56,25 +76,21 @@ export function RealesComparisonDrawer({ open, onClose, applied, onApply }: Real
         </div>
       </label>
 
-      <div className="border-b border-[#F1F4FB] py-3.5">
-        <div className="mb-2 text-[13px] font-semibold text-foreground">Forecast</div>
-        <Select
-          value={draft.forecastSel || 'none'}
-          onChange={(v) => setDraft({ ...draft, forecastSel: (v === 'none' ? '' : v) as Comparisons['forecastSel'] })}
-          options={[
-            { value: 'none', label: 'Sin comparación' },
-            { value: 'forecastActual', label: 'Forecast actual (Ago 2026)' },
-            { value: 'forecastAnterior', label: 'Forecast anterior (Jul 2026)' },
-          ]}
-        />
-      </div>
+      <RealesForecastCheck
+        rounds={rounds}
+        options={forecastOptions}
+        checked={forecastChecked}
+        selectedId={draft.forecastRoundId}
+        onToggle={toggleForecast}
+        onSelect={(id) => setDraft({ ...draft, forecastRoundId: id })}
+      />
 
       <label className="flex cursor-pointer items-center gap-3 py-3">
         <input
           type="checkbox"
           checked={draft.anioAnterior}
           onChange={(e) => setDraft({ ...draft, anioAnterior: e.target.checked })}
-          className="size-4 accent-[#22976B]"
+          className="size-4 accent-primary"
         />
         <div>
           <div className="text-[13px] font-semibold text-foreground">Año anterior</div>

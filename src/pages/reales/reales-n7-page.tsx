@@ -1,13 +1,13 @@
 import { useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
-import { Badge, Breadcrumb, Button, EmptyState, Icon } from '@/shared/ui'
+import { Breadcrumb, BulkUploadDrawer, EmptyState, Toast } from '@/shared/ui'
 import { realesRows } from '@/data/reales'
 import { calcTotals } from './lib/reales-calc'
 import { downloadRealesCsv } from './lib/download-csv'
-import { EMPTY_COMPARISONS, activeComparisonKeys } from './lib/comparisons'
+import { useComparisonsState } from './lib/use-comparisons-state'
 import { RealesComparisonDrawer } from './components/reales-comparison-drawer'
-import { CompararButton } from './components/comparar-button'
-import { RealesFilterToggle } from './components/reales-filters'
+import { RealesDetailToolbar } from './components/reales-detail-toolbar'
+import { RealesSearchPanel } from './components/reales-search-panel'
 import { RealesDetailHeader } from './components/reales-detail-header'
 import { RealesKpis } from './components/reales-kpis'
 import { RealesTable } from './components/reales-table'
@@ -19,8 +19,15 @@ export function RealesN7Page() {
 
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [search, setSearch] = useState('')
-  const [comparisons, setComparisons] = useState(EMPTY_COMPARISONS)
+  const cs = useComparisonsState()
   const [compOpen, setCompOpen] = useState(false)
+  const [cargaMasivaOpen, setCargaMasivaOpen] = useState(false)
+  const [uploadToast, setUploadToast] = useState<string | null>(null)
+
+  const handleBulkUploadApplied = (count: number) => {
+    setUploadToast(`${count} filas de reales cargadas correctamente.`)
+    setTimeout(() => setUploadToast(null), 4000)
+  }
 
   const children = useMemo(() => {
     if (!n4) return []
@@ -51,47 +58,41 @@ export function RealesN7Page() {
       <RealesDetailHeader title={n4.nombre} codigo={n4.codigo} backLabel="Volver a N4" onBack={() => navigate('/reales')} />
       <RealesKpis totals={calcTotals(n4)} currency="USD" />
 
-      <div className="mx-8 mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2.5">
-          <RealesFilterToggle open={filtersOpen} onToggle={() => setFiltersOpen((v) => !v)} activeCount={search ? 1 : 0} />
-          <Badge variant="neutral" className="border border-[#DDD0F8] bg-[#F3EEFF] text-[#6922E7]">
-            <Icon name="trendup" size={12} color="currentColor" />
-            Forecast Agosto 2026
-          </Badge>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => downloadRealesCsv(n4.children, `Reales_N7_${n4.codigo}.csv`)}>
-            <Icon name="download" size={12} color="#0047B0" /> Descargar
-          </Button>
-          <CompararButton count={activeComparisonKeys(comparisons).length} onClick={() => setCompOpen(true)} />
-        </div>
-      </div>
+      <RealesDetailToolbar
+        filtersOpen={filtersOpen}
+        onToggleFilters={() => setFiltersOpen((v) => !v)}
+        activeFilterCount={search ? 1 : 0}
+        comparisonCount={cs.comparisonKeys.length}
+        allComparisonsCollapsed={cs.allRowsCollapsed(children.map((c) => c.codigo))}
+        onToggleAllComparisons={() => cs.toggleAllRows(children.map((c) => c.codigo))}
+        onDownload={() => downloadRealesCsv(n4.children, `Reales_N7_${n4.codigo}.csv`)}
+        onOpenComparar={() => setCompOpen(true)}
+        onOpenCargaMasiva={() => setCargaMasivaOpen(true)}
+      />
 
-      {filtersOpen && (
-        <div className="mx-8 mb-4 rounded-xl border border-border bg-white p-4.5 shadow-[0_4px_16px_rgba(6,20,60,0.06)]">
-          <label className="mb-1 block text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase">Nombre / código PEP N7</label>
-          <div className="flex h-9 w-full max-w-sm items-center gap-2 rounded-lg border border-border bg-white px-3">
-            <Icon name="search" size={14} color="#8A90A2" />
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar..."
-              className="h-full flex-1 bg-transparent text-[12.5px] outline-none placeholder:text-muted-foreground"
-            />
-          </div>
-        </div>
-      )}
+      {filtersOpen && <RealesSearchPanel search={search} onSearchChange={setSearch} />}
 
       <RealesTable
         rows={children.map((c) => ({ ...c, parentCodigo: n4.codigo, parentNombre: n4.nombre }))}
         mode="n7"
         currency="USD"
-        comparisons={activeComparisonKeys(comparisons)}
+        comparisons={cs.comparisonKeys}
+        forecastRound={cs.forecastRound}
+        collapsedRows={cs.collapsedRows}
+        onToggleRowCollapse={cs.toggleRowCollapse}
         itemLabel="PEPs N7"
         onRowClick={(row) => navigate(`/reales/${encodeURIComponent(n4.codigo)}/${encodeURIComponent(row.codigo)}`)}
       />
 
-      <RealesComparisonDrawer open={compOpen} onClose={() => setCompOpen(false)} applied={comparisons} onApply={setComparisons} />
+      <RealesComparisonDrawer open={compOpen} onClose={() => setCompOpen(false)} applied={cs.comparisons} onApply={cs.setComparisons} />
+      <BulkUploadDrawer
+        open={cargaMasivaOpen}
+        onClose={() => setCargaMasivaOpen(false)}
+        onApplied={handleBulkUploadApplied}
+        title="Carga masiva de reales"
+        applyLabel="Aplicar carga"
+      />
+      <Toast message={uploadToast} />
     </div>
   )
 }

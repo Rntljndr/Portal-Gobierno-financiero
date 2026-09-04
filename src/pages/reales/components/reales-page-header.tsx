@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router'
 import { Badge, Icon, SegmentedTabs } from '@/shared/ui'
 import { REALES_ULTIMO_REAL_LABEL } from '@/data/reales'
+import { useMesCierre } from '@/shared/context/use-mes-cierre'
 
 interface RealesPageHeaderProps {
   tab: 'n4' | 'n7'
@@ -9,6 +10,7 @@ interface RealesPageHeaderProps {
 
 export function RealesPageHeader({ tab, onTabChange }: RealesPageHeaderProps) {
   const navigate = useNavigate()
+  const { mesCerrado } = useMesCierre()
 
   return (
     <div className="flex flex-wrap items-start justify-between gap-4 p-[10px_32px_18px]">
@@ -16,6 +18,11 @@ export function RealesPageHeader({ tab, onTabChange }: RealesPageHeaderProps) {
         <div className="flex items-center gap-2.5">
           <span className="text-[26px] leading-tight font-bold tracking-tight text-primary">Reales</span>
           <Badge variant="primary">Ejercicio 2026</Badge>
+          {mesCerrado && (
+            <Badge variant="success">
+              <Icon name="check" size={10} color="currentColor" /> Agosto publicado
+            </Badge>
+          )}
         </div>
         <div className="mt-1.5 flex items-center gap-2 text-[13px] text-muted-foreground">
           <Icon name="check" size={13} color="#067647" />

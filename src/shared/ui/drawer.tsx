@@ -10,16 +10,19 @@ interface DrawerProps {
   eyebrow?: string
   subtitle?: string
   wide?: boolean
+  closeDisabled?: boolean
   footer?: ReactNode
   children: ReactNode
 }
 
-export function Drawer({ open, onClose, title, eyebrow, subtitle, wide, footer, children }: DrawerProps) {
+export function Drawer({ open, onClose, title, eyebrow, subtitle, wide, closeDisabled, footer, children }: DrawerProps) {
   return (
-    <Dialog.Root open={open} onOpenChange={(next) => !next && onClose()}>
+    <Dialog.Root open={open} onOpenChange={(next) => !next && !closeDisabled && onClose()}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-[9000] bg-cs-azul-oscuro/35 backdrop-blur-[2px]" />
         <Dialog.Content
+          onEscapeKeyDown={(e) => closeDisabled && e.preventDefault()}
+          onPointerDownOutside={(e) => closeDisabled && e.preventDefault()}
           className={cn(
             'fixed inset-y-0 right-0 z-[9001] flex h-full max-w-[92vw] flex-col bg-white shadow-[0_0_40px_rgba(6,20,148,0.2)]',
             wide ? 'w-[640px]' : 'w-[460px]',
@@ -32,7 +35,12 @@ export function Drawer({ open, onClose, title, eyebrow, subtitle, wide, footer, 
               {subtitle && <div className="mt-0.5 text-[11px] text-muted-foreground">{subtitle}</div>}
             </div>
             <Dialog.Close asChild>
-              <button type="button" aria-label="Cerrar" className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-surface-hover">
+              <button
+                type="button"
+                disabled={closeDisabled}
+                aria-label="Cerrar"
+                className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-surface-hover disabled:opacity-40"
+              >
                 <Icon name="x_close" size={16} color="currentColor" />
               </button>
             </Dialog.Close>

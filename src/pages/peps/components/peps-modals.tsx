@@ -1,4 +1,4 @@
-import { BulkUploadModal } from '@/shared/ui'
+import { BulkUploadDrawer } from '@/shared/ui'
 
 export type OpenPepModal = null | 'crearN4Masivo' | 'crearN7Masivo' | 'editarEquipo' | 'asignarCecos'
 
@@ -19,7 +19,7 @@ export function PepsModals({ openModal, onClose, onApplied }: PepsModalsProps) {
   const config = openModal ? CONFIG[openModal] : null
 
   return (
-    <BulkUploadModal
+    <BulkUploadDrawer
       open={openModal !== null}
       onClose={onClose}
       title={config?.title ?? ''}

@@ -3,6 +3,7 @@ import { EmptyState } from '@/shared/ui'
 import type { PreliminarN4Row, PreliminarRow } from '@/data/preliminares'
 import { PreliminaresTableRow } from './preliminares-table-row'
 import { n4RowSelectState } from '../lib/n4-row-select-state'
+import { preliminaresColCounts } from '../lib/preliminares-table-cols'
 import { PreliminaresTableHead } from './preliminares-table-head'
 
 type Row = (PreliminarRow & { parentServicio?: string; parentCodigo?: string }) | PreliminarN4Row
@@ -17,6 +18,8 @@ interface PreliminaresTableProps {
   selected?: Set<string>
   onToggleSelect?: (codigo: string) => void
   onToggleSelectN4?: (row: PreliminarN4Row) => void
+  showSubPepCol?: boolean
+  identityLabel?: string
 }
 
 export function PreliminaresTable({
@@ -29,6 +32,8 @@ export function PreliminaresTable({
   selected = new Set(),
   onToggleSelect,
   onToggleSelectN4,
+  showSubPepCol = true,
+  identityLabel,
 }: PreliminaresTableProps) {
   if (rows.length === 0) {
     return (
@@ -38,10 +43,12 @@ export function PreliminaresTable({
     )
   }
 
+  const { total: identityColSpan } = preliminaresColCounts(isN7, selectable, showSubPepCol)
+
   return (
     <div className="mx-8 mb-6 overflow-x-auto rounded-xl border border-border">
       <table className="w-full border-collapse text-xs">
-        <PreliminaresTableHead isN7={isN7} selectable={selectable} mesLabel={mesLabel} />
+        <PreliminaresTableHead isN7={isN7} selectable={selectable} mesLabel={mesLabel} showSubPepCol={showSubPepCol} identityLabel={identityLabel} />
         <tbody>
           {rows.map((row) => {
             const isN4WithChildren = 'children' in row
@@ -57,16 +64,17 @@ export function PreliminaresTable({
                 indeterminate={triState?.indeterminate}
                 checkDisabled={triState ? triState.disabled : undefined}
                 onToggleSelect={() => (isN4WithChildren ? onToggleSelectN4?.(row) : onToggleSelect?.(row.codigo))}
+                showSubPepCol={showSubPepCol}
               />
             )
           })}
         </tbody>
         <tfoot>
           <tr className={cn('border-t-2 border-border bg-[#FAFBFE] font-bold')}>
-            <td colSpan={(isN7 ? 13 : 7) + (selectable ? 1 : 0)} className="p-[10px_14px] text-[12.5px] text-foreground">
+            <td colSpan={identityColSpan} className="p-[10px_14px] text-[12.5px] text-foreground">
               Total · {rows.length} {itemLabel}
             </td>
-            <td colSpan={7} className="p-[10px_14px] border-l-2 border-l-primary/20 text-center text-xs text-muted-foreground">
+            <td colSpan={20} className="p-[10px_14px] border-l-2 border-l-primary/20 text-center text-xs text-muted-foreground">
               Monedas mixtas — ver por servicio
             </td>
           </tr>

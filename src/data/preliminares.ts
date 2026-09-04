@@ -1,5 +1,6 @@
 import { pepN4Tablon } from './reporteria'
 import { pepN4Meta } from './pep-n4-meta'
+import { buildSubPeps, CON_SUBPEPS, type PepSubPep } from './pep-subpeps'
 
 export const PRELIM_MES_ANTERIOR_LABEL = 'Julio 2026'
 export const PRELIM_MES_OPEN_LABEL = 'Agosto 2026'
@@ -15,8 +16,6 @@ const CON_PRELIMINAR = new Set(['N4-2027-001', 'N4-2027-002', 'N4-2027-004', 'N4
 const MIXTOS = new Set(['N4-2027-002', 'N4-2027-004', 'N4-2027-007', 'N4-2027-009'])
 /** N4 completamente pasado a Definitivo (todos sus N7). */
 const TODO_DEFINITIVO = new Set(['N4-2027-001'])
-/** Códigos de N7 con SubPEPs asociados (Ajuste 9). */
-const CON_SUBPEPS = new Set(['N7-001a', 'N7-002a', 'N7-004b', 'N7-009a'])
 
 /** Factor determinístico (leve variación real vs. forecast) usado al calcular el preliminar de cada código. */
 function preliminarFactor(codigo: string): number {
@@ -36,11 +35,7 @@ function tipoActualizacionFor(estado: PrelimEstado, n4codigo: string, n7index: n
   return TODO_DEFINITIVO.has(n4codigo) || n7index === 0 ? 'manual' : 'automatica'
 }
 
-export interface PreliminarSubPep {
-  codigo: string
-  nombre: string
-  monto: number
-}
+export type PreliminarSubPep = PepSubPep
 
 export interface PreliminarHeadcountRow {
   cargo: string
@@ -61,6 +56,8 @@ export interface PreliminarRow {
   bandera: string
   cuentaContable: string
   moneda: string
+  meses: Record<string, number>
+  planFactor: number
   acumReal: number
   forecastMes: number
   preliminarMes: number
@@ -72,13 +69,6 @@ export interface PreliminarRow {
 export interface PreliminarN4Row extends PreliminarRow {
   children: PreliminarRow[]
   headcount: PreliminarHeadcountRow[]
-}
-
-function buildSubPeps(codigo: string, nombre: string, monto: number): PreliminarSubPep[] {
-  return [
-    { codigo: `${codigo}-S1`, nombre: `${nombre} · Componente A`, monto: Math.round(monto * 0.6) },
-    { codigo: `${codigo}-S2`, nombre: `${nombre} · Componente B`, monto: Math.round(monto * 0.4) },
-  ]
 }
 
 function buildHeadcount(n4: { equipo: string; children: { equipo: string }[] }): PreliminarHeadcountRow[] {
@@ -110,6 +100,8 @@ function buildRow(
     pais: base.pais,
     equipo: base.equipo,
     ...meta,
+    meses: base.meses,
+    planFactor: base.planFactor,
     acumReal: Math.round(acumReal),
     forecastMes: Math.round(forecastMes),
     preliminarMes,

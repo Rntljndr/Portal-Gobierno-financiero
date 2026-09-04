@@ -2,50 +2,45 @@ import { Badge, Button, Icon } from '@/shared/ui'
 import { RealesFilterToggle } from './reales-filters'
 import { CompararButton } from './comparar-button'
 
-interface RealesToolbarProps {
-  filtersOpen: boolean
-  onToggleFilters: () => void
-  activeFilterCount: number
+interface RealesDetailToolbarProps {
+  filtersOpen?: boolean
+  onToggleFilters?: () => void
+  activeFilterCount?: number
   comparisonCount: number
-  onOpenComparar: () => void
+  allComparisonsCollapsed: boolean
+  onToggleAllComparisons: () => void
   onDownload: () => void
-  onOpenColumnas: () => void
+  onOpenComparar: () => void
   onOpenCargaMasiva: () => void
-  allComparisonsCollapsed?: boolean
-  onToggleAllComparisons?: () => void
 }
 
-export function RealesToolbar({
+export function RealesDetailToolbar({
   filtersOpen,
   onToggleFilters,
-  activeFilterCount,
+  activeFilterCount = 0,
   comparisonCount,
-  onOpenComparar,
-  onDownload,
-  onOpenColumnas,
-  onOpenCargaMasiva,
-  allComparisonsCollapsed = false,
+  allComparisonsCollapsed,
   onToggleAllComparisons,
-}: RealesToolbarProps) {
+  onDownload,
+  onOpenComparar,
+  onOpenCargaMasiva,
+}: RealesDetailToolbarProps) {
   return (
-    <div className="mx-8 mb-3 flex flex-wrap items-center justify-between gap-3">
+    <div className="mx-8 mb-4 flex flex-wrap items-center justify-between gap-3">
       <div className="flex items-center gap-2.5">
-        <RealesFilterToggle open={filtersOpen} onToggle={onToggleFilters} activeCount={activeFilterCount} />
+        {onToggleFilters && <RealesFilterToggle open={!!filtersOpen} onToggle={onToggleFilters} activeCount={activeFilterCount} />}
         <Badge variant="neutral" className="border border-[#DDD0F8] bg-[#F3EEFF] text-[#6922E7]">
           <Icon name="trendup" size={12} color="currentColor" />
           Forecast Agosto 2026
         </Badge>
       </div>
       <div className="flex items-center gap-2">
-        {comparisonCount > 0 && onToggleAllComparisons && (
+        {comparisonCount > 0 && (
           <Button variant="outline" size="sm" onClick={onToggleAllComparisons}>
             <Icon name={allComparisonsCollapsed ? 'chevron_down' : 'chevron_up'} size={12} color="#0047B0" />
             {allComparisonsCollapsed ? 'Expandir todo' : 'Contraer todo'}
           </Button>
         )}
-        <Button variant="outline" size="sm" onClick={onOpenColumnas}>
-          <Icon name="eye" size={12} color="#0047B0" /> Columnas
-        </Button>
         <Button variant="outline" size="sm" onClick={onDownload}>
           <Icon name="download" size={12} color="#0047B0" /> Descargar
         </Button>

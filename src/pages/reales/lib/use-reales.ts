@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { realesN7Rows, realesRows, type RealesN7Row, type RealesN4Row } from '@/data/reales'
 import { EMPTY_REALES_FILTERS, type RealesFilterOptions, type RealesFilters } from './reales-filters-types'
-import { EMPTY_COMPARISONS, activeComparisonKeys, type Comparisons } from './comparisons'
+import { useComparisonsState } from './use-comparisons-state'
 import { REALES_N4_COL_KEYS, REALES_N7_COL_KEYS } from './reales-table-cols'
 
 const ROWS_PER_PAGE = 10
@@ -30,7 +30,7 @@ export function useReales() {
   const [filters, setFilters] = useState<RealesFilters>(EMPTY_REALES_FILTERS)
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [currency, setCurrency] = useState<'USD' | 'local'>('USD')
-  const [comparisons, setComparisons] = useState<Comparisons>(EMPTY_COMPARISONS)
+  const comparisonsState = useComparisonsState()
   const [compDrawerOpen, setCompDrawerOpen] = useState(false)
   const [page, setPage] = useState(1)
   const [visibleColsN4, setVisibleColsN4] = useState<string[]>(REALES_N4_COL_KEYS)
@@ -90,12 +90,11 @@ export function useReales() {
     options,
     currency,
     setCurrency,
-    comparisons,
-    setComparisons,
-    comparisonKeys: activeComparisonKeys(comparisons),
+    ...comparisonsState,
     compDrawerOpen,
     setCompDrawerOpen,
     filteredN4,
+    filteredN7,
     paged,
     totalFiltered: activeData.length,
     page: pageSafe,

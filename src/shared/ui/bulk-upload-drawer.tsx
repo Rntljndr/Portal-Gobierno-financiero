@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import { Modal } from './modal'
+import { Drawer } from './drawer'
 import { Button } from './button'
 import { Icon } from './icon'
 import { BulkUploadDropzone } from './bulk-upload-dropzone'
 
 type Status = 'idle' | 'uploading' | 'success'
 
-interface BulkUploadModalProps {
+interface BulkUploadDrawerProps {
   open: boolean
   onClose: () => void
   onApplied: (count: number) => void
@@ -19,7 +19,7 @@ const FAKE_ERRORS = [
   { line: 7, msg: 'El valor de "País" no es válido.' },
 ]
 
-export function BulkUploadModal({ open, onClose, onApplied, title, applyLabel }: BulkUploadModalProps) {
+export function BulkUploadDrawer({ open, onClose, onApplied, title, applyLabel }: BulkUploadDrawerProps) {
   const [fileName, setFileName] = useState('')
   const [status, setStatus] = useState<Status>('idle')
 
@@ -41,14 +41,13 @@ export function BulkUploadModal({ open, onClose, onApplied, title, applyLabel }:
   }
 
   return (
-    <Modal
+    <Drawer
       open={open}
       onClose={() => {
         reset()
         onClose()
       }}
       title={title}
-      width={520}
       closeDisabled={status === 'uploading'}
       footer={
         <>
@@ -84,6 +83,6 @@ export function BulkUploadModal({ open, onClose, onApplied, title, applyLabel }:
           </div>
         </div>
       )}
-    </Modal>
+    </Drawer>
   )
 }

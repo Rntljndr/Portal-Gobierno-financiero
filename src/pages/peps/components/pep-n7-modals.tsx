@@ -1,4 +1,4 @@
-import { BulkUploadModal, Button, Modal } from '@/shared/ui'
+import { BulkUploadDrawer, Button, Modal } from '@/shared/ui'
 import type { PepN4Row, PepN7Row } from '@/data/peps'
 import { CuentaContableDrawer } from './cuenta-contable-drawer'
 import { CrearEditarPepN7Drawer } from './crear-editar-pep-n7-drawer'
@@ -36,7 +36,7 @@ export function PepN7Modals({
 
       <CrearEditarPepN7Drawer open={n7DrawerOpen} onClose={onN7DrawerClose} editing={n7Editing} pepCodigo={pep.pep} onSubmit={onN7Submit} />
 
-      <BulkUploadModal open={masivoOpen} onClose={onMasivoClose} title="Crear PEP N7 masivamente" applyLabel="Aplicar carga masiva" onApplied={onMasivoApplied} />
+      <BulkUploadDrawer open={masivoOpen} onClose={onMasivoClose} title="Crear PEP N7 masivamente" applyLabel="Aplicar carga masiva" onApplied={onMasivoApplied} />
 
       <Modal
         open={deleteRow !== null}

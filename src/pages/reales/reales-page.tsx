@@ -1,6 +1,7 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router'
-import { Breadcrumb, ColumnsDrawer, Pagination } from '@/shared/ui'
-import { calcTotals } from './lib/reales-calc'
+import { Breadcrumb, BulkUploadDrawer, ColumnsDrawer, Pagination, Toast } from '@/shared/ui'
+import { sumTotals } from './lib/reales-calc'
 import { downloadRealesCsv } from './lib/download-csv'
 import { useReales } from './lib/use-reales'
 import { realesColsForMode } from './lib/reales-table-cols'
@@ -15,14 +16,16 @@ import type { RealesN7Row, RealesRow } from '@/data/reales'
 export function RealesPage() {
   const navigate = useNavigate()
   const s = useReales()
+  const [cargaMasivaOpen, setCargaMasivaOpen] = useState(false)
+  const [uploadToast, setUploadToast] = useState<string | null>(null)
 
-  const aggregateTotals = s.filteredN4.reduce(
-    (acc, r) => {
-      const t = calcTotals(r)
-      return { plan: acc.plan + t.plan, real: acc.real + t.real, disponible: acc.disponible + t.disponible, realMasForecast: acc.realMasForecast + t.realMasForecast, desvio: acc.desvio + t.desvio, pctDesvio: 0 }
-    },
-    { plan: 0, real: 0, disponible: 0, realMasForecast: 0, desvio: 0, pctDesvio: 0 },
-  )
+  const aggregateTotals = sumTotals(s.isN7 ? s.filteredN7 : s.filteredN4)
+  const pagedCodigos = s.paged.map((r) => r.codigo)
+
+  const handleBulkUploadApplied = (count: number) => {
+    setUploadToast(`${count} filas de reales cargadas correctamente.`)
+    setTimeout(() => setUploadToast(null), 4000)
+  }
 
   const goToN7 = (row: RealesRow | RealesN7Row) => navigate(`/reales/${encodeURIComponent(row.codigo)}`)
 
@@ -39,6 +42,9 @@ export function RealesPage() {
         onOpenComparar={() => s.setCompDrawerOpen(true)}
         onDownload={() => downloadRealesCsv(s.filteredN4, 'Reales_N4_2026.csv')}
         onOpenColumnas={() => s.setColumnsDrawerOpen(true)}
+        onOpenCargaMasiva={() => setCargaMasivaOpen(true)}
+        allComparisonsCollapsed={s.allRowsCollapsed(pagedCodigos)}
+        onToggleAllComparisons={() => s.toggleAllRows(pagedCodigos)}
       />
       <RealesFiltersPanel open={s.filtersOpen} isN7={s.isN7} filters={s.filters} options={s.options} onChange={s.onChangeFilter} onClear={s.clearFilters} activeCount={s.activeFilterCount} />
       <RealesTable
@@ -47,11 +53,22 @@ export function RealesPage() {
         visibleCols={s.visibleCols}
         currency={s.currency}
         comparisons={s.comparisonKeys}
+        forecastRound={s.forecastRound}
+        collapsedRows={s.collapsedRows}
+        onToggleRowCollapse={s.toggleRowCollapse}
         itemLabel={s.isN7 ? 'PEPs N7' : 'servicios'}
         onRowClick={s.isN7 ? (row) => navigate(`/reales/${encodeURIComponent((row as RealesN7Row).parentCodigo)}/${encodeURIComponent(row.codigo)}`) : goToN7}
       />
       <Pagination page={s.page} totalPages={s.totalPages} totalItems={s.totalFiltered} pageSize={s.pageSize} onPageChange={s.setPage} itemLabel={s.isN7 ? 'PEPs N7' : 'servicios'} />
       <RealesComparisonDrawer open={s.compDrawerOpen} onClose={() => s.setCompDrawerOpen(false)} applied={s.comparisons} onApply={s.setComparisons} />
+      <BulkUploadDrawer
+        open={cargaMasivaOpen}
+        onClose={() => setCargaMasivaOpen(false)}
+        onApplied={handleBulkUploadApplied}
+        title="Carga masiva de reales"
+        applyLabel="Aplicar carga"
+      />
+      <Toast message={uploadToast} />
       <ColumnsDrawer
         open={s.columnsDrawerOpen}
         cols={realesColsForMode(s.isN7 ? 'n7' : 'n4')}

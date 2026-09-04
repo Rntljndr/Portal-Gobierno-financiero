@@ -17,7 +17,6 @@ export const REALES_N4_COLS: RealesColDef[] = [
 ]
 
 export const REALES_N7_COLS: RealesColDef[] = [
-  { key: 'nombre', label: 'PEP N7', render: (r) => r.nombre },
   { key: 'codigo', label: 'Código', render: (r) => r.codigo },
   { key: 'pais', label: 'País Origen', render: (r) => r.pais },
   { key: 'gerenciaPadre', label: 'Ger. Padre', render: (r) => r.gerenciaPadre },
@@ -37,3 +36,7 @@ export function realesColsForMode(mode: 'n4' | 'n7'): RealesColDef[] {
 
 export const REALES_N4_COL_KEYS = REALES_N4_COLS.map((c) => c.key)
 export const REALES_N7_COL_KEYS = REALES_N7_COLS.map((c) => c.key)
+
+/** Ancho fijo de la columna SubPEP (sticky, primera columna en N7) para calcular el offset sticky de la columna de identidad. */
+export const REALES_SUBPEP_COL_PX = 72
+export const REALES_SUBPEP_COL_W = 'w-[72px] min-w-[72px]'

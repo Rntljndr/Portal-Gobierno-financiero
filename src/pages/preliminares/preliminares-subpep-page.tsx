@@ -1,16 +1,55 @@
+import { useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router'
-import { Badge, Breadcrumb, Button, EmptyState, Icon } from '@/shared/ui'
+import { Breadcrumb, BulkUploadDrawer, EmptyState, Toast } from '@/shared/ui'
 import { PRELIM_MES_OPEN_LABEL } from '@/data/preliminares'
+import type { PreliminarRow } from '@/data/preliminares'
+import { useRole } from '@/shared/context/use-role'
 import { usePreliminaresStore } from './lib/use-preliminares-store'
+import { usePrelimToolbar } from './lib/use-prelim-toolbar'
+import { calcPrelimKpis, calcPrelimStats } from './lib/preliminares-calc'
+import { downloadPreliminaresCsv } from './lib/download-csv'
+import { PreliminaresKpis } from './components/preliminares-kpis'
+import { PreliminaresStatsRow } from './components/preliminares-stats-row'
+import { PreliminaresToolbar } from './components/preliminares-toolbar'
+import { PreliminaresSearchPanel } from './components/preliminares-search-panel'
+import { PreliminaresSubPepHeader } from './components/preliminares-subpep-header'
 import { PreliminaresTable } from './components/preliminares-table'
-import { SubPepsTable } from './components/subpeps-table'
+import { GuardarDefinitivoModal } from './components/guardar-definitivo-modal'
+import { CierreContableModal } from './components/cierre-contable-modal'
+
+/** SubPEP como fila de tabla N7: hereda la identidad del N7 padre y prorratea sus montos según el peso de cada SubPEP. */
+function buildSubPepRows(n7: PreliminarRow): PreliminarRow[] {
+  const subPeps = n7.subPeps ?? []
+  const totalMonto = subPeps.reduce((s, sp) => s + sp.monto, 0) || 1
+  return subPeps.map((sp) => {
+    const peso = sp.monto / totalMonto
+    const meses = Object.fromEntries(Object.entries(n7.meses).map(([k, v]) => [k, v * peso]))
+    return {
+      ...n7,
+      codigo: sp.codigo,
+      servicio: sp.nombre,
+      meses,
+      acumReal: Math.round(n7.acumReal * peso),
+      forecastMes: Math.round(n7.forecastMes * peso),
+      preliminarMes: Math.round(n7.preliminarMes * peso),
+      subPeps: undefined,
+    }
+  })
+}
 
 export function PreliminaresSubPepPage() {
   const { codigo, n7codigo } = useParams()
   const navigate = useNavigate()
   const store = usePreliminaresStore()
+  const { role } = useRole()
+  const isCdG = role === 'cdg'
   const n4 = store.rows.find((r) => r.codigo === codigo)
   const n7 = n4?.children.find((c) => c.codigo === n7codigo)
+
+  const rows = useMemo(() => (n7 ? buildSubPepRows(n7) : []), [n7])
+  const kpis = useMemo(() => calcPrelimKpis(rows), [rows])
+  const stats = useMemo(() => calcPrelimStats(rows), [rows])
+  const t = usePrelimToolbar({ rows, markCodigos: () => (n7 ? [n7.codigo] : []) })
 
   if (!n4 || !n7) {
     return (
@@ -31,32 +70,50 @@ export function PreliminaresSubPepPage() {
           { label: n7.servicio },
         ]}
       />
-      <div className="flex flex-wrap items-start justify-between gap-4 p-[10px_32px_18px]">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <span className="text-[20px] leading-tight font-bold tracking-tight text-primary">{n7.servicio}</span>
-            <Badge variant="primary">{n7.codigo}</Badge>
-          </div>
-          <div className="mt-1.5 flex items-center gap-2 text-[13px] text-muted-foreground">
-            <Icon name="check" size={13} color="#067647" /> SubPEPs · {PRELIM_MES_OPEN_LABEL}
-          </div>
-        </div>
-        <Button variant="outline" size="sm" onClick={() => navigate(`/preliminares/${encodeURIComponent(n4.codigo)}`)}>
-          <Icon name="chevron_left" size={12} color="currentColor" /> Volver a N7
-        </Button>
-      </div>
+      <PreliminaresSubPepHeader servicio={n7.servicio} codigo={n7.codigo} onBack={() => navigate(`/preliminares/${encodeURIComponent(n4.codigo)}`)} />
+
+      <PreliminaresKpis {...kpis} />
+      {isCdG && <PreliminaresStatsRow totalServicio={stats.total} conPrelim={stats.conPrelim} definitivos={stats.definitivos} />}
+
+      <PreliminaresToolbar
+        filtersOpen={t.filtersOpen}
+        onToggleFilters={() => t.setFiltersOpen((v) => !v)}
+        activeFilterCount={t.search ? 1 : 0}
+        onGuardarDefinitivo={() => t.setShowConfirm(true)}
+        selectedCount={t.selected.size}
+        allSelected={t.allSelected}
+        onToggleSelectAll={t.toggleSelectAll}
+        onOpenCargaMasiva={() => t.setShowBulkUpload(true)}
+        onDownload={() => downloadPreliminaresCsv(t.filteredRows, `Preliminares_SubPEP_${n7.codigo}.csv`)}
+        onCierreContable={() => t.setShowCierre(true)}
+        mesCerrado={t.mesCerrado}
+      />
+      {t.filtersOpen && <PreliminaresSearchPanel label="Nombre / código SubPEP" search={t.search} onSearchChange={t.setSearch} />}
 
       <PreliminaresTable
-        rows={[{ ...n7, parentServicio: n4.servicio }]}
+        rows={t.filteredRows}
         isN7
-        itemLabel="PEP N7"
+        showSubPepCol={false}
+        identityLabel="SubPEP"
+        itemLabel="SubPEPs"
         mesLabel={PRELIM_MES_OPEN_LABEL.split(' ')[0]}
+        selectable={isCdG}
+        selected={t.selected}
+        onToggleSelect={t.toggleSelect}
       />
 
-      <div className="mx-8 mb-2 text-[13.5px] font-bold text-foreground">SubPEPs</div>
-      <div className="mx-8 mb-8">
-        <SubPepsTable n7Rows={[n7]} />
-      </div>
+      <GuardarDefinitivoModal open={t.showConfirm} count={t.selected.size} onClose={() => t.setShowConfirm(false)} onConfirm={t.confirmGuardar} />
+      <BulkUploadDrawer
+        open={t.showBulkUpload}
+        onClose={() => t.setShowBulkUpload(false)}
+        onApplied={t.handleBulkUploadApplied}
+        title="Carga masiva de preliminares"
+        applyLabel="Aplicar carga"
+      />
+      <CierreContableModal open={t.showCierre} mesLabel={PRELIM_MES_OPEN_LABEL} onClose={() => t.setShowCierre(false)} onConfirm={t.confirmCierre} />
+
+      <Toast message={t.toast} />
+      <Toast message={t.cierreToast} />
     </div>
   )
 }

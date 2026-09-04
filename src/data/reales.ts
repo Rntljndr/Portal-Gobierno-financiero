@@ -1,7 +1,9 @@
 import { monthKeys, monthLabels, pepN4Tablon } from './reporteria'
 import { pepN4Meta } from './pep-n4-meta'
+import { buildSubPeps, CON_SUBPEPS, type PepSubPep } from './pep-subpeps'
 
 export { monthKeys, monthLabels }
+export type { PepSubPep }
 
 /** Meses ya cerrados (con real reportado); el resto del año queda en forecast. */
 export const REALES_LAST_CLOSED = 7
@@ -23,6 +25,7 @@ export interface RealesRow {
   bandera: string
   cuentaContable: string
   moneda: string
+  subPeps?: PepSubPep[]
 }
 
 export interface RealesN4Row extends RealesRow {
@@ -36,7 +39,8 @@ export interface RealesN7Row extends RealesRow {
 
 function enrich(codigo: string, base: { nombre: string; pais: string; equipo: string; planFactor: number; meses: Record<string, number> }, metaCodigo: string): RealesRow {
   const meta = pepN4Meta[metaCodigo]
-  return { codigo, paisDestino: base.pais, ...base, ...meta }
+  const subPeps = CON_SUBPEPS.has(codigo) ? buildSubPeps(codigo, base.nombre, (base.meses.ago || 0) * 1000) : undefined
+  return { codigo, paisDestino: base.pais, ...base, ...meta, subPeps }
 }
 
 export const realesRows: RealesN4Row[] = pepN4Tablon.map((n4) => ({

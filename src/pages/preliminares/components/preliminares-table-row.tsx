@@ -1,13 +1,27 @@
 import { cn } from '@/shared/lib/utils'
+import { ResumenCells } from '@/shared/ui'
+import { REALES_LAST_CLOSED } from '@/data/reales'
 import type { PreliminarRow } from '@/data/preliminares'
-import { prelimFmt, prelimPct } from '../lib/preliminares-calc'
-import { AvanceBadge, DifChip } from './avance-badge'
-import { EstadoBadge, TipoActualizacionBadge } from './estado-badge'
+import { calcPrelimMonths, calcPrelimTotals, prelimFmt } from '../lib/preliminares-calc'
+import { PRELIM_SUBPEP_COL_W } from '../lib/preliminares-table-cols'
+import { EstadoBadge } from './estado-badge'
 import { TriCheckbox } from './tri-checkbox'
+import { PreliminaresSubPepCell } from './preliminares-subpep-cell'
 
 const td = 'p-[10px_10px] text-[11.5px] whitespace-nowrap text-cs-gris-oscuro'
-const tdNum = `${td} text-right bg-primary/[0.03]`
-const tdSubPep = 'sticky left-0 z-[1] bg-white font-semibold text-foreground'
+const tdSubPep = 'sticky z-[1] bg-white font-semibold text-foreground'
+
+function monthCellClass(i: number) {
+  const closed = i < REALES_LAST_CLOSED
+  const current = i === REALES_LAST_CLOSED
+  return cn(
+    'p-[10px_6px] text-right font-mono text-[11.5px] tabular-nums',
+    closed ? 'bg-primary/[0.03] text-foreground' : current ? 'bg-[#FFFBEB] font-bold text-[#B45309]' : 'text-muted-foreground',
+    i === 0 && 'border-l-2 border-l-[#C4DFFF]',
+    current && 'border-l-2 border-l-[#FDE68A]',
+    i === REALES_LAST_CLOSED + 1 && 'border-l-2 border-l-[#CBD5E1]',
+  )
+}
 
 interface PreliminaresTableRowProps {
   row: PreliminarRow & { parentServicio?: string; parentCodigo?: string }
@@ -18,6 +32,7 @@ interface PreliminaresTableRowProps {
   indeterminate?: boolean
   checkDisabled?: boolean
   onToggleSelect?: () => void
+  showSubPepCol?: boolean
 }
 
 export function PreliminaresTableRow({
@@ -29,16 +44,23 @@ export function PreliminaresTableRow({
   indeterminate,
   checkDisabled,
   onToggleSelect,
+  showSubPepCol = true,
 }: PreliminaresTableRowProps) {
-  const dif = row.preliminarMes > 0 ? row.forecastMes - row.preliminarMes : null
-  const pct = row.preliminarMes > 0 ? prelimPct(row.preliminarMes, row.forecastMes) : null
-  const hasPrelim = row.preliminarMes > 0
+  const months = calcPrelimMonths(row)
+  const totals = calcPrelimTotals(row)
+  const fmt = (n: number) => prelimFmt(n, row.moneda)
   const hasSubPeps = isN7 && !!row.subPeps?.length
-  const clickable = isN7 ? hasSubPeps : true
-  const rowOnClick = onRowClick && clickable ? () => onRowClick(row) : undefined
+  const showSubPep = isN7 && showSubPepCol
+  const identitySticky = showSubPep ? 'left-[72px]' : 'left-0'
+  const rowClickable = isN7 ? hasSubPeps && !!onRowClick : !!onRowClick
+  const rowOnClick = rowClickable ? () => onRowClick?.(row) : undefined
 
   return (
-    <tr className={cn('border-t border-border', rowOnClick && 'cursor-pointer hover:bg-[#FBFCFE]')} onClick={rowOnClick} title={rowOnClick ? (isN7 ? 'Ver SubPEPs' : 'Ver PEPs N7') : undefined}>
+    <tr
+      className={cn('border-t border-border', rowOnClick && 'cursor-pointer hover:bg-[#FBFCFE]')}
+      onClick={rowOnClick}
+      title={rowOnClick ? (isN7 ? 'Ver SubPEPs' : 'Ver PEPs N7') : undefined}
+    >
       {selectable && (
         <td className={cn(td, 'text-center')} onClick={(e) => e.stopPropagation()}>
           <TriCheckbox
@@ -49,12 +71,8 @@ export function PreliminaresTableRow({
           />
         </td>
       )}
-      {isN7 ? (
-        <td className={cn(td, tdSubPep)}>{row.parentServicio}</td>
-      ) : (
-        <td className={cn(td, 'font-semibold text-foreground')}>{row.servicio}</td>
-      )}
-      {isN7 && <td className={cn(td, 'font-semibold text-foreground')}>{row.servicio}</td>}
+      {showSubPep && <PreliminaresSubPepCell hasSubPeps={hasSubPeps} className={cn(td, 'sticky left-0 z-[1] bg-white text-center', PRELIM_SUBPEP_COL_W)} />}
+      <td className={cn(td, isN7 ? cn(tdSubPep, identitySticky) : 'font-semibold text-foreground')}>{row.servicio}</td>
       <td className={td}>{row.codigo}</td>
       <td className={td}>{row.pais}</td>
       <td className={td}>{row.gerenciaPadre}</td>
@@ -69,20 +87,12 @@ export function PreliminaresTableRow({
           <EstadoBadge estado={row.estado} />
         </td>
       )}
-      {isN7 && (
-        <td className={cn(td, 'text-center')}>
-          <TipoActualizacionBadge tipo={row.tipoActualizacion} />
+      {months.map((v, i) => (
+        <td key={i} className={monthCellClass(i)}>
+          {fmt(v)}
         </td>
-      )}
-      <td className={cn(tdNum, 'border-l-2 border-l-primary/20 font-bold text-foreground')}>{prelimFmt(row.acumReal, row.moneda)}</td>
-      <td className={tdNum}>{prelimFmt(Math.round(row.acumReal / 7), row.moneda)}</td>
-      <td className={cn(tdNum, 'font-bold text-foreground')}>{prelimFmt(row.forecastMes, row.moneda)}</td>
-      <td className={tdNum}>{prelimFmt(Math.round(row.forecastMes * 1.03), row.moneda)}</td>
-      <td className={tdNum}>
-        {hasPrelim ? <span className="font-bold text-primary tabular-nums">{prelimFmt(row.preliminarMes, row.moneda)}</span> : <span className="text-[11px] text-border-strong italic">Sin ingresar</span>}
-      </td>
-      <td className={tdNum}>{hasPrelim ? <DifChip dif={dif} moneda={row.moneda} /> : <span className="text-border-strong">—</span>}</td>
-      <td className={cn(tdNum, 'text-center')}>{hasPrelim ? <AvanceBadge pct={pct} /> : <span className="text-[11px] text-border-strong">—</span>}</td>
+      ))}
+      <ResumenCells totals={totals} fmt={fmt} />
     </tr>
   )
 }
