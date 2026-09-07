@@ -25,8 +25,7 @@ export function CierreContableModal({ open, mesLabel, onClose, onConfirm }: Cier
       }
     >
       <p className="text-[13.5px] leading-relaxed text-cs-gris-oscuro">
-        ¿Confirmas el Cierre Contable de {mesLabel}? Todos los valores marcados como Definitivos serán publicados en el módulo de Reales y serán visibles para todos los usuarios. Esta acción no se
-        puede deshacer.
+        ¿Confirmas el Cierre Contable de {mesLabel}? Todos los valores pasarán a Definitivo y serán publicados en el módulo de Reales. El siguiente mes comenzará a mostrar sus Preliminares.
       </p>
     </Modal>
   )

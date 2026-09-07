@@ -1,6 +1,5 @@
 import { useNavigate, useParams } from 'react-router'
-import { Badge, Breadcrumb, Button, EmptyState, Icon } from '@/shared/ui'
-import { PRELIM_MES_OPEN_LABEL } from '@/data/preliminares'
+import { Badge, Breadcrumb, EmptyState, Icon, VolverBar } from '@/shared/ui'
 import { usePreliminaresStore } from './lib/use-preliminares-store'
 import { PreliminarDetalleSection } from './components/preliminar-detalle-section'
 
@@ -19,24 +18,24 @@ export function PreliminaresN7Page() {
   }
 
   return (
-    <div className="h-full overflow-y-auto">
-      <Breadcrumb items={[{ label: 'SIP', to: '/' }, { label: 'Presupuesto', to: '/ejercicios' }, { label: 'Preliminares', to: '/preliminares' }, { label: n4.servicio }]} />
-      <div className="flex flex-wrap items-start justify-between gap-4 p-[10px_32px_18px]">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <span className="text-[20px] leading-tight font-bold tracking-tight text-primary">{n4.servicio}</span>
-            <Badge variant="primary">{n4.codigo}</Badge>
-          </div>
-          <div className="mt-1.5 flex items-center gap-2 text-[13px] text-muted-foreground">
-            <Icon name="check" size={13} color="#067647" /> Detalle de servicio · {PRELIM_MES_OPEN_LABEL}
+    <div className="flex h-full flex-col">
+      <div className="flex-1 overflow-y-auto">
+        <Breadcrumb items={[{ label: 'SIP', to: '/' }, { label: 'Presupuesto', to: '/ejercicios' }, { label: 'Preliminares', to: '/preliminares' }, { label: `N4 — ${n4.servicio}` }]} />
+        <div className="flex flex-wrap items-start justify-between gap-4 p-[10px_32px_18px]">
+          <div>
+            <div className="flex items-center gap-2.5">
+              <span className="text-[20px] leading-tight font-bold tracking-tight text-primary">N4 — {n4.servicio}</span>
+              <Badge variant="primary">{n4.codigo}</Badge>
+            </div>
+            <div className="mt-1.5 flex items-center gap-2 text-[13px] text-muted-foreground">
+              <Icon name="check" size={13} color="#067647" /> Detalle de servicio · {store.mesAbierto}
+            </div>
           </div>
         </div>
-        <Button variant="outline" size="sm" onClick={() => navigate('/preliminares')}>
-          <Icon name="chevron_left" size={12} color="currentColor" /> Volver
-        </Button>
-      </div>
 
-      <PreliminarDetalleSection n4={n4} />
+        <PreliminarDetalleSection n4={n4} />
+      </div>
+      <VolverBar label="Volver" onBack={() => navigate('/preliminares')} />
     </div>
   )
 }

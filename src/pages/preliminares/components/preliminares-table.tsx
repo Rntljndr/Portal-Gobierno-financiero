@@ -3,7 +3,7 @@ import { EmptyState } from '@/shared/ui'
 import type { PreliminarN4Row, PreliminarRow } from '@/data/preliminares'
 import { PreliminaresTableRow } from './preliminares-table-row'
 import { n4RowSelectState } from '../lib/n4-row-select-state'
-import { preliminaresColCounts } from '../lib/preliminares-table-cols'
+import { preliminaresColCounts, PRELIM_DATA_COLS } from '../lib/preliminares-table-cols'
 import { PreliminaresTableHead } from './preliminares-table-head'
 
 type Row = (PreliminarRow & { parentServicio?: string; parentCodigo?: string }) | PreliminarN4Row
@@ -74,7 +74,7 @@ export function PreliminaresTable({
             <td colSpan={identityColSpan} className="p-[10px_14px] text-[12.5px] text-foreground">
               Total · {rows.length} {itemLabel}
             </td>
-            <td colSpan={20} className="p-[10px_14px] border-l-2 border-l-primary/20 text-center text-xs text-muted-foreground">
+            <td colSpan={PRELIM_DATA_COLS} className="p-[10px_14px] border-l-2 border-l-primary/20 text-center text-xs text-muted-foreground">
               Monedas mixtas — ver por servicio
             </td>
           </tr>

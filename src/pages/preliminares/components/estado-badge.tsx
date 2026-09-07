@@ -15,3 +15,8 @@ export function EstadoBadge({ estado }: { estado: PrelimEstado }) {
     </Badge>
   )
 }
+
+/** Ajuste P5: a nivel N4 el estado es el % de completitud de sus N7 — solo el número, sin texto ni ícono adicional. */
+export function CompletitudBadge({ pct }: { pct: number }) {
+  return <Badge variant="primary">{pct}%</Badge>
+}

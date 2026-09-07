@@ -1,14 +1,12 @@
-import { Badge, Button, Icon } from '@/shared/ui'
+import { Badge, Icon } from '@/shared/ui'
 import { REALES_ULTIMO_REAL_LABEL } from '@/data/reales'
 
 interface RealesDetailHeaderProps {
   title: string
   codigo: string
-  onBack: () => void
-  backLabel: string
 }
 
-export function RealesDetailHeader({ title, codigo, onBack, backLabel }: RealesDetailHeaderProps) {
+export function RealesDetailHeader({ title, codigo }: RealesDetailHeaderProps) {
   return (
     <div className="flex flex-wrap items-start justify-between gap-4 p-[10px_32px_18px]">
       <div>
@@ -23,9 +21,6 @@ export function RealesDetailHeader({ title, codigo, onBack, backLabel }: RealesD
           </span>
         </div>
       </div>
-      <Button variant="outline" size="sm" onClick={onBack}>
-        <Icon name="chevron_left" size={12} color="currentColor" /> {backLabel}
-      </Button>
     </div>
   )
 }

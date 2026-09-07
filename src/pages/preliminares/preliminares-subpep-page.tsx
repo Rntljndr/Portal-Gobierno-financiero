@@ -1,9 +1,9 @@
 import { useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router'
-import { Breadcrumb, BulkUploadDrawer, EmptyState, Toast } from '@/shared/ui'
-import { PRELIM_MES_OPEN_LABEL } from '@/data/preliminares'
+import { Breadcrumb, BulkUploadDrawer, EmptyState, Toast, VolverBar } from '@/shared/ui'
 import type { PreliminarRow } from '@/data/preliminares'
 import { useRole } from '@/shared/context/use-role'
+import { useComparisonsState } from '@/pages/reales/lib/use-comparisons-state'
 import { usePreliminaresStore } from './lib/use-preliminares-store'
 import { usePrelimToolbar } from './lib/use-prelim-toolbar'
 import { calcPrelimKpis, calcPrelimStats } from './lib/preliminares-calc'
@@ -14,7 +14,6 @@ import { PreliminaresToolbar } from './components/preliminares-toolbar'
 import { PreliminaresSearchPanel } from './components/preliminares-search-panel'
 import { PreliminaresSubPepHeader } from './components/preliminares-subpep-header'
 import { PreliminaresTable } from './components/preliminares-table'
-import { GuardarDefinitivoModal } from './components/guardar-definitivo-modal'
 import { CierreContableModal } from './components/cierre-contable-modal'
 
 /** SubPEP como fila de tabla N7: hereda la identidad del N7 padre y prorratea sus montos según el peso de cada SubPEP. */
@@ -49,7 +48,9 @@ export function PreliminaresSubPepPage() {
   const rows = useMemo(() => (n7 ? buildSubPepRows(n7) : []), [n7])
   const kpis = useMemo(() => calcPrelimKpis(rows), [rows])
   const stats = useMemo(() => calcPrelimStats(rows), [rows])
-  const t = usePrelimToolbar({ rows, markCodigos: () => (n7 ? [n7.codigo] : []) })
+  // Ajuste P6: los SubPEPs son solo visualización — sin selección ni Guardar Definitivo funcional en este nivel.
+  const t = usePrelimToolbar({ rows, markCodigos: () => [] })
+  const { activeForecastLabel } = useComparisonsState()
 
   if (!n4 || !n7) {
     return (
@@ -60,17 +61,18 @@ export function PreliminaresSubPepPage() {
   }
 
   return (
-    <div className="h-full overflow-y-auto">
+    <div className="flex h-full flex-col">
+      <div className="flex-1 overflow-y-auto">
       <Breadcrumb
         items={[
           { label: 'SIP', to: '/' },
           { label: 'Presupuesto', to: '/ejercicios' },
           { label: 'Preliminares', to: '/preliminares' },
-          { label: n4.servicio, to: `/preliminares/${encodeURIComponent(n4.codigo)}` },
-          { label: n7.servicio },
+          { label: `N4 — ${n4.servicio}`, to: `/preliminares/${encodeURIComponent(n4.codigo)}` },
+          { label: `N7 — ${n7.servicio}` },
         ]}
       />
-      <PreliminaresSubPepHeader servicio={n7.servicio} codigo={n7.codigo} onBack={() => navigate(`/preliminares/${encodeURIComponent(n4.codigo)}`)} />
+      <PreliminaresSubPepHeader servicio={n7.servicio} codigo={n7.codigo} mesAbierto={t.mesAbierto} />
 
       <PreliminaresKpis {...kpis} />
       {isCdG && <PreliminaresStatsRow totalServicio={stats.total} conPrelim={stats.conPrelim} definitivos={stats.definitivos} />}
@@ -79,14 +81,15 @@ export function PreliminaresSubPepPage() {
         filtersOpen={t.filtersOpen}
         onToggleFilters={() => t.setFiltersOpen((v) => !v)}
         activeFilterCount={t.search ? 1 : 0}
-        onGuardarDefinitivo={() => t.setShowConfirm(true)}
-        selectedCount={t.selected.size}
-        allSelected={t.allSelected}
-        onToggleSelectAll={t.toggleSelectAll}
+        onGuardarDefinitivo={() => {}}
+        selectedCount={0}
+        allSelected={false}
+        onToggleSelectAll={() => {}}
+        showSelection={false}
         onOpenCargaMasiva={() => t.setShowBulkUpload(true)}
         onDownload={() => downloadPreliminaresCsv(t.filteredRows, `Preliminares_SubPEP_${n7.codigo}.csv`)}
         onCierreContable={() => t.setShowCierre(true)}
-        mesCerrado={t.mesCerrado}
+        activeForecastLabel={activeForecastLabel}
       />
       {t.filtersOpen && <PreliminaresSearchPanel label="Nombre / código SubPEP" search={t.search} onSearchChange={t.setSearch} />}
 
@@ -96,13 +99,9 @@ export function PreliminaresSubPepPage() {
         showSubPepCol={false}
         identityLabel="SubPEP"
         itemLabel="SubPEPs"
-        mesLabel={PRELIM_MES_OPEN_LABEL.split(' ')[0]}
-        selectable={isCdG}
-        selected={t.selected}
-        onToggleSelect={t.toggleSelect}
+        mesLabel={t.mesAbierto.split(' ')[0]}
       />
 
-      <GuardarDefinitivoModal open={t.showConfirm} count={t.selected.size} onClose={() => t.setShowConfirm(false)} onConfirm={t.confirmGuardar} />
       <BulkUploadDrawer
         open={t.showBulkUpload}
         onClose={() => t.setShowBulkUpload(false)}
@@ -110,10 +109,12 @@ export function PreliminaresSubPepPage() {
         title="Carga masiva de preliminares"
         applyLabel="Aplicar carga"
       />
-      <CierreContableModal open={t.showCierre} mesLabel={PRELIM_MES_OPEN_LABEL} onClose={() => t.setShowCierre(false)} onConfirm={t.confirmCierre} />
+      <CierreContableModal open={t.showCierre} mesLabel={t.mesAbierto} onClose={() => t.setShowCierre(false)} onConfirm={t.confirmCierre} />
 
       <Toast message={t.toast} />
       <Toast message={t.cierreToast} />
+      </div>
+      <VolverBar label="Volver a N7" onBack={() => navigate(`/preliminares/${encodeURIComponent(n4.codigo)}`)} />
     </div>
   )
 }

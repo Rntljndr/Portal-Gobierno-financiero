@@ -1,10 +1,8 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { realesN7Rows, realesRows, type RealesN7Row, type RealesN4Row } from '@/data/reales'
 import { EMPTY_REALES_FILTERS, type RealesFilterOptions, type RealesFilters } from './reales-filters-types'
 import { useComparisonsState } from './use-comparisons-state'
 import { REALES_N4_COL_KEYS, REALES_N7_COL_KEYS } from './reales-table-cols'
-
-const ROWS_PER_PAGE = 10
 
 function uniqSorted(values: string[]): string[] {
   return [...new Set(values)].filter(Boolean).sort((a, b) => a.localeCompare(b, 'es'))
@@ -32,7 +30,6 @@ export function useReales() {
   const [currency, setCurrency] = useState<'USD' | 'local'>('USD')
   const comparisonsState = useComparisonsState()
   const [compDrawerOpen, setCompDrawerOpen] = useState(false)
-  const [page, setPage] = useState(1)
   const [visibleColsN4, setVisibleColsN4] = useState<string[]>(REALES_N4_COL_KEYS)
   const [visibleColsN7, setVisibleColsN7] = useState<string[]>(REALES_N7_COL_KEYS)
   const [columnsDrawerOpen, setColumnsDrawerOpen] = useState(false)
@@ -57,12 +54,6 @@ export function useReales() {
     }),
     [],
   )
-
-  useEffect(() => setPage(1), [filters, tab])
-
-  const totalPages = Math.max(1, Math.ceil(activeData.length / ROWS_PER_PAGE))
-  const pageSafe = Math.min(page, totalPages)
-  const paged = activeData.slice((pageSafe - 1) * ROWS_PER_PAGE, pageSafe * ROWS_PER_PAGE)
 
   const activeFilterCount =
     (filters.servicio ? 1 : 0) +
@@ -95,12 +86,8 @@ export function useReales() {
     setCompDrawerOpen,
     filteredN4,
     filteredN7,
-    paged,
+    activeData,
     totalFiltered: activeData.length,
-    page: pageSafe,
-    totalPages,
-    pageSize: ROWS_PER_PAGE,
-    setPage,
     visibleCols: isN7 ? visibleColsN7 : visibleColsN4,
     setVisibleCols: isN7 ? setVisibleColsN7 : setVisibleColsN4,
     columnsDrawerOpen,

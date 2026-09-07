@@ -11,7 +11,8 @@ interface RealesDetailToolbarProps {
   onToggleAllComparisons: () => void
   onDownload: () => void
   onOpenComparar: () => void
-  onOpenCargaMasiva: () => void
+  onOpenCargaMasiva?: () => void
+  activeForecastLabel?: string | null
 }
 
 export function RealesDetailToolbar({
@@ -24,15 +25,18 @@ export function RealesDetailToolbar({
   onDownload,
   onOpenComparar,
   onOpenCargaMasiva,
+  activeForecastLabel,
 }: RealesDetailToolbarProps) {
   return (
     <div className="mx-8 mb-4 flex flex-wrap items-center justify-between gap-3">
       <div className="flex items-center gap-2.5">
         {onToggleFilters && <RealesFilterToggle open={!!filtersOpen} onToggle={onToggleFilters} activeCount={activeFilterCount} />}
-        <Badge variant="neutral" className="border border-[#DDD0F8] bg-[#F3EEFF] text-[#6922E7]">
-          <Icon name="trendup" size={12} color="currentColor" />
-          Forecast Agosto 2026
-        </Badge>
+        {activeForecastLabel && (
+          <Badge variant="neutral" className="border border-[#DDD0F8] bg-[#F3EEFF] text-[#6922E7]">
+            <Icon name="trendup" size={12} color="currentColor" />
+            {activeForecastLabel}
+          </Badge>
+        )}
       </div>
       <div className="flex items-center gap-2">
         {comparisonCount > 0 && (
@@ -44,9 +48,11 @@ export function RealesDetailToolbar({
         <Button variant="outline" size="sm" onClick={onDownload}>
           <Icon name="download" size={12} color="#0047B0" /> Descargar
         </Button>
-        <Button variant="outline" size="sm" onClick={onOpenCargaMasiva}>
-          <Icon name="upload" size={12} color="#0047B0" /> Carga masiva
-        </Button>
+        {onOpenCargaMasiva && (
+          <Button variant="outline" size="sm" onClick={onOpenCargaMasiva}>
+            <Icon name="upload" size={12} color="#0047B0" /> Carga masiva
+          </Button>
+        )}
         <CompararButton count={comparisonCount} onClick={onOpenComparar} />
       </div>
     </div>

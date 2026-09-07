@@ -28,6 +28,7 @@ export const REALES_N7_COLS: RealesColDef[] = [
   { key: 'cuentaContable', label: 'Cta. Cont.', render: (r) => r.cuentaContable },
   { key: 'paisDestino', label: 'País Destino', render: (r) => r.paisDestino },
   { key: 'moneda', label: 'Moneda', render: (r) => r.moneda },
+  { key: 'tipoActualizacion', label: 'Actualización', render: (r) => (r.tipoActualizacion === 'manual' ? 'Manual' : 'Automática') },
 ]
 
 export function realesColsForMode(mode: 'n4' | 'n7'): RealesColDef[] {

@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Button, Drawer } from '@/shared/ui'
+import { Drawer, Spinner } from '@/shared/ui'
 import { useForecastStore } from '@/pages/forecast/lib/use-forecast-store'
 import { EMPTY_COMPARISONS, type Comparisons } from '../lib/comparisons'
 import { defaultForecastRoundId, forecastComparisonOptions } from '../lib/forecast-comparison'
 import { RealesForecastCheck } from './reales-forecast-check'
+import { RealesCompareCheck } from './reales-compare-check'
+import { RealesCompareFooter } from './reales-compare-footer'
 
 interface RealesComparisonDrawerProps {
   open: boolean
@@ -12,9 +14,13 @@ interface RealesComparisonDrawerProps {
   onApply: (next: Comparisons) => void
 }
 
+/** Ajuste R2: la comparativa no se precarga — se consulta recién al presionar Aplicar, con el drawer bloqueado mientras "responde el servidor". */
+const APPLY_DELAY_MS = 700
+
 export function RealesComparisonDrawer({ open, onClose, applied, onApply }: RealesComparisonDrawerProps) {
   const [draft, setDraft] = useState<Comparisons>(applied)
   const [lastRoundId, setLastRoundId] = useState<string | null>(null)
+  const [applying, setApplying] = useState(false)
   const { rounds } = useForecastStore()
   const forecastOptions = forecastComparisonOptions(rounds)
   const forecastChecked = draft.forecastRoundId !== null
@@ -22,14 +28,19 @@ export function RealesComparisonDrawer({ open, onClose, applied, onApply }: Real
   useEffect(() => {
     if (open) {
       setDraft(applied)
-      // El forecast activo (último cerrado) queda listo para elegir apenas se marca el checkbox (Ajuste R3).
+      setApplying(false)
+      // El forecast activo (último cerrado) queda listo para elegir apenas se marca el checkbox.
       setLastRoundId(applied.forecastRoundId ?? defaultForecastRoundId(rounds))
     }
   }, [open, applied, rounds])
 
   const handleAplicar = () => {
-    onApply(draft)
-    onClose()
+    setApplying(true)
+    setTimeout(() => {
+      onApply(draft)
+      setApplying(false)
+      onClose()
+    }, APPLY_DELAY_MS)
   }
 
   const handleLimpiar = () => {
@@ -52,51 +63,40 @@ export function RealesComparisonDrawer({ open, onClose, applied, onApply }: Real
       open={open}
       onClose={onClose}
       title="Comparar con"
-      footer={
-        <>
-          <Button variant="outline" onClick={handleLimpiar}>
-            Limpiar
-          </Button>
-          <Button variant="primary" onClick={handleAplicar}>
-            Aplicar
-          </Button>
-        </>
-      }
+      closeDisabled={applying}
+      footer={<RealesCompareFooter applying={applying} onLimpiar={handleLimpiar} onAplicar={handleAplicar} />}
     >
-      <label className="flex cursor-pointer items-center gap-3 border-b border-[#F1F4FB] py-3">
-        <input
-          type="checkbox"
+      <fieldset disabled={applying} className="contents">
+        <RealesCompareCheck
+          label="Presupuesto"
+          hint="Plan aprobado 2026"
           checked={draft.presupuesto}
-          onChange={(e) => setDraft({ ...draft, presupuesto: e.target.checked })}
-          className="size-4 accent-primary"
+          onChange={(v) => setDraft({ ...draft, presupuesto: v })}
         />
-        <div>
-          <div className="text-[13px] font-semibold text-foreground">Presupuesto</div>
-          <div className="mt-0.5 text-[11px] text-muted-foreground">Plan aprobado 2026</div>
-        </div>
-      </label>
 
-      <RealesForecastCheck
-        rounds={rounds}
-        options={forecastOptions}
-        checked={forecastChecked}
-        selectedId={draft.forecastRoundId}
-        onToggle={toggleForecast}
-        onSelect={(id) => setDraft({ ...draft, forecastRoundId: id })}
-      />
+        <RealesForecastCheck
+          rounds={rounds}
+          options={forecastOptions}
+          checked={forecastChecked}
+          selectedId={draft.forecastRoundId}
+          onToggle={toggleForecast}
+          onSelect={(id) => setDraft({ ...draft, forecastRoundId: id })}
+        />
 
-      <label className="flex cursor-pointer items-center gap-3 py-3">
-        <input
-          type="checkbox"
+        <RealesCompareCheck
+          label="Año anterior"
+          hint="Comparar con 2025"
           checked={draft.anioAnterior}
-          onChange={(e) => setDraft({ ...draft, anioAnterior: e.target.checked })}
-          className="size-4 accent-primary"
+          onChange={(v) => setDraft({ ...draft, anioAnterior: v })}
+          border={false}
         />
-        <div>
-          <div className="text-[13px] font-semibold text-foreground">Año anterior</div>
-          <div className="mt-0.5 text-[11px] text-muted-foreground">Comparar con 2025</div>
+      </fieldset>
+
+      {applying && (
+        <div className="mt-4 flex items-center gap-2.5 rounded-lg border border-border bg-[#F8F9FD] p-3 text-[12.5px] text-cs-gris-oscuro">
+          <Spinner size={4} /> Consultando comparativa en el servidor...
         </div>
-      </label>
+      )}
     </Drawer>
   )
 }

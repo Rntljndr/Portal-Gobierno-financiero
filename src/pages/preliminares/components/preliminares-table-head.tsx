@@ -1,11 +1,9 @@
 import { cn } from '@/shared/lib/utils'
-import { monthLabels } from '@/data/reporteria'
-import { REALES_LAST_CLOSED } from '@/data/reales'
-import { PROYECCION_ANUAL_COLS, PROYECCION_ANUAL_LABEL, RESUMEN_ACUMULADO_COLS, RESUMEN_ACUMULADO_LABEL } from '@/shared/lib/resumen-blocks'
 import { preliminaresColCounts, PRELIM_SUBPEP_COL_W } from '../lib/preliminares-table-cols'
 
 const th = 'p-[8px_10px] text-left text-[11px] font-bold text-muted-foreground uppercase tracking-[0.03em] whitespace-nowrap border-b border-border bg-[#F4F6FB]'
 const thGroup = 'p-[6px_8px] text-center text-[10.5px] font-bold whitespace-nowrap border-b border-border'
+const thData = 'p-[9px_10px] text-right text-[11px] font-bold text-muted-foreground uppercase tracking-[0.03em] whitespace-nowrap border-b-2 border-border bg-[#F4F6FB]'
 const thSubPep = 'sticky z-[2] min-w-[140px]'
 
 interface PreliminaresTableHeadProps {
@@ -29,18 +27,14 @@ export function PreliminaresTableHead({ isN7, selectable, mesLabel, showSubPepCo
         {showSubPep && <th className={cn(th, 'sticky left-0 z-[2]', PRELIM_SUBPEP_COL_W)} />}
         <th className={cn(th, 'sticky z-[2]', identitySticky)} />
         <th colSpan={afterSticky} className="border-b border-border bg-[#F4F6FB]" />
-        <th colSpan={REALES_LAST_CLOSED} className={cn(thGroup, 'border-l-2 border-l-[#C4DFFF] bg-[#EEF4FF] text-primary')}>
-          Real · Ene-Jul (meses cerrados)
+        <th colSpan={4} className={cn(thGroup, 'border-l-2 border-l-border text-cs-gris-oscuro')}>
+          Ene–Jul / {mesLabel}
         </th>
-        <th className={cn(thGroup, 'border-l-2 border-l-[#FDE68A] bg-[#FFFBEB] text-[#B45309]')}>Preliminar · {mesLabel}</th>
-        <th colSpan={11 - REALES_LAST_CLOSED} className={cn(thGroup, 'border-l-2 border-l-[#CBD5E1] text-muted-foreground')}>
-          Forecast · resto del año
+        <th colSpan={2} className={cn(thGroup, 'border-l-2 border-l-border text-cs-gris-oscuro')}>
+          Desvío vs. Plan
         </th>
-        <th colSpan={RESUMEN_ACUMULADO_COLS.length} className={cn(thGroup, 'border-l-2 border-l-border text-cs-gris-oscuro')}>
-          {RESUMEN_ACUMULADO_LABEL}
-        </th>
-        <th colSpan={PROYECCION_ANUAL_COLS.length} className={cn(thGroup, 'border-l-2 border-l-border bg-primary/5 text-primary')}>
-          {PROYECCION_ANUAL_LABEL}
+        <th colSpan={2} className={cn(thGroup, 'border-l-2 border-l-border bg-primary/5 text-primary')}>
+          Desvío vs. Forecast
         </th>
       </tr>
       <tr>
@@ -56,36 +50,15 @@ export function PreliminaresTableHead({ isN7, selectable, mesLabel, showSubPepCo
         {isN7 && <th className={th}>Asignación</th>}
         <th className={th}>Cta. Cont.</th>
         <th className={th}>Moneda</th>
-        {isN7 && <th className={cn(th, 'text-center')}>Estado</th>}
-        {monthLabels.map((label, i) => {
-          const closed = i < REALES_LAST_CLOSED
-          const current = i === REALES_LAST_CLOSED
-          return (
-            <th
-              key={label}
-              className={cn(
-                'min-w-[62px] p-[8px_4px_6px] text-right text-[11px] font-bold whitespace-nowrap border-b-2',
-                closed ? 'border-b-[#C4DFFF] bg-primary/5 text-primary' : current ? 'border-b-[#FDE68A] bg-[#FFFBEB] text-[#B45309]' : 'border-b-border bg-[#F8F9FD] text-muted-foreground',
-                i === 0 && 'border-l-2 border-l-[#C4DFFF]',
-                current && 'border-l-2 border-l-[#FDE68A]',
-                i === REALES_LAST_CLOSED + 1 && 'border-l-2 border-l-[#CBD5E1]',
-              )}
-            >
-              <div>{label.slice(0, 3)}</div>
-              <div className="mt-px text-[8px] font-semibold opacity-75">{closed ? 'Real' : current ? 'Prelim' : 'FC'}</div>
-            </th>
-          )
-        })}
-        {RESUMEN_ACUMULADO_COLS.map((c, i) => (
-          <th key={c.key} className={cn(th, i === 0 && 'border-l-2 border-l-border', c.key === 'desvioAcumPct' ? 'text-center' : 'text-right')}>
-            {c.label}
-          </th>
-        ))}
-        {PROYECCION_ANUAL_COLS.map((c, i) => (
-          <th key={c.key} className={cn(th, 'bg-primary/5 text-primary', i === 0 && 'border-l-2 border-l-border', c.key === 'desvioAnualPct' ? 'text-center' : 'text-right')}>
-            {c.label}
-          </th>
-        ))}
+        <th className={cn(th, 'text-center')}>{isN7 ? 'Estado' : 'Completitud'}</th>
+        <th className={cn(thData, 'border-l-2 border-l-border')}>Real acumulado</th>
+        <th className={thData}>Forecast del mes</th>
+        <th className={thData}>Plan del mes</th>
+        <th className={cn(thData, 'bg-[#EEF4FF] text-primary')}>Preliminar del mes</th>
+        <th className={cn(thData, 'border-l-2 border-l-border')}>Desvío monto</th>
+        <th className={cn(thData, 'text-center')}>Desvío %</th>
+        <th className={cn(thData, 'border-l-2 border-l-border')}>Desvío monto</th>
+        <th className={cn(thData, 'text-center')}>Desvío %</th>
       </tr>
     </thead>
   )

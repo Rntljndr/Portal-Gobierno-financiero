@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { Breadcrumb, BulkUploadDrawer, Pagination, Toast } from '@/shared/ui'
-import { PRELIM_MES_OPEN_LABEL } from '@/data/preliminares'
 import type { PreliminarN4Row, PreliminarRow } from '@/data/preliminares'
 import { useRole } from '@/shared/context/use-role'
-import { useMesCierre } from '@/shared/context/use-mes-cierre'
+import { useComparisonsState } from '@/pages/reales/lib/use-comparisons-state'
 import { usePreliminares } from './lib/use-preliminares'
+import { usePreliminaresStore } from './lib/use-preliminares-store'
 import { downloadPreliminaresCsv } from './lib/download-csv'
 import { PreliminaresPageHeader } from './components/preliminares-page-header'
 import { PreliminaresKpis } from './components/preliminares-kpis'
@@ -21,15 +21,17 @@ export function PreliminaresPage() {
   const { role } = useRole()
   const isCdG = role === 'cdg'
   const s = usePreliminares()
-  const { mesCerrado, cerrarMes } = useMesCierre()
+  const store = usePreliminaresStore()
+  const { activeForecastLabel } = useComparisonsState()
   const [showBulkUpload, setShowBulkUpload] = useState(false)
   const [showCierre, setShowCierre] = useState(false)
   const [cierreToast, setCierreToast] = useState<string | null>(null)
 
   const confirmCierre = () => {
-    cerrarMes()
+    const mesQueCierra = store.mesAbierto
+    store.ejecutarCierreContable()
     setShowCierre(false)
-    setCierreToast(`Cierre Contable de ${PRELIM_MES_OPEN_LABEL} ejecutado. Los datos ya están disponibles en Reales.`)
+    setCierreToast(`Cierre Contable de ${mesQueCierra} ejecutado. Los datos están disponibles en Reales.`)
     setTimeout(() => setCierreToast(null), 4000)
   }
 
@@ -42,7 +44,7 @@ export function PreliminaresPage() {
   return (
     <div className="h-full overflow-y-auto">
       <Breadcrumb items={[{ label: 'SIP', to: '/' }, { label: 'Presupuesto', to: '/ejercicios' }, { label: 'Reales', to: '/reales' }, { label: 'Preliminares' }]} />
-      <PreliminaresPageHeader tab={s.tab} onTabChange={s.setTab} />
+      <PreliminaresPageHeader tab={s.tab} onTabChange={s.setTab} mesAbierto={store.mesAbierto} />
       <PreliminaresKpis {...s.kpi} />
       {isCdG && <PreliminaresStatsRow totalServicio={s.totalServicio} conPrelim={s.conPrelim} definitivos={s.definitivos} />}
       <PreliminaresToolbar
@@ -54,16 +56,16 @@ export function PreliminaresPage() {
         allSelected={s.allSelected}
         onToggleSelectAll={s.toggleSelectAll}
         onOpenCargaMasiva={() => setShowBulkUpload(true)}
-        onDownload={() => downloadPreliminaresCsv(s.activeData, `Preliminares_${s.isN7 ? 'N7' : 'N4'}_Agosto2026.csv`)}
+        onDownload={() => downloadPreliminaresCsv(s.activeData, `Preliminares_${s.isN7 ? 'N7' : 'N4'}_${store.mesAbierto.replace(' ', '')}.csv`)}
         onCierreContable={() => setShowCierre(true)}
-        mesCerrado={mesCerrado}
+        activeForecastLabel={activeForecastLabel}
       />
       <PrelimFiltersPanel open={s.filtersOpen} isN7={s.isN7} filters={s.filters} options={s.options} onChange={s.onChangeFilter} onClear={s.clearFilters} activeCount={s.activeFilterCount} />
       <PreliminaresTable
         rows={s.paged}
         isN7={s.isN7}
         itemLabel={s.isN7 ? 'PEPs N7' : 'servicios'}
-        mesLabel={PRELIM_MES_OPEN_LABEL.split(' ')[0]}
+        mesLabel={store.mesAbierto.split(' ')[0]}
         onRowClick={s.isN7 ? goToSubPep : goToN7}
         selectable={isCdG}
         selected={s.selected}
@@ -82,7 +84,7 @@ export function PreliminaresPage() {
         applyLabel="Aplicar carga"
       />
 
-      <CierreContableModal open={showCierre} mesLabel={PRELIM_MES_OPEN_LABEL} onClose={() => setShowCierre(false)} onConfirm={confirmCierre} />
+      <CierreContableModal open={showCierre} mesLabel={store.mesAbierto} onClose={() => setShowCierre(false)} onConfirm={confirmCierre} />
 
       <Toast message={s.showToast} />
       <Toast message={cierreToast} />

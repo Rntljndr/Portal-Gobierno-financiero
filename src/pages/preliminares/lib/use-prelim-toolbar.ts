@@ -1,7 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { PreliminarRow } from '@/data/preliminares'
-import { PRELIM_MES_OPEN_LABEL } from '@/data/preliminares'
-import { useMesCierre } from '@/shared/context/use-mes-cierre'
 import { usePreliminaresStore } from './use-preliminares-store'
 
 interface UsePrelimToolbarOptions {
@@ -13,7 +11,6 @@ interface UsePrelimToolbarOptions {
 /** Estado y handlers del toolbar completo (filtro, seleccionar todos, descargar, carga masiva, guardar definitivo, cierre contable), reusado en Preliminares N7 y SubPEP. */
 export function usePrelimToolbar({ rows, markCodigos }: UsePrelimToolbarOptions) {
   const store = usePreliminaresStore()
-  const { mesCerrado, cerrarMes } = useMesCierre()
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [search, setSearch] = useState('')
   const [selected, setSelected] = useState<Set<string>>(new Set())
@@ -52,7 +49,7 @@ export function usePrelimToolbar({ rows, markCodigos }: UsePrelimToolbarOptions)
     const codigos = markCodigos ? markCodigos([...selected]) : [...selected]
     store.markDefinitivo(codigos)
     setShowConfirm(false)
-    setToast(`${selected.size} línea(s) pasadas a Definitivo correctamente`)
+    setToast(`${selected.size} líneas pasadas a Definitivo correctamente`)
     setSelected(new Set())
   }
 
@@ -62,9 +59,10 @@ export function usePrelimToolbar({ rows, markCodigos }: UsePrelimToolbarOptions)
   }
 
   const confirmCierre = () => {
-    cerrarMes()
+    const mesQueCierra = store.mesAbierto
+    store.ejecutarCierreContable()
     setShowCierre(false)
-    setCierreToast(`Cierre Contable de ${PRELIM_MES_OPEN_LABEL} ejecutado. Los datos ya están disponibles en Reales.`)
+    setCierreToast(`Cierre Contable de ${mesQueCierra} ejecutado. Los datos están disponibles en Reales.`)
     setTimeout(() => setCierreToast(null), 4000)
   }
 
@@ -87,7 +85,7 @@ export function usePrelimToolbar({ rows, markCodigos }: UsePrelimToolbarOptions)
     showCierre,
     setShowCierre,
     confirmCierre,
-    mesCerrado,
+    mesAbierto: store.mesAbierto,
     toast,
     cierreToast,
   }

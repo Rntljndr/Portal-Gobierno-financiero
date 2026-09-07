@@ -50,7 +50,6 @@ export function RealesTableRow({
   const cols = realesColsForMode(mode).filter((c) => visibleCols.includes(c.key))
   const hasSubPeps = mode === 'n7' && !!row.subPeps?.length
   const showSubPep = mode === 'n7' && showSubPepCol
-  const identityColSpan = cols.length + (showSubPep ? 1 : 0)
   const identitySticky = showSubPep ? 'left-[72px]' : 'left-0'
   const rowClickable = mode === 'n4' ? !!onClick : hasSubPeps && !!onClick
   const hasComparisons = comparisons.length > 0
@@ -105,7 +104,8 @@ export function RealesTableRow({
             months={months}
             totals={totals}
             currency={currency}
-            identityColSpan={identityColSpan}
+            colsColSpan={cols.length}
+            showSubPep={showSubPep}
             forecastRound={key === 'forecast' ? forecastRound : null}
           />
         ))}

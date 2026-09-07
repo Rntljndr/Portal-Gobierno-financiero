@@ -13,6 +13,10 @@ export interface PreliminaresStore {
   clearFilters: () => void
   filtersOpen: boolean
   setFiltersOpen: Dispatch<SetStateAction<boolean>>
+  /** Ajuste P3: mes abierto actual de Preliminares, avanza manualmente al ejecutar Cierre Contable. */
+  mesAbierto: string
+  mesAnterior: string
+  ejecutarCierreContable: () => void
 }
 
 export const PreliminaresContext = createContext<PreliminaresStore | null>(null)

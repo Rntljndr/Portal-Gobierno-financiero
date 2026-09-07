@@ -3,18 +3,23 @@ import type { ForecastRound } from '@/data/forecast'
 import { REALES_LAST_CLOSED } from '@/data/reales'
 import { COMPARISON_SERIES, fmtRealesOrDash, type ComparisonSeries, type RealesTotals } from '../lib/reales-calc'
 import { forecastRoundFactor } from '../lib/forecast-comparison'
-import { DesvioChip } from '@/shared/ui'
+import { REALES_SUBPEP_COL_W } from '../lib/reales-table-cols'
+import { DesvioArrow, DesvioChip } from '@/shared/ui'
 
 interface RealesComparisonRowProps {
   seriesKey: ComparisonSeries['key']
   months: number[]
   totals: RealesTotals
   currency: string
-  identityColSpan: number
+  colsColSpan: number
+  showSubPep: boolean
   forecastRound?: ForecastRound | null
 }
 
-export function RealesComparisonRow({ seriesKey, months, totals, currency, identityColSpan, forecastRound }: RealesComparisonRowProps) {
+/** Filas de comparación (Ajuste R5): tono neutro/desaturado en toda la fila para no competir con la línea principal de Reales; solo la etiqueta conserva su color identificador. */
+const mutedCell = 'text-muted-foreground'
+
+export function RealesComparisonRow({ seriesKey, months, totals, currency, colsColSpan, showSubPep, forecastRound }: RealesComparisonRowProps) {
   const cfg = COMPARISON_SERIES[seriesKey]
   const fmt = (n: number) => fmtRealesOrDash(n, currency)
   const factor = seriesKey === 'forecast' && forecastRound ? forecastRoundFactor(forecastRound) : cfg.factor
@@ -29,38 +34,39 @@ export function RealesComparisonRow({ seriesKey, months, totals, currency, ident
   const desvioAnualPct = ownAnual !== 0 ? (desvioAnual / ownAnual) * 100 : null
 
   return (
-    <tr className="border-t border-dashed" style={{ background: cfg.bg, borderColor: cfg.border }}>
-      <td className="p-[5px_10px_5px_10px] sticky left-0 z-[1]" style={{ background: cfg.bg }}>
+    <tr className="border-t border-dashed border-border bg-[#F8F9FD]">
+      {showSubPep && <td className={cn('sticky left-0 z-[1] bg-[#F8F9FD]', REALES_SUBPEP_COL_W)} />}
+      <td className={cn('p-[5px_10px] sticky z-[1] bg-[#F8F9FD]', showSubPep ? 'left-[72px]' : 'left-0')}>
         <span className="rounded border px-1.5 py-0.5 text-[10px] font-bold" style={{ color: cfg.color, background: cfg.bg, borderColor: cfg.border }}>
           {cfg.label}
         </span>
       </td>
-      <td colSpan={identityColSpan} style={{ background: cfg.bg }} />
-      {months.map((v, i) => (
-        <td key={i} className={cn('p-[5px_6px] text-right font-mono text-[11px]', (i === 0 || i === REALES_LAST_CLOSED) && 'border-l-2 border-l-[#D5DCF0]')} style={{ color: cfg.textColor }}>
-          {fmt(v * factor)}
-        </td>
-      ))}
-      <td className="p-[5px_8px] border-l-2 border-l-[#D5DCF0] text-right font-mono text-[11px]" style={{ color: cfg.textColor }}>
-        {isPlan ? fmt(ownAcum) : '—'}
-      </td>
-      <td className="p-[5px_8px] text-right font-mono text-[11px]" style={{ color: cfg.textColor }}>
-        {isPlan ? '—' : fmt(ownAcum)}
-      </td>
-      <td className={cn('p-[5px_8px] text-right font-mono text-[11px]', desvioAcum > 0 ? 'text-destructive' : 'text-success')}>
+      <td colSpan={colsColSpan} className="bg-[#F8F9FD]" />
+      {months.map((v, i) => {
+        const ownMonthly = v * factor
+        const pct = ownMonthly !== 0 ? ((v - ownMonthly) / ownMonthly) * 100 : null
+        return (
+          <td
+            key={i}
+            className={cn('p-[5px_6px] text-right font-mono text-[11px]', mutedCell, (i === 0 || i === REALES_LAST_CLOSED) && 'border-l-2 border-l-[#E2E6F0]')}
+          >
+            <span className="inline-flex items-center gap-0.5">
+              <DesvioArrow pct={pct} />
+              {fmt(ownMonthly)}
+            </span>
+          </td>
+        )
+      })}
+      <td className={cn('p-[5px_8px] border-l-2 border-l-[#E2E6F0] text-right font-mono text-[11px] font-semibold', mutedCell)}>{fmt(ownAcum)}</td>
+      <td className={cn('p-[5px_8px] text-right font-mono text-[11px]', mutedCell)}>
         {desvioAcum >= 0 ? '+' : ''}
         {fmt(desvioAcum)}
       </td>
       <td className="p-[5px_8px] text-center">
         <DesvioChip pct={desvioAcumPct} />
       </td>
-      <td className="p-[5px_8px] border-l-2 border-l-[#D5DCF0] text-right font-mono text-[11px]" style={{ color: cfg.textColor }}>
-        {isPlan ? fmt(ownAnual) : '—'}
-      </td>
-      <td className="p-[5px_8px] text-right font-mono text-[11px]" style={{ color: cfg.textColor }}>
-        {isPlan ? '—' : fmt(ownAnual)}
-      </td>
-      <td className={cn('p-[5px_8px] text-right font-mono text-[11px]', desvioAnual > 0 ? 'text-destructive' : 'text-success')}>
+      <td className={cn('p-[5px_8px] border-l-2 border-l-[#E2E6F0] text-right font-mono text-[11px] font-semibold', mutedCell)}>{fmt(ownAnual)}</td>
+      <td className={cn('p-[5px_8px] text-right font-mono text-[11px]', mutedCell)}>
         {desvioAnual >= 0 ? '+' : ''}
         {fmt(desvioAnual)}
       </td>

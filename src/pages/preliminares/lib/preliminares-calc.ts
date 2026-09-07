@@ -1,7 +1,4 @@
-import { monthKeys } from '@/data/reporteria'
-import { REALES_LAST_CLOSED } from '@/data/reales'
 import type { PrelimEstado, PreliminarRow } from '@/data/preliminares'
-import type { ResumenTotals } from '@/shared/lib/resumen-blocks'
 
 export function prelimFmt(n: number, moneda: string): string {
   if (moneda === 'USD') return `$${Math.round(n / 1000).toLocaleString('es-CL')}K`
@@ -9,65 +6,65 @@ export function prelimFmt(n: number, moneda: string): string {
   return `${Math.round(n / 1000).toLocaleString('es-CL')}K`
 }
 
-export function prelimPct(preliminar: number, forecast: number): number | null {
-  if (!forecast) return null
-  return (preliminar / forecast) * 100
+type PrelimRow = Pick<PreliminarRow, 'meses' | 'acumReal' | 'forecastMes' | 'preliminarMes'>
+
+export interface PrelimRowTotals {
+  realAcum: number
+  forecastMes: number
+  planMes: number
+  preliminarMes: number
+  desvioPlanMonto: number
+  desvioPlanPct: number | null
+  desvioForecastMonto: number
+  desvioForecastPct: number | null
 }
 
-type PrelimMonthsRow = Pick<PreliminarRow, 'meses' | 'planFactor' | 'preliminarMes'>
-
-/**
- * 12 columnas mensuales (Ajuste P4): meses cerrados = Real, mes en curso = Preliminar (no existe Real todavía),
- * meses restantes = Forecast. Mismo criterio de "meses cerrados" que Reales (REALES_LAST_CLOSED).
- */
-export function calcPrelimMonths(row: PrelimMonthsRow): number[] {
-  return monthKeys.map((k, i) => {
-    if (i === REALES_LAST_CLOSED) return row.preliminarMes
-    const base = (row.meses[k] || 0) * 1000
-    return i < REALES_LAST_CLOSED ? base * row.planFactor : base * 0.96
-  })
+/** Ajuste P2: Preliminar del mes como protagonista, comparado horizontalmente contra Plan y Forecast del mes. */
+export function calcPrelimRowTotals(row: PrelimRow): PrelimRowTotals {
+  const planMes = (row.meses.ago || 0) * 1000
+  const desvioPlanMonto = row.preliminarMes - planMes
+  const desvioForecastMonto = row.preliminarMes - row.forecastMes
+  return {
+    realAcum: row.acumReal,
+    forecastMes: row.forecastMes,
+    planMes,
+    preliminarMes: row.preliminarMes,
+    desvioPlanMonto,
+    desvioPlanPct: planMes !== 0 ? (desvioPlanMonto / planMes) * 100 : null,
+    desvioForecastMonto,
+    desvioForecastPct: row.forecastMes !== 0 ? (desvioForecastMonto / row.forecastMes) * 100 : null,
+  }
 }
 
-type PrelimTotalsRow = PrelimMonthsRow & Pick<PreliminarRow, 'acumReal'>
-
-/** Totales de los bloques Resumen Acumulado + Proyección Anual (Ajuste P4), misma fórmula que Reales. */
-export function calcPrelimTotals(row: PrelimTotalsRow): ResumenTotals {
-  const months = calcPrelimMonths(row)
-  const plan = monthKeys.reduce((s, k) => s + (row.meses[k] || 0) * 1000, 0)
-  const real = row.acumReal
-  const realMasForecast = months.reduce((s, v) => s + v, 0)
-  const desvio = realMasForecast - plan
-  const pctDesvio = plan > 0 ? (desvio / plan) * 100 : 0
-  const planAcum = (plan * REALES_LAST_CLOSED) / 12
-  const desvioAcumMonto = real - planAcum
-  const desvioAcumPct = planAcum > 0 ? (desvioAcumMonto / planAcum) * 100 : null
-  return { plan, real, realMasForecast, desvio, pctDesvio, planAcum, desvioAcumMonto, desvioAcumPct }
-}
-
-/** Suma los totales de un conjunto de filas y recalcula los desvíos sobre el agregado. */
-export function sumPrelimTotals(rows: PrelimTotalsRow[]): ResumenTotals {
+/** Suma un conjunto de filas y recalcula los desvíos sobre el agregado (nunca promedia porcentajes). */
+export function sumPrelimRowTotals(rows: PrelimRow[]): PrelimRowTotals {
   const acc = rows.reduce(
     (a, r) => {
-      const t = calcPrelimTotals(r)
-      return { plan: a.plan + t.plan, real: a.real + t.real, realMasForecast: a.realMasForecast + t.realMasForecast, planAcum: a.planAcum + t.planAcum }
+      const t = calcPrelimRowTotals(r)
+      return {
+        realAcum: a.realAcum + t.realAcum,
+        forecastMes: a.forecastMes + t.forecastMes,
+        planMes: a.planMes + t.planMes,
+        preliminarMes: a.preliminarMes + t.preliminarMes,
+      }
     },
-    { plan: 0, real: 0, realMasForecast: 0, planAcum: 0 },
+    { realAcum: 0, forecastMes: 0, planMes: 0, preliminarMes: 0 },
   )
-  const desvio = acc.realMasForecast - acc.plan
-  const pctDesvio = acc.plan > 0 ? (desvio / acc.plan) * 100 : 0
-  const desvioAcumMonto = acc.real - acc.planAcum
-  const desvioAcumPct = acc.planAcum > 0 ? (desvioAcumMonto / acc.planAcum) * 100 : null
-  return { ...acc, desvio, pctDesvio, desvioAcumMonto, desvioAcumPct }
+  const desvioPlanMonto = acc.preliminarMes - acc.planMes
+  const desvioForecastMonto = acc.preliminarMes - acc.forecastMes
+  return {
+    ...acc,
+    desvioPlanMonto,
+    desvioPlanPct: acc.planMes !== 0 ? (desvioPlanMonto / acc.planMes) * 100 : null,
+    desvioForecastMonto,
+    desvioForecastPct: acc.forecastMes !== 0 ? (desvioForecastMonto / acc.forecastMes) * 100 : null,
+  }
 }
 
-type PrelimKpiRow = PrelimTotalsRow & Pick<PreliminarRow, 'forecastMes'>
-
-/** KPIs de las cards principales de Preliminares (Plan/Real/Forecast del mes + Desvío acumulado), para cualquier nivel (N4, N7 o SubPEP). */
-export function calcPrelimKpis(rows: PrelimKpiRow[]) {
-  const totals = sumPrelimTotals(rows)
-  const planMes = rows.reduce((s, r) => s + (r.meses.ago || 0) * 1000, 0)
-  const forecastMes = rows.reduce((s, r) => s + r.forecastMes, 0)
-  return { planMes, forecastMes, acumReal: totals.real, desvioAcumMonto: totals.desvioAcumMonto, desvioAcumPct: totals.desvioAcumPct }
+/** KPIs de las cards principales (Ajuste P1): Real del mes / Plan del mes / Forecast del mes / Desvío del mes, para cualquier nivel. */
+export function calcPrelimKpis(rows: PrelimRow[]) {
+  const t = sumPrelimRowTotals(rows)
+  return { realMes: t.realAcum, planMes: t.planMes, forecastMes: t.forecastMes, desvioMes: t.desvioPlanMonto, desvioMesPct: t.desvioPlanPct }
 }
 
 /** Conteo de servicios / con preliminar / definitivos para la tabla-resumen inferior, en cualquier nivel. */
@@ -77,4 +74,10 @@ export function calcPrelimStats(rows: { estado: PrelimEstado }[]) {
     conPrelim: rows.filter((r) => r.estado === 'preliminar').length,
     definitivos: rows.filter((r) => r.estado === 'definitivo').length,
   }
+}
+
+/** Ajuste P5: % de N7 ya pasados a Definitivo dentro de un N4 — 100 solo si todos lo están. */
+export function calcCompletitud(children: { estado: PrelimEstado }[]): number {
+  if (children.length === 0) return 0
+  return Math.round((children.filter((c) => c.estado === 'definitivo').length / children.length) * 100)
 }

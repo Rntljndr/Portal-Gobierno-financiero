@@ -24,7 +24,10 @@ export function GuardarDefinitivoModal({ open, count, onClose, onConfirm }: Guar
         </>
       }
     >
-      <p className="text-[13.5px] leading-relaxed text-cs-gris-oscuro">Estás a punto de guardar a definitivos "{count} PEP"?</p>
+      <p className="text-[13.5px] leading-relaxed text-cs-gris-oscuro">
+        ¿Confirmas pasar {count === 1 ? 'la línea seleccionada' : `las ${count} líneas seleccionadas`} a Definitivo? Los valores quedarán fijos y no serán actualizados por la sincronización
+        automática de SAP.
+      </p>
     </Modal>
   )
 }

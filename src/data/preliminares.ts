@@ -4,8 +4,30 @@ import { buildSubPeps, CON_SUBPEPS, type PepSubPep } from './pep-subpeps'
 
 export const PRELIM_MES_ANTERIOR_LABEL = 'Julio 2026'
 export const PRELIM_MES_OPEN_LABEL = 'Agosto 2026'
-export const PRELIM_CIERRE_DATE = '24 agosto 2026'
-export const PRELIM_DIAS_FALTAN = 2
+
+/** Ajuste P3: meses que se van abriendo a medida que Control de Gestión ejecuta el Cierre Contable (manual, sin fecha automática). */
+export const PRELIM_MESES = ['Agosto 2026', 'Septiembre 2026', 'Octubre 2026', 'Noviembre 2026', 'Diciembre 2026']
+
+export interface PrelimCierreSapFecha {
+  fecha: string
+  dias: number
+}
+
+/**
+ * Ajuste P4: fecha de cierre contable SAP por mes y por país. Mantenedor (carga/edición por CdG, import/export Excel)
+ * queda como evolutivo — por ahora esta tabla hace de fuente de datos; los meses/países sin entrada muestran "sin fecha definida".
+ */
+export const PRELIM_CIERRE_SAP_FECHAS: Record<string, Record<string, PrelimCierreSapFecha>> = {
+  'Agosto 2026': {
+    Chile: { fecha: '24 agosto 2026', dias: 2 },
+    Argentina: { fecha: '22 agosto 2026', dias: 1 },
+    Brasil: { fecha: '26 agosto 2026', dias: 4 },
+  },
+}
+
+export function getCierreSapFecha(mes: string, pais: string): PrelimCierreSapFecha | null {
+  return PRELIM_CIERRE_SAP_FECHAS[mes]?.[pais] ?? null
+}
 
 export type PrelimEstado = 'preliminar' | 'definitivo'
 export type PrelimTipoActualizacion = 'automatica' | 'manual'
@@ -71,7 +93,11 @@ export interface PreliminarN4Row extends PreliminarRow {
   headcount: PreliminarHeadcountRow[]
 }
 
-function buildHeadcount(n4: { equipo: string; children: { equipo: string }[] }): PreliminarHeadcountRow[] {
+/** Ajuste P10: servicios puramente de licenciamiento/infraestructura sin dotación propia — no muestran tabla de Headcount. */
+const SIN_HEADCOUNT = new Set(['N4-2027-004', 'N4-2027-008'])
+
+function buildHeadcount(codigo: string, n4: { equipo: string; children: { equipo: string }[] }): PreliminarHeadcountRow[] {
+  if (SIN_HEADCOUNT.has(codigo)) return []
   const equipos = [...new Set([n4.equipo, ...n4.children.map((c) => c.equipo)])]
   const cargos = ['Analista', 'Especialista', 'Líder Técnico']
   return equipos.slice(0, 3).map((equipo, i) => ({
@@ -111,6 +137,8 @@ function buildRow(
   }
 }
 
+
+
 export const preliminaresRows: PreliminarN4Row[] = pepN4Tablon.map((n4) => {
   const hasPrelim = CON_PRELIMINAR.has(n4.codigo)
   const children = n4.children.map((n7, i) => {
@@ -122,6 +150,6 @@ export const preliminaresRows: PreliminarN4Row[] = pepN4Tablon.map((n4) => {
   return {
     ...buildRow(n4.codigo, n4, hasPrelim, n4Estado, children[0]?.tipoActualizacion ?? 'automatica', n4.codigo),
     children,
-    headcount: buildHeadcount(n4),
+    headcount: buildHeadcount(n4.codigo, n4),
   }
 })

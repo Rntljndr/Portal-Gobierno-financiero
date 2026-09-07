@@ -3,7 +3,7 @@ import type { PreliminarN4Row, PreliminarRow } from '@/data/preliminares'
 import type { PrelimFilterOptions, PrelimFilters } from './preliminares-filters-types'
 import { usePreliminaresStore } from './use-preliminares-store'
 import { allSelectable, toggleGroupInSet, toggleInSet } from './selection-helpers'
-import { sumPrelimTotals } from './preliminares-calc'
+import { calcPrelimKpis } from './preliminares-calc'
 
 const ROWS_PER_PAGE = 10
 
@@ -63,14 +63,6 @@ function countActiveFilters(f: PrelimFilters): number {
   )
 }
 
-function calcKpi(filteredN4: PreliminarN4Row[]) {
-  const usdRows = filteredN4.filter((r) => r.moneda === 'USD')
-  const totals = sumPrelimTotals(usdRows)
-  const planMes = usdRows.reduce((s, r) => s + (r.meses.ago || 0) * 1000, 0)
-  const forecastMes = usdRows.reduce((s, r) => s + r.forecastMes, 0)
-  return { planMes, forecastMes, acumReal: totals.real, desvioAcumMonto: totals.desvioAcumMonto, desvioAcumPct: totals.desvioAcumPct }
-}
-
 export function usePreliminares() {
   const store = usePreliminaresStore()
   const { rows, tab, setTab, filters, filtersOpen, setFiltersOpen } = store
@@ -103,7 +95,7 @@ export function usePreliminares() {
   const paged = activeData.slice((pageSafe - 1) * ROWS_PER_PAGE, pageSafe * ROWS_PER_PAGE)
 
   const activeFilterCount = countActiveFilters(filters)
-  const kpi = calcKpi(filteredN4)
+  const kpi = calcPrelimKpis(filteredN4)
 
   const toggleSelected = (codigo: string) => setSelected((prev) => toggleInSet(prev, codigo))
 

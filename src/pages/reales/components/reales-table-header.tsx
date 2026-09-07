@@ -1,6 +1,6 @@
 import { cn } from '@/shared/lib/utils'
 import { REALES_LAST_CLOSED, monthLabels } from '@/data/reales'
-import { PROYECCION_ANUAL_COLS, PROYECCION_ANUAL_LABEL, RESUMEN_ACUMULADO_COLS, RESUMEN_ACUMULADO_LABEL } from '@/shared/lib/resumen-blocks'
+import { PROYECCION_ANUAL_COLS, PROYECCION_ANUAL_LABEL, resumenAcumuladoLabel, RESUMEN_ACUMULADO_COLS } from '@/shared/lib/resumen-blocks'
 import { realesColsForMode, REALES_SUBPEP_COL_W } from '../lib/reales-table-cols'
 
 const thGroup = 'p-[6px_8px] text-center text-[10.5px] font-bold whitespace-nowrap border-b border-border'
@@ -33,7 +33,7 @@ export function RealesTableHeader({ mode, visibleCols, showSubPepCol = true, ide
           Forecast · Ago-Dic (proyectado)
         </th>
         <th colSpan={RESUMEN_ACUMULADO_COLS.length} className={cn(thGroup, 'border-l-2 border-l-border text-cs-gris-oscuro')}>
-          {RESUMEN_ACUMULADO_LABEL}
+          {resumenAcumuladoLabel()}
         </th>
         <th colSpan={PROYECCION_ANUAL_COLS.length} className={cn(thGroup, 'border-l-2 border-l-border bg-primary/5 text-primary')}>
           {PROYECCION_ANUAL_LABEL}

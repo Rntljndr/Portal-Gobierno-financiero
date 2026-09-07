@@ -1,3 +1,5 @@
+import { REALES_LAST_CLOSED, monthLabels } from '@/data/reales'
+
 export interface ResumenColDef {
   key: string
   label: string
@@ -17,10 +19,13 @@ export interface ResumenTotals {
 }
 
 /** Bloque 1: comparación al mismo período (meses cerrados). Compartido por Reales y Preliminares. */
-export const RESUMEN_ACUMULADO_LABEL = 'Resumen Acumulado'
+export function resumenAcumuladoLabel(lastClosed: number = REALES_LAST_CLOSED): string {
+  if (lastClosed <= 0) return 'Acumulado'
+  return `Acumulado ${monthLabels[0]}–${monthLabels[lastClosed - 1]}`
+}
+
 export const RESUMEN_ACUMULADO_COLS: ResumenColDef[] = [
-  { key: 'planAcum', label: 'Plan acumulado' },
-  { key: 'realAcum', label: 'Real acumulado' },
+  { key: 'total', label: 'Total' },
   { key: 'desvioAcum', label: 'Desvío' },
   { key: 'desvioAcumPct', label: 'Desvío %' },
 ]
@@ -28,8 +33,7 @@ export const RESUMEN_ACUMULADO_COLS: ResumenColDef[] = [
 /** Bloque 2: comparación del año completo. Compartido por Reales y Preliminares. */
 export const PROYECCION_ANUAL_LABEL = 'Proyección Anual'
 export const PROYECCION_ANUAL_COLS: ResumenColDef[] = [
-  { key: 'planAnual', label: 'Plan total' },
-  { key: 'realFcAnual', label: 'Real + Forecast' },
+  { key: 'totalAnual', label: 'Total Anual' },
   { key: 'desvioAnual', label: 'Desvío' },
   { key: 'desvioAnualPct', label: 'Desvío %' },
 ]
