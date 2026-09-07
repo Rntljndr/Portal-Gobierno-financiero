@@ -11,10 +11,10 @@ import { downloadPreliminaresCsv } from './lib/download-csv'
 import { PreliminaresKpis } from './components/preliminares-kpis'
 import { PreliminaresStatsRow } from './components/preliminares-stats-row'
 import { PreliminaresToolbar } from './components/preliminares-toolbar'
+import { PreliminaresTopActions } from './components/preliminares-top-actions'
 import { PreliminaresSearchPanel } from './components/preliminares-search-panel'
 import { PreliminaresSubPepHeader } from './components/preliminares-subpep-header'
 import { PreliminaresTable } from './components/preliminares-table'
-import { CierreContableModal } from './components/cierre-contable-modal'
 
 /** SubPEP como fila de tabla N7: hereda la identidad del N7 padre y prorratea sus montos según el peso de cada SubPEP. */
 function buildSubPepRows(n7: PreliminarRow): PreliminarRow[] {
@@ -48,8 +48,7 @@ export function PreliminaresSubPepPage() {
   const rows = useMemo(() => (n7 ? buildSubPepRows(n7) : []), [n7])
   const kpis = useMemo(() => calcPrelimKpis(rows), [rows])
   const stats = useMemo(() => calcPrelimStats(rows), [rows])
-  // Ajuste P6: los SubPEPs son solo visualización — sin selección ni Guardar Definitivo funcional en este nivel.
-  const t = usePrelimToolbar({ rows, markCodigos: () => [] })
+  const t = usePrelimToolbar({ rows, markCodigos: () => [] }) // P6: SubPEPs son solo visualización, sin Guardar Definitivo
   const { activeForecastLabel } = useComparisonsState()
 
   if (!n4 || !n7) {
@@ -74,6 +73,14 @@ export function PreliminaresSubPepPage() {
       />
       <PreliminaresSubPepHeader servicio={n7.servicio} codigo={n7.codigo} mesAbierto={t.mesAbierto} />
 
+      <PreliminaresTopActions
+        filtersOpen={t.filtersOpen}
+        onToggleFilters={() => t.setFiltersOpen((v) => !v)}
+        activeFilterCount={t.search ? 1 : 0}
+        activeForecastLabel={activeForecastLabel}
+        onCierreContable={() => {}}
+        showCierreContable={false}
+      />
       <PreliminaresKpis {...kpis} />
       {isCdG && <PreliminaresStatsRow totalServicio={stats.total} conPrelim={stats.conPrelim} definitivos={stats.definitivos} />}
 
@@ -88,8 +95,9 @@ export function PreliminaresSubPepPage() {
         showSelection={false}
         onOpenCargaMasiva={() => t.setShowBulkUpload(true)}
         onDownload={() => downloadPreliminaresCsv(t.filteredRows, `Preliminares_SubPEP_${n7.codigo}.csv`)}
-        onCierreContable={() => t.setShowCierre(true)}
-        activeForecastLabel={activeForecastLabel}
+        onCierreContable={() => {}}
+        showFiltros={false}
+        showCierreContable={false}
       />
       {t.filtersOpen && <PreliminaresSearchPanel label="Nombre / código SubPEP" search={t.search} onSearchChange={t.setSearch} />}
 
@@ -102,17 +110,8 @@ export function PreliminaresSubPepPage() {
         mesLabel={t.mesAbierto.split(' ')[0]}
       />
 
-      <BulkUploadDrawer
-        open={t.showBulkUpload}
-        onClose={() => t.setShowBulkUpload(false)}
-        onApplied={t.handleBulkUploadApplied}
-        title="Carga masiva de preliminares"
-        applyLabel="Aplicar carga"
-      />
-      <CierreContableModal open={t.showCierre} mesLabel={t.mesAbierto} onClose={() => t.setShowCierre(false)} onConfirm={t.confirmCierre} />
-
+      <BulkUploadDrawer open={t.showBulkUpload} onClose={() => t.setShowBulkUpload(false)} onApplied={t.handleBulkUploadApplied} title="Carga masiva de preliminares" applyLabel="Aplicar carga" />
       <Toast message={t.toast} />
-      <Toast message={t.cierreToast} />
       </div>
       <VolverBar label="Volver a N7" onBack={() => navigate(`/preliminares/${encodeURIComponent(n4.codigo)}`)} />
     </div>

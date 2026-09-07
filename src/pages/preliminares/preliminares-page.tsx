@@ -11,6 +11,7 @@ import { PreliminaresPageHeader } from './components/preliminares-page-header'
 import { PreliminaresKpis } from './components/preliminares-kpis'
 import { PreliminaresStatsRow } from './components/preliminares-stats-row'
 import { PreliminaresToolbar } from './components/preliminares-toolbar'
+import { PreliminaresTopActions } from './components/preliminares-top-actions'
 import { PrelimFiltersPanel } from './components/preliminares-filters'
 import { PreliminaresTable } from './components/preliminares-table'
 import { CierreContableModal } from './components/cierre-contable-modal'
@@ -45,6 +46,13 @@ export function PreliminaresPage() {
     <div className="h-full overflow-y-auto">
       <Breadcrumb items={[{ label: 'SIP', to: '/' }, { label: 'Presupuesto', to: '/ejercicios' }, { label: 'Reales', to: '/reales' }, { label: 'Preliminares' }]} />
       <PreliminaresPageHeader tab={s.tab} onTabChange={s.setTab} mesAbierto={store.mesAbierto} />
+      <PreliminaresTopActions
+        filtersOpen={s.filtersOpen}
+        onToggleFilters={() => s.setFiltersOpen((v) => !v)}
+        activeFilterCount={s.activeFilterCount}
+        activeForecastLabel={activeForecastLabel}
+        onCierreContable={() => setShowCierre(true)}
+      />
       <PreliminaresKpis {...s.kpi} />
       {isCdG && <PreliminaresStatsRow totalServicio={s.totalServicio} conPrelim={s.conPrelim} definitivos={s.definitivos} />}
       <PreliminaresToolbar
@@ -58,7 +66,8 @@ export function PreliminaresPage() {
         onOpenCargaMasiva={() => setShowBulkUpload(true)}
         onDownload={() => downloadPreliminaresCsv(s.activeData, `Preliminares_${s.isN7 ? 'N7' : 'N4'}_${store.mesAbierto.replace(' ', '')}.csv`)}
         onCierreContable={() => setShowCierre(true)}
-        activeForecastLabel={activeForecastLabel}
+        showFiltros={false}
+        showCierreContable={false}
       />
       <PrelimFiltersPanel open={s.filtersOpen} isN7={s.isN7} filters={s.filters} options={s.options} onChange={s.onChangeFilter} onClear={s.clearFilters} activeCount={s.activeFilterCount} />
       <PreliminaresTable

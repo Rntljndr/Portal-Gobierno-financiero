@@ -2,6 +2,7 @@ import { useNavigate, useParams } from 'react-router'
 import { Badge, Breadcrumb, EmptyState, Icon, VolverBar } from '@/shared/ui'
 import { usePreliminaresStore } from './lib/use-preliminares-store'
 import { PreliminarDetalleSection } from './components/preliminar-detalle-section'
+import { CierreIndicator } from './components/cierre-indicator'
 
 export function PreliminaresN7Page() {
   const { codigo } = useParams()
@@ -31,6 +32,7 @@ export function PreliminaresN7Page() {
               <Icon name="check" size={13} color="#067647" /> Detalle de servicio · {store.mesAbierto}
             </div>
           </div>
+          <CierreIndicator mesAbierto={store.mesAbierto} />
         </div>
 
         <PreliminarDetalleSection n4={n4} />

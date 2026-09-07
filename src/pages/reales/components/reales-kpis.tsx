@@ -12,7 +12,6 @@ export function RealesKpis({ totals, currency }: RealesKpisProps) {
 
   return (
     <div className="mx-8 mb-5.5 grid grid-cols-4 gap-3.5">
-      <KpiCard label="Plan acum. Ene-Jul" value={fmtReales(totals.planAcum, currency)} icon={<Icon name="dollar" size={16} color="#0047B0" />} iconBg="#EEF4FF" delta="Prorrateo lineal del plan" />
       <KpiCard
         label="Real acum. Ene-Jul"
         value={fmtReales(totals.real, currency)}
@@ -20,6 +19,7 @@ export function RealesKpis({ totals, currency }: RealesKpisProps) {
         iconBg="#ECFDF3"
         delta={pctEjecutado ? `${pctEjecutado}% del plan ejecutado` : '—'}
       />
+      <KpiCard label="Plan acum. Ene-Jul" value={fmtReales(totals.planAcum, currency)} icon={<Icon name="dollar" size={16} color="#0047B0" />} iconBg="#EEF4FF" delta="Prorrateo lineal del plan" />
       <KpiCard
         label="Desvío acum."
         value={`${over ? '+' : ''}${fmtReales(totals.desvioAcumMonto, currency)}`}

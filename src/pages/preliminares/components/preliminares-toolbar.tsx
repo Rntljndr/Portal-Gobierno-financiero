@@ -15,6 +15,8 @@ interface PreliminaresToolbarProps {
   onCierreContable: () => void
   activeForecastLabel?: string | null
   showSelection?: boolean
+  showFiltros?: boolean
+  showCierreContable?: boolean
 }
 
 export function PreliminaresToolbar({
@@ -30,6 +32,8 @@ export function PreliminaresToolbar({
   onCierreContable,
   activeForecastLabel,
   showSelection = true,
+  showFiltros = true,
+  showCierreContable = true,
 }: PreliminaresToolbarProps) {
   const { role } = useRole()
   const isCdG = role === 'cdg'
@@ -37,8 +41,8 @@ export function PreliminaresToolbar({
   return (
     <div className="mx-8 mb-4 flex flex-wrap items-center justify-between gap-3">
       <div className="flex items-center gap-2.5">
-        <PrelimFilterToggle open={filtersOpen} onToggle={onToggleFilters} activeCount={activeFilterCount} />
-        {activeForecastLabel && (
+        {showFiltros && <PrelimFilterToggle open={filtersOpen} onToggle={onToggleFilters} activeCount={activeFilterCount} />}
+        {showFiltros && activeForecastLabel && (
           <Badge variant="neutral" className="border border-[#DDD0F8] bg-[#F3EEFF] text-[#6922E7]">
             <Icon name="trendup" size={12} color="currentColor" />
             {activeForecastLabel}
@@ -64,7 +68,7 @@ export function PreliminaresToolbar({
             <Icon name="check" size={13} color="#fff" /> Guardar Definitivo {selectedCount > 0 && `(${selectedCount})`}
           </Button>
         )}
-        {isCdG && (
+        {isCdG && showCierreContable && (
           <Button variant="primary" size="sm" onClick={onCierreContable} className="bg-[#B42318] hover:bg-[#941d15]">
             <Icon name="lock" size={12} color="#fff" /> Cierre Contable
           </Button>

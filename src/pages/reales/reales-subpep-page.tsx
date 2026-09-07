@@ -12,6 +12,7 @@ import { RealesComparisonDrawer } from './components/reales-comparison-drawer'
 import { RealesDetailToolbar } from './components/reales-detail-toolbar'
 import { RealesDetailHeader } from './components/reales-detail-header'
 import { RealesKpis } from './components/reales-kpis'
+import { RealesTopActions } from './components/reales-top-actions'
 import { RealesTable } from './components/reales-table'
 
 /** SubPEP como fila de tabla N7: hereda la identidad del N7 padre y prorratea sus meses según el peso del monto de cada SubPEP. */
@@ -62,6 +63,7 @@ export function RealesSubPepPage() {
           ]}
         />
         <RealesDetailHeader title={n7.nombre} codigo={n7.codigo} />
+        <RealesTopActions activeForecastLabel={cs.activeForecastLabel} />
         <RealesKpis totals={calcTotals(n7)} currency="USD" />
 
         <RealesDetailToolbar
@@ -72,6 +74,7 @@ export function RealesSubPepPage() {
           onOpenComparar={() => setCompOpen(true)}
           onOpenCargaMasiva={isCdG ? () => setCargaMasivaOpen(true) : undefined}
           activeForecastLabel={cs.activeForecastLabel}
+          showFiltros={false}
         />
 
         <RealesTable

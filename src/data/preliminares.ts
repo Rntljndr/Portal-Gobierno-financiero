@@ -9,24 +9,32 @@ export const PRELIM_MES_OPEN_LABEL = 'Agosto 2026'
 export const PRELIM_MESES = ['Agosto 2026', 'Septiembre 2026', 'Octubre 2026', 'Noviembre 2026', 'Diciembre 2026']
 
 export interface PrelimCierreSapFecha {
+  /** Día del mes — permite ordenar de la fecha más próxima a la de mayor holgura sin parsear el texto. */
+  dia: number
   fecha: string
-  dias: number
 }
 
 /**
- * Ajuste P4: fecha de cierre contable SAP por mes y por país. Mantenedor (carga/edición por CdG, import/export Excel)
- * queda como evolutivo — por ahora esta tabla hace de fuente de datos; los meses/países sin entrada muestran "sin fecha definida".
+ * Ajuste P4: fecha de cierre contable SAP por mes y por país — es distinta para cada país. Mantenedor (carga/edición por
+ * CdG, import/export Excel) queda como evolutivo; por ahora esta tabla hace de fuente de datos, los países sin entrada
+ * muestran "sin fecha definida".
  */
 export const PRELIM_CIERRE_SAP_FECHAS: Record<string, Record<string, PrelimCierreSapFecha>> = {
   'Agosto 2026': {
-    Chile: { fecha: '24 agosto 2026', dias: 2 },
-    Argentina: { fecha: '22 agosto 2026', dias: 1 },
-    Brasil: { fecha: '26 agosto 2026', dias: 4 },
+    Argentina: { dia: 22, fecha: '22 agosto 2026' },
+    Chile: { dia: 24, fecha: '24 agosto 2026' },
+    Brasil: { dia: 26, fecha: '26 agosto 2026' },
+    Colombia: { dia: 27, fecha: '27 agosto 2026' },
+    Perú: { dia: 28, fecha: '28 agosto 2026' },
   },
 }
 
-export function getCierreSapFecha(mes: string, pais: string): PrelimCierreSapFecha | null {
-  return PRELIM_CIERRE_SAP_FECHAS[mes]?.[pais] ?? null
+/** Países ordenados de la fecha de cierre más próxima a la de mayor holgura. */
+export function getCierreSapFechasOrdenadas(mes: string): { pais: string; fecha: string }[] {
+  const fechas = PRELIM_CIERRE_SAP_FECHAS[mes] ?? {}
+  return Object.entries(fechas)
+    .sort(([, a], [, b]) => a.dia - b.dia)
+    .map(([pais, f]) => ({ pais, fecha: f.fecha }))
 }
 
 export type PrelimEstado = 'preliminar' | 'definitivo'

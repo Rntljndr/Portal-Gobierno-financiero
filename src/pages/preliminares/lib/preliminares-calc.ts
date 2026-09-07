@@ -61,10 +61,10 @@ export function sumPrelimRowTotals(rows: PrelimRow[]): PrelimRowTotals {
   }
 }
 
-/** KPIs de las cards principales (Ajuste P1): Real del mes / Plan del mes / Forecast del mes / Desvío del mes, para cualquier nivel. */
+/** KPIs de las cards principales: Preliminar del mes / Plan del mes / Forecast del mes / Desvío del mes, para cualquier nivel. */
 export function calcPrelimKpis(rows: PrelimRow[]) {
   const t = sumPrelimRowTotals(rows)
-  return { realMes: t.realAcum, planMes: t.planMes, forecastMes: t.forecastMes, desvioMes: t.desvioPlanMonto, desvioMesPct: t.desvioPlanPct }
+  return { preliminarMes: t.preliminarMes, planMes: t.planMes, forecastMes: t.forecastMes, desvioMes: t.desvioPlanMonto, desvioMesPct: t.desvioPlanPct }
 }
 
 /** Conteo de servicios / con preliminar / definitivos para la tabla-resumen inferior, en cualquier nivel. */

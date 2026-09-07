@@ -10,6 +10,7 @@ import { useBulkUploadToast } from './lib/use-bulk-upload-toast'
 import { realesColsForMode } from './lib/reales-table-cols'
 import { RealesPageHeader } from './components/reales-page-header'
 import { RealesKpis } from './components/reales-kpis'
+import { RealesTopActions } from './components/reales-top-actions'
 import { RealesToolbar } from './components/reales-toolbar'
 import { RealesFiltersPanel } from './components/reales-filters'
 import { RealesTable } from './components/reales-table'
@@ -37,6 +38,12 @@ export function RealesPage() {
     <div ref={infinite.containerRef} className="h-full overflow-y-auto">
       <Breadcrumb items={[{ label: 'SIP', to: '/' }, { label: 'Presupuesto', to: '/ejercicios' }, { label: 'Ejercicios', to: '/ejercicios' }, { label: 'Reales' }]} />
       <RealesPageHeader tab={s.tab} onTabChange={s.setTab} />
+      <RealesTopActions
+        filtersOpen={s.filtersOpen}
+        onToggleFilters={() => s.setFiltersOpen((v) => !v)}
+        activeFilterCount={s.activeFilterCount}
+        activeForecastLabel={s.activeForecastLabel}
+      />
       <RealesKpis totals={aggregateTotals} currency={s.currency} />
       <RealesToolbar
         filtersOpen={s.filtersOpen}
@@ -50,6 +57,7 @@ export function RealesPage() {
         allComparisonsCollapsed={s.allRowsCollapsed(pagedCodigos)}
         onToggleAllComparisons={() => s.toggleAllRows(pagedCodigos)}
         activeForecastLabel={s.activeForecastLabel}
+        showFiltros={false}
       />
       <RealesFiltersPanel open={s.filtersOpen} isN7={s.isN7} filters={s.filters} options={s.options} onChange={s.onChangeFilter} onClear={s.clearFilters} activeCount={s.activeFilterCount} />
       <RealesTable

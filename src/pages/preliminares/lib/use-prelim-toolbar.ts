@@ -8,7 +8,7 @@ interface UsePrelimToolbarOptions {
   markCodigos?: (selected: string[]) => string[]
 }
 
-/** Estado y handlers del toolbar completo (filtro, seleccionar todos, descargar, carga masiva, guardar definitivo, cierre contable), reusado en Preliminares N7 y SubPEP. */
+/** Estado y handlers del toolbar (filtro, seleccionar todos, descargar, carga masiva, guardar definitivo), reusado en Preliminares N7 y SubPEP. */
 export function usePrelimToolbar({ rows, markCodigos }: UsePrelimToolbarOptions) {
   const store = usePreliminaresStore()
   const [filtersOpen, setFiltersOpen] = useState(false)
@@ -16,9 +16,7 @@ export function usePrelimToolbar({ rows, markCodigos }: UsePrelimToolbarOptions)
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [showConfirm, setShowConfirm] = useState(false)
   const [showBulkUpload, setShowBulkUpload] = useState(false)
-  const [showCierre, setShowCierre] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
-  const [cierreToast, setCierreToast] = useState<string | null>(null)
 
   useEffect(() => {
     if (!toast) return
@@ -58,14 +56,6 @@ export function usePrelimToolbar({ rows, markCodigos }: UsePrelimToolbarOptions)
     setToast(`${count} líneas actualizadas correctamente`)
   }
 
-  const confirmCierre = () => {
-    const mesQueCierra = store.mesAbierto
-    store.ejecutarCierreContable()
-    setShowCierre(false)
-    setCierreToast(`Cierre Contable de ${mesQueCierra} ejecutado. Los datos están disponibles en Reales.`)
-    setTimeout(() => setCierreToast(null), 4000)
-  }
-
   return {
     filtersOpen,
     setFiltersOpen,
@@ -82,11 +72,7 @@ export function usePrelimToolbar({ rows, markCodigos }: UsePrelimToolbarOptions)
     showBulkUpload,
     setShowBulkUpload,
     handleBulkUploadApplied,
-    showCierre,
-    setShowCierre,
-    confirmCierre,
     mesAbierto: store.mesAbierto,
     toast,
-    cierreToast,
   }
 }

@@ -1,4 +1,5 @@
 import { Badge, Icon } from '@/shared/ui'
+import { CierreIndicator } from './cierre-indicator'
 
 interface PreliminaresSubPepHeaderProps {
   servicio: string
@@ -18,6 +19,7 @@ export function PreliminaresSubPepHeader({ servicio, codigo, mesAbierto }: Preli
           <Icon name="check" size={13} color="#067647" /> SubPEPs · {mesAbierto}
         </div>
       </div>
+      <CierreIndicator mesAbierto={mesAbierto} />
     </div>
   )
 }

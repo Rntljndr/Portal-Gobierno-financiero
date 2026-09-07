@@ -13,6 +13,7 @@ interface RealesDetailToolbarProps {
   onOpenComparar: () => void
   onOpenCargaMasiva?: () => void
   activeForecastLabel?: string | null
+  showFiltros?: boolean
 }
 
 export function RealesDetailToolbar({
@@ -26,12 +27,13 @@ export function RealesDetailToolbar({
   onOpenComparar,
   onOpenCargaMasiva,
   activeForecastLabel,
+  showFiltros = true,
 }: RealesDetailToolbarProps) {
   return (
     <div className="mx-8 mb-4 flex flex-wrap items-center justify-between gap-3">
       <div className="flex items-center gap-2.5">
-        {onToggleFilters && <RealesFilterToggle open={!!filtersOpen} onToggle={onToggleFilters} activeCount={activeFilterCount} />}
-        {activeForecastLabel && (
+        {showFiltros && onToggleFilters && <RealesFilterToggle open={!!filtersOpen} onToggle={onToggleFilters} activeCount={activeFilterCount} />}
+        {showFiltros && activeForecastLabel && (
           <Badge variant="neutral" className="border border-[#DDD0F8] bg-[#F3EEFF] text-[#6922E7]">
             <Icon name="trendup" size={12} color="currentColor" />
             {activeForecastLabel}

@@ -9,11 +9,11 @@ import { downloadPreliminaresCsv } from '../lib/download-csv'
 import { PreliminaresKpis } from './preliminares-kpis'
 import { PreliminaresStatsRow } from './preliminares-stats-row'
 import { PreliminaresToolbar } from './preliminares-toolbar'
+import { PreliminaresTopActions } from './preliminares-top-actions'
 import { PreliminaresSearchPanel } from './preliminares-search-panel'
 import { PreliminaresTable } from './preliminares-table'
 import { HeadcountTable } from './headcount-table'
 import { GuardarDefinitivoModal } from './guardar-definitivo-modal'
-import { CierreContableModal } from './cierre-contable-modal'
 
 export function PreliminarDetalleSection({ n4 }: { n4: PreliminarN4Row }) {
   const navigate = useNavigate()
@@ -29,6 +29,14 @@ export function PreliminarDetalleSection({ n4 }: { n4: PreliminarN4Row }) {
 
   return (
     <>
+      <PreliminaresTopActions
+        filtersOpen={t.filtersOpen}
+        onToggleFilters={() => t.setFiltersOpen((v) => !v)}
+        activeFilterCount={t.search ? 1 : 0}
+        activeForecastLabel={activeForecastLabel}
+        onCierreContable={() => {}}
+        showCierreContable={false}
+      />
       <PreliminaresKpis {...kpis} />
       {isCdG && <PreliminaresStatsRow totalServicio={stats.total} conPrelim={stats.conPrelim} definitivos={stats.definitivos} />}
 
@@ -42,8 +50,9 @@ export function PreliminarDetalleSection({ n4 }: { n4: PreliminarN4Row }) {
         onToggleSelectAll={t.toggleSelectAll}
         onOpenCargaMasiva={() => t.setShowBulkUpload(true)}
         onDownload={() => downloadPreliminaresCsv(t.filteredRows, `Preliminares_N7_${n4.codigo}.csv`)}
-        onCierreContable={() => t.setShowCierre(true)}
-        activeForecastLabel={activeForecastLabel}
+        onCierreContable={() => {}}
+        showFiltros={false}
+        showCierreContable={false}
       />
       {t.filtersOpen && <PreliminaresSearchPanel label="Nombre / código PEP N7" search={t.search} onSearchChange={t.setSearch} />}
 
@@ -75,10 +84,7 @@ export function PreliminarDetalleSection({ n4 }: { n4: PreliminarN4Row }) {
         title="Carga masiva de preliminares"
         applyLabel="Aplicar carga"
       />
-      <CierreContableModal open={t.showCierre} mesLabel={t.mesAbierto} onClose={() => t.setShowCierre(false)} onConfirm={t.confirmCierre} />
-
       <Toast message={t.toast} />
-      <Toast message={t.cierreToast} />
     </>
   )
 }

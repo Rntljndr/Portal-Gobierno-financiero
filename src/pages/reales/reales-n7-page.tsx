@@ -12,6 +12,7 @@ import { RealesDetailToolbar } from './components/reales-detail-toolbar'
 import { RealesSearchPanel } from './components/reales-search-panel'
 import { RealesDetailHeader } from './components/reales-detail-header'
 import { RealesKpis } from './components/reales-kpis'
+import { RealesTopActions } from './components/reales-top-actions'
 import { RealesTable } from './components/reales-table'
 
 export function RealesN7Page() {
@@ -56,12 +57,14 @@ export function RealesN7Page() {
           ]}
         />
         <RealesDetailHeader title={n4.nombre} codigo={n4.codigo} />
-        <RealesKpis totals={calcTotals(n4)} currency="USD" />
-
-        <RealesDetailToolbar
+        <RealesTopActions
           filtersOpen={filtersOpen}
           onToggleFilters={() => setFiltersOpen((v) => !v)}
           activeFilterCount={search ? 1 : 0}
+          activeForecastLabel={cs.activeForecastLabel}
+        />
+        <RealesKpis totals={calcTotals(n4)} currency="USD" />
+        <RealesDetailToolbar
           comparisonCount={cs.comparisonKeys.length}
           allComparisonsCollapsed={cs.allRowsCollapsed(children.map((c) => c.codigo))}
           onToggleAllComparisons={() => cs.toggleAllRows(children.map((c) => c.codigo))}
@@ -69,10 +72,9 @@ export function RealesN7Page() {
           onOpenComparar={() => setCompOpen(true)}
           onOpenCargaMasiva={isCdG ? () => setCargaMasivaOpen(true) : undefined}
           activeForecastLabel={cs.activeForecastLabel}
+          showFiltros={false}
         />
-
         {filtersOpen && <RealesSearchPanel search={search} onSearchChange={setSearch} />}
-
         <RealesTable
           rows={children.map((c) => ({ ...c, parentCodigo: n4.codigo, parentNombre: n4.nombre }))}
           mode="n7"
@@ -87,13 +89,7 @@ export function RealesN7Page() {
 
         <RealesComparisonDrawer open={compOpen} onClose={() => setCompOpen(false)} applied={cs.comparisons} onApply={cs.setComparisons} />
         {isCdG && (
-          <BulkUploadDrawer
-            open={cargaMasivaOpen}
-            onClose={() => setCargaMasivaOpen(false)}
-            onApplied={upload.onApplied}
-            title="Carga masiva de reales"
-            applyLabel="Aplicar carga"
-          />
+          <BulkUploadDrawer open={cargaMasivaOpen} onClose={() => setCargaMasivaOpen(false)} onApplied={upload.onApplied} title="Carga masiva de reales" applyLabel="Aplicar carga" />
         )}
         <Toast message={upload.toast} />
       </div>
