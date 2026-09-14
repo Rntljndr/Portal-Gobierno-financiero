@@ -31,6 +31,11 @@ export function ForecastRoundCard({ round, onRequestClose, onRequestDelete }: Fo
       </div>
       <div className="flex gap-2">
         {round.estado === 'Abierto' && (
+          <Button variant="outline" size="sm" onClick={() => navigate(`/forecast/${round.id}/editar`)}>
+            <Icon name="edit" size={12} color="#0047B0" /> Editar
+          </Button>
+        )}
+        {round.estado === 'Abierto' && (
           <Button variant="outline" size="sm" className="border-[#FECACA] text-[#B42318] hover:bg-[#FEE8E8]" onClick={() => onRequestClose(round)}>
             <Icon name="x_close" size={12} color="#B42318" /> Cerrar Forecast
           </Button>

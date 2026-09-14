@@ -73,7 +73,7 @@ export function TasasCambioTable({ value, onChange, readOnly = false }: TasasCam
                             className="w-[72px] rounded-md border border-border px-1.5 py-1 text-right text-xs outline-none focus:border-primary"
                           />
                         ) : (
-                          <span title={isHist ? 'Tasa real — no editable' : undefined} className="font-mono text-[12.5px] tabular-nums text-cs-gris-oscuro">
+                          <span title={isHist ? 'Tasa real — no editable' : undefined} className="text-[12.5px] tabular-nums text-cs-gris-oscuro">
                             {tasas[mi] ?? ''}
                           </span>
                         )}

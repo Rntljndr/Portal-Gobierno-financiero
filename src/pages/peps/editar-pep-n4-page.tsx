@@ -24,10 +24,8 @@ export function EditarPepN4Page() {
       <Breadcrumb
         items={[
           { label: 'SIP', to: '/' },
-          { label: 'Presupuesto', to: '/ejercicios' },
-          { label: 'Ejercicios', to: '/ejercicios' },
-          { label: 'Mis Servicios', to: '/ejercicios/mis-servicios' },
-          { label: 'ABM PEPS – Nivel 4', to: '/ejercicios/mis-servicios/peps' },
+          { label: 'Administración', to: '/administracion/peps' },
+          { label: 'ABM PEPS – Nivel 4', to: '/administracion/peps' },
           { label: s.pep.pep },
         ]}
       />
@@ -42,7 +40,7 @@ export function EditarPepN4Page() {
       </div>
 
       <div className="flex justify-center gap-4 border-t border-border bg-white p-[16px_32px]">
-        <Button variant="outline" onClick={() => navigate('/ejercicios/mis-servicios/peps')}>
+        <Button variant="outline" onClick={() => navigate('/administracion/peps')}>
           Volver
         </Button>
       </div>

@@ -40,6 +40,11 @@ export function ForecastDetailPage() {
         </div>
         <div className="flex gap-2">
           {round.estado === 'Abierto' && (
+            <Button variant="primary" onClick={() => navigate(`/forecast/${round.id}/editar`)}>
+              <Icon name="edit" size={13} color="#fff" /> Editar Forecast
+            </Button>
+          )}
+          {round.estado === 'Abierto' && (
             <Button variant="outline" className="border-[#FECACA] text-[#B42318] hover:bg-[#FEE8E8]" onClick={() => setShowClose(true)}>
               <Icon name="x_close" size={13} color="#B42318" /> Cerrar Forecast
             </Button>

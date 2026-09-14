@@ -13,9 +13,14 @@ interface CountrySummaryPanelProps {
   onVistaMonedaChange: (v: CurrencyView) => void
 }
 
+/** Cantidad de cards visibles a la vez antes de necesitar scroll lateral (el resto se distribuye a lo ancho por igual). */
+const VISIBLE_CARDS = 6
+const GAP_PX = 10
+
 export function CountrySummaryPanel({ paisSel, metricMode, onMetricModeChange, vistaMoneda, onVistaMonedaChange }: CountrySummaryPanelProps) {
   const [open, setOpen] = useState(true)
   const [selectedPais, setSelectedPais] = useState<string | null>(null)
+  const cols = Math.min(countryBudgets.length, VISIBLE_CARDS)
 
   return (
     <div className="mx-8 mb-6 rounded-2xl bg-[linear-gradient(180deg,var(--color-cs-azul)_0%,#003685_100%)] p-5.5">
@@ -37,7 +42,10 @@ export function CountrySummaryPanel({ paisSel, metricMode, onMetricModeChange, v
       </div>
 
       {open && (
-        <div className="mt-4.5 flex flex-wrap gap-2.5">
+        <div
+          className="mt-4.5 grid grid-flow-col overflow-x-auto pb-1"
+          style={{ gap: GAP_PX, gridAutoColumns: `calc((100% - ${GAP_PX * (cols - 1)}px) / ${cols})` }}
+        >
           {countryBudgets.map((c) => (
             <CountrySummaryCard
               key={c.pais}

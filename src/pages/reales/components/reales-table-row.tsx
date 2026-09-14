@@ -12,7 +12,7 @@ const td = 'p-[10px_8px] text-[12px] whitespace-nowrap text-cs-gris-oscuro'
 
 function monthCellClass(closed: boolean, i: number) {
   return cn(
-    'p-[10px_6px] text-right font-mono text-[11.5px] tabular-nums',
+    'p-[10px_6px] text-right text-[11.5px] tabular-nums',
     closed ? 'bg-primary/[0.03] text-foreground' : 'text-muted-foreground',
     i === 0 && (closed ? 'border-l-2 border-l-[#C4DFFF]' : 'border-l-2 border-l-[#CBD5E1]'),
     i === REALES_LAST_CLOSED && 'border-l-2 border-l-[#CBD5E1]',
@@ -75,7 +75,7 @@ export function RealesTableRow({
                   e.stopPropagation()
                   onToggleRowCollapse(row.codigo)
                 }}
-                className="shrink-0 text-muted-foreground"
+                className="mx-2 shrink-0 text-muted-foreground"
                 aria-label={rowCollapsed ? 'Expandir comparativa' : 'Contraer comparativa'}
               >
                 <Icon name={rowCollapsed ? 'chevron_down' : 'chevron_up'} size={12} color="currentColor" />
@@ -94,7 +94,7 @@ export function RealesTableRow({
             {fmt(v)}
           </td>
         ))}
-        <ResumenCells totals={totals} fmt={fmt} />
+        <ResumenCells totals={totals} fmt={fmt} hideDesvio={showComparisons} />
       </tr>
       {showComparisons &&
         comparisons.map((key) => (

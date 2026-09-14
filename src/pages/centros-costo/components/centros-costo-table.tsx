@@ -33,7 +33,7 @@ export function CentrosCostoTable({ rows }: { rows: CentroCostoRow[] }) {
         <tbody>
           {rows.map((r) => (
             <tr key={r.id} className="border-t border-border hover:bg-[#FBFCFE]">
-              <td className={`${td} font-mono text-xs font-semibold`}>{r.codigo}</td>
+              <td className={`${td} text-xs font-semibold`}>{r.codigo}</td>
               <td className={td}>
                 <span
                   className={`rounded-md px-2 py-0.5 text-[11px] font-bold ${

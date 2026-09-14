@@ -2,14 +2,13 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { Breadcrumb, BulkUploadDrawer, ColumnsDrawer, Toast } from '@/shared/ui'
 import { useRole } from '@/shared/context/use-role'
-import { sumTotals } from './lib/reales-calc'
 import { downloadRealesCsv } from './lib/download-csv'
 import { useReales } from './lib/use-reales'
 import { useInfiniteScroll } from './lib/use-infinite-scroll'
 import { useBulkUploadToast } from './lib/use-bulk-upload-toast'
 import { realesColsForMode } from './lib/reales-table-cols'
 import { RealesPageHeader } from './components/reales-page-header'
-import { RealesKpis } from './components/reales-kpis'
+import { RealesCountrySummary } from './components/reales-country-summary'
 import { RealesTopActions } from './components/reales-top-actions'
 import { RealesToolbar } from './components/reales-toolbar'
 import { RealesFiltersPanel } from './components/reales-filters'
@@ -29,9 +28,7 @@ export function RealesPage() {
   const infinite = useInfiniteScroll(`reales-${s.tab}`, s.totalFiltered)
   const paged = s.activeData.slice(0, infinite.visibleCount)
 
-  const aggregateTotals = sumTotals(s.isN7 ? s.filteredN7 : s.filteredN4)
   const pagedCodigos = paged.map((r) => r.codigo)
-
   const goToN7 = (row: RealesRow | RealesN7Row) => navigate(`/reales/${encodeURIComponent(row.codigo)}`)
 
   return (
@@ -44,7 +41,7 @@ export function RealesPage() {
         activeFilterCount={s.activeFilterCount}
         activeForecastLabel={s.activeForecastLabel}
       />
-      <RealesKpis totals={aggregateTotals} currency={s.currency} />
+      <RealesCountrySummary rows={s.countryBaseData} currency={s.currency} />
       <RealesToolbar
         filtersOpen={s.filtersOpen}
         onToggleFilters={() => s.setFiltersOpen((v) => !v)}

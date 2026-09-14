@@ -3,7 +3,6 @@ import { useNavigate, useParams } from 'react-router'
 import { Breadcrumb, BulkUploadDrawer, EmptyState, Toast, VolverBar } from '@/shared/ui'
 import { realesRows } from '@/data/reales'
 import { useRole } from '@/shared/context/use-role'
-import { calcTotals } from './lib/reales-calc'
 import { downloadRealesCsv } from './lib/download-csv'
 import { useComparisonsState } from './lib/use-comparisons-state'
 import { useBulkUploadToast } from './lib/use-bulk-upload-toast'
@@ -11,7 +10,7 @@ import { RealesComparisonDrawer } from './components/reales-comparison-drawer'
 import { RealesDetailToolbar } from './components/reales-detail-toolbar'
 import { RealesSearchPanel } from './components/reales-search-panel'
 import { RealesDetailHeader } from './components/reales-detail-header'
-import { RealesKpis } from './components/reales-kpis'
+import { RealesCountrySummary } from './components/reales-country-summary'
 import { RealesTopActions } from './components/reales-top-actions'
 import { RealesTable } from './components/reales-table'
 
@@ -63,7 +62,7 @@ export function RealesN7Page() {
           activeFilterCount={search ? 1 : 0}
           activeForecastLabel={cs.activeForecastLabel}
         />
-        <RealesKpis totals={calcTotals(n4)} currency="USD" />
+        <RealesCountrySummary title={`Reales — ${n4.pais}`} subtitle={`N4 ${n4.codigo} · Real acumulado vs. plan acumulado`} rows={[n4]} paisesList={[n4.pais]} currency="USD" />
         <RealesDetailToolbar
           comparisonCount={cs.comparisonKeys.length}
           allComparisonsCollapsed={cs.allRowsCollapsed(children.map((c) => c.codigo))}

@@ -37,7 +37,7 @@ export function BanderasTable({ rows, onToggleVisible, onDelete }: BanderasTable
           {rows.map((r) => (
             <tr key={r.id} className="border-t border-border hover:bg-[#FBFCFE]">
               <td className={`${td} font-semibold`}>{r.desc}</td>
-              <td className={`${td} font-mono text-xs`}>{r.codigo}</td>
+              <td className={`${td} text-xs`}>{r.codigo}</td>
               <td className={`${td} text-cs-gris-oscuro`}>{r.division}</td>
               <td className={td}>
                 {paisFlagBandera[r.pais]} {r.pais}

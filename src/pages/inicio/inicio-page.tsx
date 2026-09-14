@@ -1,6 +1,7 @@
 import { Breadcrumb, PageHeader } from '@/shared/ui'
 import { DashboardHero } from './components/hero'
 import { DashboardKpiRow } from './components/kpi-row'
+import { ProjectProgressChart } from './components/project-progress-chart'
 import { DashboardShortcuts } from './components/shortcuts'
 import { RecentActivity } from './components/recent-activity'
 
@@ -15,6 +16,7 @@ export function InicioPage() {
       />
       <DashboardHero />
       <DashboardKpiRow />
+      <ProjectProgressChart />
       <DashboardShortcuts />
       <RecentActivity />
     </div>

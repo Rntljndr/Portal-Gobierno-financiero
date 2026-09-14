@@ -4,14 +4,13 @@ import { Breadcrumb, BulkUploadDrawer, EmptyState, Toast, VolverBar } from '@/sh
 import { realesRows } from '@/data/reales'
 import type { RealesN7Row } from '@/data/reales'
 import { useRole } from '@/shared/context/use-role'
-import { calcTotals } from './lib/reales-calc'
 import { downloadRealesCsv } from './lib/download-csv'
 import { useComparisonsState } from './lib/use-comparisons-state'
 import { useBulkUploadToast } from './lib/use-bulk-upload-toast'
 import { RealesComparisonDrawer } from './components/reales-comparison-drawer'
 import { RealesDetailToolbar } from './components/reales-detail-toolbar'
 import { RealesDetailHeader } from './components/reales-detail-header'
-import { RealesKpis } from './components/reales-kpis'
+import { RealesCountrySummary } from './components/reales-country-summary'
 import { RealesTopActions } from './components/reales-top-actions'
 import { RealesTable } from './components/reales-table'
 
@@ -64,7 +63,12 @@ export function RealesSubPepPage() {
         />
         <RealesDetailHeader title={n7.nombre} codigo={n7.codigo} />
         <RealesTopActions activeForecastLabel={cs.activeForecastLabel} />
-        <RealesKpis totals={calcTotals(n7)} currency="USD" />
+        <RealesCountrySummary
+          subtitle={`N7 ${n7.codigo} · Real acumulado vs. plan acumulado (0 en países sin participación)`}
+          rows={[n7]}
+          currency="USD"
+          zeroFill
+        />
 
         <RealesDetailToolbar
           comparisonCount={cs.comparisonKeys.length}

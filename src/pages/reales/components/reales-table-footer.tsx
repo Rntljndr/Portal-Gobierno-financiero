@@ -25,21 +25,21 @@ export function RealesTableFooter({ rowCount, itemLabel, identityColSpan, monthT
         {monthTotals.map((v, i) => (
           <td
             key={i}
-            className={cn('p-[13px_6px] text-right font-mono text-[12.5px] tabular-nums whitespace-nowrap text-cs-gris-oscuro', (i === 0 || i === REALES_LAST_CLOSED) && 'border-l-2 border-l-[#D5DCF0]')}
+            className={cn('p-[13px_6px] text-right text-[12.5px] tabular-nums whitespace-nowrap text-cs-gris-oscuro', (i === 0 || i === REALES_LAST_CLOSED) && 'border-l-2 border-l-[#D5DCF0]')}
           >
             {fmt(v)}
           </td>
         ))}
-        <td className="p-[13px_14px] border-l-2 border-l-[#D5DCF0] text-right font-mono text-[12.5px] whitespace-nowrap text-primary">{fmt(grandTotals.real)}</td>
-        <td className={cn('p-[13px_14px] text-right font-mono text-[12.5px] whitespace-nowrap', grandTotals.desvioAcumMonto > 0 ? 'text-destructive' : 'text-success')}>
+        <td className="p-[13px_14px] border-l-2 border-l-[#D5DCF0] text-right text-[12.5px] whitespace-nowrap text-primary">{fmt(grandTotals.real)}</td>
+        <td className={cn('p-[13px_14px] text-right text-[12.5px] whitespace-nowrap', grandTotals.desvioAcumMonto > 0 ? 'text-destructive' : 'text-success')}>
           {grandTotals.desvioAcumMonto >= 0 ? '+' : ''}
           {fmt(grandTotals.desvioAcumMonto)}
         </td>
         <td className="p-[13px_8px] text-center">
           <DesvioChip pct={grandTotals.desvioAcumPct} />
         </td>
-        <td className="p-[13px_14px] border-l-2 border-l-[#D5DCF0] text-right font-mono text-[12.5px] whitespace-nowrap text-[#6922E7]">{fmt(grandTotals.realMasForecast)}</td>
-        <td className={cn('p-[13px_14px] text-right font-mono text-[12.5px] whitespace-nowrap', grandTotals.desvio > 0 ? 'text-destructive' : 'text-success')}>
+        <td className="p-[13px_14px] border-l-2 border-l-[#D5DCF0] text-right text-[12.5px] whitespace-nowrap text-[#6922E7]">{fmt(grandTotals.realMasForecast)}</td>
+        <td className={cn('p-[13px_14px] text-right text-[12.5px] whitespace-nowrap', grandTotals.desvio > 0 ? 'text-destructive' : 'text-success')}>
           {grandTotals.desvio >= 0 ? '+' : ''}
           {fmt(grandTotals.desvio)}
         </td>

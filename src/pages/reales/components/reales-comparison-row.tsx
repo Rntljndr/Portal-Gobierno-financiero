@@ -48,7 +48,7 @@ export function RealesComparisonRow({ seriesKey, months, totals, currency, colsC
         return (
           <td
             key={i}
-            className={cn('p-[5px_6px] text-right font-mono text-[11px]', mutedCell, (i === 0 || i === REALES_LAST_CLOSED) && 'border-l-2 border-l-[#E2E6F0]')}
+            className={cn('p-[5px_6px] text-right text-[11px]', mutedCell, (i === 0 || i === REALES_LAST_CLOSED) && 'border-l-2 border-l-[#E2E6F0]')}
           >
             <span className="inline-flex items-center gap-0.5">
               <DesvioArrow pct={pct} />
@@ -57,16 +57,16 @@ export function RealesComparisonRow({ seriesKey, months, totals, currency, colsC
           </td>
         )
       })}
-      <td className={cn('p-[5px_8px] border-l-2 border-l-[#E2E6F0] text-right font-mono text-[11px] font-semibold', mutedCell)}>{fmt(ownAcum)}</td>
-      <td className={cn('p-[5px_8px] text-right font-mono text-[11px]', mutedCell)}>
+      <td className={cn('p-[5px_8px] border-l-2 border-l-[#E2E6F0] text-right text-[11px] font-semibold', mutedCell)}>{fmt(ownAcum)}</td>
+      <td className={cn('p-[5px_8px] text-right text-[11px]', mutedCell)}>
         {desvioAcum >= 0 ? '+' : ''}
         {fmt(desvioAcum)}
       </td>
       <td className="p-[5px_8px] text-center">
         <DesvioChip pct={desvioAcumPct} />
       </td>
-      <td className={cn('p-[5px_8px] border-l-2 border-l-[#E2E6F0] text-right font-mono text-[11px] font-semibold', mutedCell)}>{fmt(ownAnual)}</td>
-      <td className={cn('p-[5px_8px] text-right font-mono text-[11px]', mutedCell)}>
+      <td className={cn('p-[5px_8px] border-l-2 border-l-[#E2E6F0] text-right text-[11px] font-semibold', mutedCell)}>{fmt(ownAnual)}</td>
+      <td className={cn('p-[5px_8px] text-right text-[11px]', mutedCell)}>
         {desvioAnual >= 0 ? '+' : ''}
         {fmt(desvioAnual)}
       </td>

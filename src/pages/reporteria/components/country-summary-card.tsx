@@ -42,7 +42,7 @@ export function CountrySummaryCard({ c, metricMode, isDolar = false, active, sel
       type="button"
       onClick={onClick}
       className={cn(
-        'min-w-[165px] max-w-[220px] flex-1 rounded-2xl bg-white p-[11px_10px] text-left shadow-[0_1px_2px_rgba(6,20,60,0.05),0_5px_14px_-6px_rgba(6,20,60,0.14)] transition-opacity',
+        'w-full rounded-2xl bg-white p-[11px_10px] text-left shadow-[0_1px_2px_rgba(6,20,60,0.05),0_5px_14px_-6px_rgba(6,20,60,0.14)] transition-opacity',
         selected && 'ring-2 ring-primary',
         !active && 'opacity-55',
       )}
@@ -82,11 +82,6 @@ export function CountrySummaryCard({ c, metricMode, isDolar = false, active, sel
         <MetricRow label="HC Plan" value={c.hcPlan > 0 ? c.hcPlan.toLocaleString('es-CL') : <EmptyValue />} />
         <MetricRow label="HC forecast base" value={c.hcForecast > 0 ? c.hcForecast.toLocaleString('es-CL') : <EmptyValue />} />
       </div>
-      {c.empty && (
-        <div className="mt-2.5 border-t border-dashed border-border pt-2 text-center text-[10px] font-semibold tracking-wide text-[#98A0AE] uppercase">
-          Sin presupuesto cargado
-        </div>
-      )}
     </button>
   )
 }

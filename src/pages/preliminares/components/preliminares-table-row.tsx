@@ -9,7 +9,7 @@ import { PreliminaresSubPepCell } from './preliminares-subpep-cell'
 
 const td = 'p-[10px_10px] text-[11.5px] whitespace-nowrap text-cs-gris-oscuro'
 const tdSubPep = 'sticky z-[1] bg-white font-semibold text-foreground'
-const tdData = 'p-[10px_10px] text-right font-mono text-[11.5px] tabular-nums whitespace-nowrap text-cs-gris-oscuro'
+const tdData = 'p-[10px_10px] text-right text-[11.5px] tabular-nums whitespace-nowrap text-cs-gris-oscuro'
 
 function desvioTone(monto: number) {
   if (monto > 0) return 'text-destructive'
@@ -80,9 +80,9 @@ export function PreliminaresTableRow({
         {isN4WithChildren ? <CompletitudBadge pct={calcCompletitud(row.children)} /> : <EstadoBadge estado={row.estado} />}
       </td>
       <td className={cn(tdData, 'border-l-2 border-l-border')}>{fmt(t.realAcum)}</td>
-      <td className={tdData}>{fmt(t.forecastMes)}</td>
+      <td className={cn(tdData, 'border-l-2 border-l-border bg-[#EEF4FF] font-bold text-primary')}>{fmt(t.preliminarMes)}</td>
       <td className={tdData}>{fmt(t.planMes)}</td>
-      <td className={cn(tdData, 'bg-[#EEF4FF] font-bold text-primary')}>{fmt(t.preliminarMes)}</td>
+      <td className={tdData}>{fmt(t.forecastMes)}</td>
       <td className={cn(tdData, 'border-l-2 border-l-border font-semibold', desvioTone(t.desvioPlanMonto))}>
         {t.desvioPlanMonto >= 0 ? '+' : ''}
         {fmt(t.desvioPlanMonto)}

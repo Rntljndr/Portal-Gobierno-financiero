@@ -4,9 +4,9 @@ import type { PreliminarN4Row, PreliminarRow } from '@/data/preliminares'
 import { useRole } from '@/shared/context/use-role'
 import { useComparisonsState } from '@/pages/reales/lib/use-comparisons-state'
 import { usePrelimToolbar } from '../lib/use-prelim-toolbar'
-import { calcPrelimKpis, calcPrelimStats } from '../lib/preliminares-calc'
+import { calcPrelimStats } from '../lib/preliminares-calc'
 import { downloadPreliminaresCsv } from '../lib/download-csv'
-import { PreliminaresKpis } from './preliminares-kpis'
+import { PreliminaresCountrySummary } from './preliminares-country-summary'
 import { PreliminaresStatsRow } from './preliminares-stats-row'
 import { PreliminaresToolbar } from './preliminares-toolbar'
 import { PreliminaresTopActions } from './preliminares-top-actions'
@@ -22,7 +22,6 @@ export function PreliminarDetalleSection({ n4 }: { n4: PreliminarN4Row }) {
   const t = usePrelimToolbar({ rows: n4.children })
   const { activeForecastLabel } = useComparisonsState()
 
-  const kpis = calcPrelimKpis(n4.children)
   const stats = calcPrelimStats(n4.children)
 
   const goToSubPep = (row: PreliminarRow) => navigate(`/preliminares/${encodeURIComponent(n4.codigo)}/${encodeURIComponent(row.codigo)}`)
@@ -37,7 +36,7 @@ export function PreliminarDetalleSection({ n4 }: { n4: PreliminarN4Row }) {
         onCierreContable={() => {}}
         showCierreContable={false}
       />
-      <PreliminaresKpis {...kpis} />
+      <PreliminaresCountrySummary rows={n4.children} paisesList={[n4.pais]} />
       {isCdG && <PreliminaresStatsRow totalServicio={stats.total} conPrelim={stats.conPrelim} definitivos={stats.definitivos} />}
 
       <PreliminaresToolbar

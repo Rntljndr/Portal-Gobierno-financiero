@@ -8,10 +8,10 @@ function uniqSorted(values: string[]): string[] {
   return [...new Set(values)].filter(Boolean).sort((a, b) => a.localeCompare(b, 'es'))
 }
 
-function matchFilters(r: RealesN4Row | RealesN7Row, f: RealesFilters) {
+function matchFilters(r: RealesN4Row | RealesN7Row, f: RealesFilters, opts: { skipPais?: boolean } = {}) {
   if (f.servicio && !r.nombre.toLowerCase().includes(f.servicio.toLowerCase())) return false
   if (f.codigo && !r.codigo.toLowerCase().includes(f.codigo.toLowerCase())) return false
-  if (f.pais.length && !f.pais.includes(r.pais)) return false
+  if (!opts.skipPais && f.pais.length && !f.pais.includes(r.pais)) return false
   if (f.equipo.length && !f.equipo.includes(r.equipo)) return false
   if (f.gerenciaPadre.length && !f.gerenciaPadre.includes(r.gerenciaPadre)) return false
   if (f.gerencia.length && !f.gerencia.includes(r.gerencia)) return false
@@ -39,6 +39,12 @@ export function useReales() {
   const filteredN4 = useMemo(() => realesRows.filter((r) => matchFilters(r, filters)), [filters])
   const filteredN7 = useMemo(() => realesN7Rows.filter((r) => matchFilters(r, filters)), [filters])
   const activeData = isN7 ? filteredN7 : filteredN4
+
+  /** Datos para el resumen por país: respeta todos los filtros salvo país, así las cards siguen mostrando
+   * todos los países disponibles (con su totalización correcta) aunque haya un país seleccionado. */
+  const countryBaseN4 = useMemo(() => realesRows.filter((r) => matchFilters(r, filters, { skipPais: true })), [filters])
+  const countryBaseN7 = useMemo(() => realesN7Rows.filter((r) => matchFilters(r, filters, { skipPais: true })), [filters])
+  const countryBaseData = isN7 ? countryBaseN7 : countryBaseN4
 
   const options: RealesFilterOptions = useMemo(
     () => ({
@@ -86,6 +92,7 @@ export function useReales() {
     setCompDrawerOpen,
     filteredN4,
     filteredN7,
+    countryBaseData,
     activeData,
     totalFiltered: activeData.length,
     visibleCols: isN7 ? visibleColsN7 : visibleColsN4,

@@ -1,0 +1,41 @@
+import { EmptyState } from '@/shared/ui'
+import { monthKeys } from '@/data/reporteria'
+import type { ForecastN4Linea } from '@/data/forecast-lineas'
+import { calcN4Meses, sumN4Totals } from '../lib/forecast-edit-calc'
+import { ForecastTableHeader } from './forecast-table-header'
+import { ForecastN4TableRow } from './forecast-n4-table-row'
+import { ForecastTableFooter } from './forecast-table-footer'
+
+interface ForecastN4TableProps {
+  roundId: string
+  rows: ForecastN4Linea[]
+  cutoff: number
+  onEditMonth: (n4: ForecastN4Linea, monthKey: string, monthLabel: string, currentValue: number) => void
+}
+
+export function ForecastN4Table({ roundId, rows, cutoff, onEditMonth }: ForecastN4TableProps) {
+  if (rows.length === 0) {
+    return (
+      <div className="mx-8 mb-6">
+        <EmptyState icon="search" title="Sin servicios para mostrar" text="Este forecast no tiene PEPs N4 habilitados." />
+      </div>
+    )
+  }
+
+  const monthTotals = monthKeys.map((k) => rows.reduce((s, n4) => s + (calcN4Meses(n4)[k] || 0), 0))
+  const grandTotals = sumN4Totals(rows, cutoff)
+
+  return (
+    <div className="mx-8 mb-6 overflow-x-auto rounded-xl border border-border shadow-[0_1px_4px_rgba(0,20,60,0.06)]">
+      <table className="w-full border-collapse text-xs">
+        <ForecastTableHeader cutoff={cutoff} identityLabel="Servicio N4" />
+        <tbody>
+          {rows.map((n4) => (
+            <ForecastN4TableRow key={n4.n4Codigo} roundId={roundId} n4={n4} cutoff={cutoff} onEditMonth={onEditMonth} />
+          ))}
+        </tbody>
+        <ForecastTableFooter rowCount={rows.length} itemLabel="servicios N4" cutoff={cutoff} monthTotals={monthTotals} grandTotals={grandTotals} />
+      </table>
+    </div>
+  )
+}

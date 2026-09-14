@@ -1,4 +1,6 @@
 import { pepN4Tablon } from './reporteria'
+import { buildInitialLineas } from './forecast-lineas'
+import type { ForecastN4Linea } from './forecast-lineas'
 
 export type ForecastEstado = 'Borrador' | 'Abierto' | 'Cerrado'
 export type ForecastTipo = 'global' | 'parcial'
@@ -52,6 +54,7 @@ export interface ForecastRound {
   selPeps: string[]
   notificar: boolean
   tasasCambio: Record<string, string[]>
+  lineas: ForecastN4Linea[]
 }
 
 export const forecastRoundsIniciales: ForecastRound[] = [
@@ -69,6 +72,7 @@ export const forecastRoundsIniciales: ForecastRound[] = [
     selPeps: [],
     notificar: false,
     tasasCambio: buildDefaultTasas(),
+    lineas: buildInitialLineas([], FORECAST_MES_ACTUAL),
   },
   {
     id: 'F2_2026',
@@ -84,6 +88,7 @@ export const forecastRoundsIniciales: ForecastRound[] = [
     selPeps: [],
     notificar: true,
     tasasCambio: buildDefaultTasas(),
+    lineas: buildInitialLineas([], FORECAST_MES_ACTUAL),
   },
   {
     id: 'F3_2026',
@@ -99,6 +104,7 @@ export const forecastRoundsIniciales: ForecastRound[] = [
     selPeps: ['N4-2027-001', 'N4-2027-002', 'N4-2027-006', 'N4-2027-009'],
     notificar: false,
     tasasCambio: buildDefaultTasas(),
+    lineas: buildInitialLineas(['N4-2027-001', 'N4-2027-002', 'N4-2027-006', 'N4-2027-009'], FORECAST_MES_ACTUAL),
   },
 ]
 

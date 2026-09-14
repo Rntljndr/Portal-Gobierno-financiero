@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router'
 import { Breadcrumb, Button, Icon, PageHeader } from '@/shared/ui'
+import { FORECAST_MES_ACTUAL } from '@/data/forecast'
 import type { ForecastRound } from '@/data/forecast'
+import { buildInitialLineas } from '@/data/forecast-lineas'
 import { useForecastStore } from './lib/use-forecast-store'
 import { useCrearForecast } from './lib/use-crear-forecast'
 import { CrearForecastFormFields } from './components/crear-forecast-form'
@@ -28,6 +30,7 @@ export function ForecastCreatePage() {
       selPeps: s.form.tipo === 'parcial' ? [...s.selPeps] : [],
       notificar: s.form.notificar,
       tasasCambio: s.tasas,
+      lineas: buildInitialLineas(s.form.tipo === 'parcial' ? [...s.selPeps] : [], FORECAST_MES_ACTUAL),
     }
     addRound(round)
     navigate('/forecast')

@@ -1,5 +1,6 @@
 import { Icon } from '@/shared/ui'
 import { RoleSwitcher } from './role-switcher'
+import { TopbarTabs } from './topbar-tabs'
 
 interface TopbarProps {
   pais?: string
@@ -8,8 +9,9 @@ interface TopbarProps {
 
 export function Topbar({ pais = 'Chile', notifCount = 3 }: TopbarProps) {
   return (
-    <div className="flex h-16 shrink-0 items-center gap-4 border-b border-border bg-white px-6">
-      <div className="ml-auto flex items-center gap-5">
+    <div className="flex h-16 shrink-0 items-center gap-4 border-b border-border bg-white pl-2 pr-6">
+      <TopbarTabs />
+      <div className="flex items-center gap-5">
         <div className="flex cursor-pointer items-center gap-2 rounded-full bg-cs-celeste px-3 py-1.5 text-[12.5px] font-semibold text-cs-azul-oscuro">
           <Icon name="flagCL" size={16} />
           {pais}

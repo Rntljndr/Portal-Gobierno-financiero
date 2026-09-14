@@ -6,8 +6,11 @@ export interface Comparisons {
   anioAnterior: boolean
 }
 
-/** Estado inicial de la vista: sin comparativas activas — el usuario las agrega desde el drawer y presiona Aplicar (Ajuste R2). */
+/** Estado usado por "Limpiar" en el drawer: ninguna comparativa activa. */
 export const EMPTY_COMPARISONS: Comparisons = { presupuesto: false, forecastRoundId: null, anioAnterior: false }
+
+/** Estado inicial de la vista (Ajuste R7): Presupuesto viene siempre activado por defecto; el usuario puede sumar otras desde el drawer. */
+export const DEFAULT_COMPARISONS: Comparisons = { presupuesto: true, forecastRoundId: null, anioAnterior: false }
 
 export function activeComparisonKeys(c: Comparisons): ComparisonSeries['key'][] {
   const keys: ComparisonSeries['key'][] = []

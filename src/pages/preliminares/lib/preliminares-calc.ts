@@ -61,12 +61,6 @@ export function sumPrelimRowTotals(rows: PrelimRow[]): PrelimRowTotals {
   }
 }
 
-/** KPIs de las cards principales: Preliminar del mes / Plan del mes / Forecast del mes / Desvío del mes, para cualquier nivel. */
-export function calcPrelimKpis(rows: PrelimRow[]) {
-  const t = sumPrelimRowTotals(rows)
-  return { preliminarMes: t.preliminarMes, planMes: t.planMes, forecastMes: t.forecastMes, desvioMes: t.desvioPlanMonto, desvioMesPct: t.desvioPlanPct }
-}
-
 /** Conteo de servicios / con preliminar / definitivos para la tabla-resumen inferior, en cualquier nivel. */
 export function calcPrelimStats(rows: { estado: PrelimEstado }[]) {
   return {

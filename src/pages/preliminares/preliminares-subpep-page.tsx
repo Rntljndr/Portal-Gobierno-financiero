@@ -6,9 +6,9 @@ import { useRole } from '@/shared/context/use-role'
 import { useComparisonsState } from '@/pages/reales/lib/use-comparisons-state'
 import { usePreliminaresStore } from './lib/use-preliminares-store'
 import { usePrelimToolbar } from './lib/use-prelim-toolbar'
-import { calcPrelimKpis, calcPrelimStats } from './lib/preliminares-calc'
+import { calcPrelimStats } from './lib/preliminares-calc'
 import { downloadPreliminaresCsv } from './lib/download-csv'
-import { PreliminaresKpis } from './components/preliminares-kpis'
+import { PreliminaresCountrySummary } from './components/preliminares-country-summary'
 import { PreliminaresStatsRow } from './components/preliminares-stats-row'
 import { PreliminaresToolbar } from './components/preliminares-toolbar'
 import { PreliminaresTopActions } from './components/preliminares-top-actions'
@@ -46,7 +46,6 @@ export function PreliminaresSubPepPage() {
   const n7 = n4?.children.find((c) => c.codigo === n7codigo)
 
   const rows = useMemo(() => (n7 ? buildSubPepRows(n7) : []), [n7])
-  const kpis = useMemo(() => calcPrelimKpis(rows), [rows])
   const stats = useMemo(() => calcPrelimStats(rows), [rows])
   const t = usePrelimToolbar({ rows, markCodigos: () => [] }) // P6: SubPEPs son solo visualización, sin Guardar Definitivo
   const { activeForecastLabel } = useComparisonsState()
@@ -81,7 +80,7 @@ export function PreliminaresSubPepPage() {
         onCierreContable={() => {}}
         showCierreContable={false}
       />
-      <PreliminaresKpis {...kpis} />
+      <PreliminaresCountrySummary rows={rows} zeroFill />
       {isCdG && <PreliminaresStatsRow totalServicio={stats.total} conPrelim={stats.conPrelim} definitivos={stats.definitivos} />}
 
       <PreliminaresToolbar

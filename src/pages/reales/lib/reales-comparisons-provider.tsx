@@ -1,13 +1,13 @@
 import { useState, type ReactNode } from 'react'
 import { useForecastStore } from '@/pages/forecast/lib/use-forecast-store'
-import { activeComparisonKeys, EMPTY_COMPARISONS, type Comparisons } from './comparisons'
+import { activeComparisonKeys, DEFAULT_COMPARISONS, type Comparisons } from './comparisons'
 import { defaultForecastRoundId, forecastRoundLabel } from './forecast-comparison'
 import { RealesComparisonsContext, type RealesComparisonsStore } from './reales-comparisons-context'
 
 export function RealesComparisonsProvider({ children }: { children: ReactNode }) {
   const { rounds } = useForecastStore()
-  // Ajuste R2: la tabla entra sin ninguna comparativa activa — el usuario las agrega desde el drawer.
-  const [comparisons, setComparisons] = useState<Comparisons>(EMPTY_COMPARISONS)
+  // Ajuste R7: la tabla entra con Presupuesto ya activo — el usuario puede sumar otras comparativas desde el drawer.
+  const [comparisons, setComparisons] = useState<Comparisons>(DEFAULT_COMPARISONS)
   const [collapsedRows, setCollapsedRows] = useState<Set<string>>(new Set())
 
   const comparisonKeys = activeComparisonKeys(comparisons)

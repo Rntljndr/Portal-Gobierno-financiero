@@ -8,7 +8,7 @@ import { usePreliminares } from './lib/use-preliminares'
 import { usePreliminaresStore } from './lib/use-preliminares-store'
 import { downloadPreliminaresCsv } from './lib/download-csv'
 import { PreliminaresPageHeader } from './components/preliminares-page-header'
-import { PreliminaresKpis } from './components/preliminares-kpis'
+import { PreliminaresCountrySummary } from './components/preliminares-country-summary'
 import { PreliminaresStatsRow } from './components/preliminares-stats-row'
 import { PreliminaresToolbar } from './components/preliminares-toolbar'
 import { PreliminaresTopActions } from './components/preliminares-top-actions'
@@ -53,7 +53,7 @@ export function PreliminaresPage() {
         activeForecastLabel={activeForecastLabel}
         onCierreContable={() => setShowCierre(true)}
       />
-      <PreliminaresKpis {...s.kpi} />
+      <PreliminaresCountrySummary rows={s.countryBaseN4} />
       {isCdG && <PreliminaresStatsRow totalServicio={s.totalServicio} conPrelim={s.conPrelim} definitivos={s.definitivos} />}
       <PreliminaresToolbar
         filtersOpen={s.filtersOpen}

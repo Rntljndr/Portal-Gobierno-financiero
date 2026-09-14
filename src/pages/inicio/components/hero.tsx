@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router'
 import { Button, Icon } from '@/shared/ui'
-import { heroSummary } from '@/data/dashboard'
+import { formatCompact } from '@/shared/lib/format'
+import { computeHeroStats } from '../lib/dashboard-metrics'
 
 function MetaRow({ label, value, total }: { label: string; value: string; total?: boolean }) {
   return (
@@ -13,6 +14,7 @@ function MetaRow({ label, value, total }: { label: string; value: string; total?
 
 export function DashboardHero() {
   const navigate = useNavigate()
+  const stats = computeHeroStats()
 
   return (
     <div className="relative mx-8 mb-6 grid grid-cols-[1.5fr_1fr] gap-6 overflow-hidden rounded-[18px] bg-[linear-gradient(135deg,#061494_0%,#0047B0_60%,#2A6FDB_100%)] p-[26px_30px] text-white">
@@ -21,7 +23,7 @@ export function DashboardHero() {
           <span className="size-2 rounded-full bg-[#22C55E] shadow-[0_0_0_3px_rgba(34,197,94,0.3)]" />
           Ejercicio 2027 · Presupuesto abierto
         </div>
-        <div className="text-[26px] leading-tight font-extrabold tracking-tight">12 líneas presupuestarias asignadas</div>
+        <div className="text-[26px] leading-tight font-extrabold tracking-tight">{stats.totalLineas} líneas presupuestarias asignadas</div>
         <div className="mt-2 mb-4.5 max-w-[540px] text-[13.5px] leading-relaxed text-white/88">
           Revisá tus servicios, ajustá los montos si corresponde y enviá a Control de Gestión antes del cierre.
         </div>
@@ -35,10 +37,10 @@ export function DashboardHero() {
         </div>
       </div>
       <div className="relative z-1 flex flex-col gap-2 rounded-xl border border-white/18 bg-white/10 p-[14px_18px]">
-        <MetaRow label="Pendientes" value={String(heroSummary.pendientes)} />
-        <MetaRow label="Enviados" value={String(heroSummary.enviados)} />
-        <MetaRow label="Aprobados" value={String(heroSummary.aprobados)} />
-        <MetaRow label="Monto total" value={heroSummary.montoTotal} total />
+        <MetaRow label="Pendientes" value={String(stats.pendientes)} />
+        <MetaRow label="Enviados" value={String(stats.enviados)} />
+        <MetaRow label="Aprobados" value={String(stats.aprobados)} />
+        <MetaRow label="Monto total" value={`CLP ${formatCompact(stats.montoTotalConsolidado)}`} total />
       </div>
     </div>
   )

@@ -16,16 +16,14 @@ export function PepsPage() {
   const [showCrear, setShowCrear] = useState(false)
   const { message, showToast } = useToast()
 
-  const goEditar = (row: PepN4Row) => navigate(`/ejercicios/mis-servicios/peps/${encodeURIComponent(row.pep)}`)
+  const goEditar = (row: PepN4Row) => navigate(`/administracion/peps/${encodeURIComponent(row.pep)}`)
 
   return (
     <div className="flex h-full flex-col overflow-y-auto">
       <Breadcrumb
         items={[
           { label: 'SIP', to: '/' },
-          { label: 'Presupuesto', to: '/ejercicios' },
-          { label: 'Ejercicios', to: '/ejercicios' },
-          { label: 'Mis Servicios', to: '/ejercicios/mis-servicios' },
+          { label: 'Administración', to: '/administracion/peps' },
           { label: 'ABM PEPS – Nivel 4' },
         ]}
       />

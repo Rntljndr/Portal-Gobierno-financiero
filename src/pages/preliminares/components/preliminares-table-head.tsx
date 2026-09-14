@@ -27,8 +27,11 @@ export function PreliminaresTableHead({ isN7, selectable, mesLabel, showSubPepCo
         {showSubPep && <th className={cn(th, 'sticky left-0 z-[2]', PRELIM_SUBPEP_COL_W)} />}
         <th className={cn(th, 'sticky z-[2]', identitySticky)} />
         <th colSpan={afterSticky} className="border-b border-border bg-[#F4F6FB]" />
-        <th colSpan={4} className={cn(thGroup, 'border-l-2 border-l-border text-cs-gris-oscuro')}>
-          Ene–Jul / {mesLabel}
+        <th colSpan={1} className={cn(thGroup, 'border-l-2 border-l-border text-cs-gris-oscuro')}>
+          Ene–Jul
+        </th>
+        <th colSpan={3} className={cn(thGroup, 'border-l-2 border-l-border text-cs-gris-oscuro')}>
+          {mesLabel}
         </th>
         <th colSpan={2} className={cn(thGroup, 'border-l-2 border-l-border text-cs-gris-oscuro')}>
           Desvío vs. Plan
@@ -52,9 +55,9 @@ export function PreliminaresTableHead({ isN7, selectable, mesLabel, showSubPepCo
         <th className={th}>Moneda</th>
         <th className={cn(th, 'text-center')}>{isN7 ? 'Estado' : 'Completitud'}</th>
         <th className={cn(thData, 'border-l-2 border-l-border')}>Real acumulado</th>
-        <th className={thData}>Forecast del mes</th>
+        <th className={cn(thData, 'border-l-2 border-l-border bg-[#EEF4FF] text-primary')}>Preliminar del mes</th>
         <th className={thData}>Plan del mes</th>
-        <th className={cn(thData, 'bg-[#EEF4FF] text-primary')}>Preliminar del mes</th>
+        <th className={thData}>Forecast del mes</th>
         <th className={cn(thData, 'border-l-2 border-l-border')}>Desvío monto</th>
         <th className={cn(thData, 'text-center')}>Desvío %</th>
         <th className={cn(thData, 'border-l-2 border-l-border')}>Desvío monto</th>

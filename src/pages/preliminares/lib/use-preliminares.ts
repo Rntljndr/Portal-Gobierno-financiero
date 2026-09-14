@@ -3,7 +3,6 @@ import type { PreliminarN4Row, PreliminarRow } from '@/data/preliminares'
 import type { PrelimFilterOptions, PrelimFilters } from './preliminares-filters-types'
 import { usePreliminaresStore } from './use-preliminares-store'
 import { allSelectable, toggleGroupInSet, toggleInSet } from './selection-helpers'
-import { calcPrelimKpis } from './preliminares-calc'
 
 const ROWS_PER_PAGE = 10
 
@@ -11,10 +10,10 @@ function uniqSorted(values: string[]): string[] {
   return [...new Set(values)].filter(Boolean).sort((a, b) => a.localeCompare(b, 'es'))
 }
 
-function matchN4Filters(r: PreliminarN4Row, f: PrelimFilters) {
+function matchN4Filters(r: PreliminarN4Row, f: PrelimFilters, opts: { skipPais?: boolean } = {}) {
   if (f.servicio && !r.servicio.toLowerCase().includes(f.servicio.toLowerCase())) return false
   if (f.codigo && !r.codigo.toLowerCase().includes(f.codigo.toLowerCase())) return false
-  if (f.pais.length && !f.pais.includes(r.pais)) return false
+  if (!opts.skipPais && f.pais.length && !f.pais.includes(r.pais)) return false
   if (f.gerenciaPadre.length && !f.gerenciaPadre.includes(r.gerenciaPadre)) return false
   if (f.gerencia.length && !f.gerencia.includes(r.gerencia)) return false
   if (f.equipo.length && !f.equipo.includes(r.equipo)) return false
@@ -74,6 +73,8 @@ export function usePreliminares() {
   const isN7 = tab === 'n7'
 
   const filteredN4 = useMemo(() => rows.filter((r) => matchN4Filters(r, filters)), [rows, filters])
+  /** Para el resumen por país: respeta todos los filtros salvo país, así las cards muestran todos los países disponibles. */
+  const countryBaseN4 = useMemo(() => rows.filter((r) => matchN4Filters(r, filters, { skipPais: true })), [rows, filters])
   const n7Flat = useMemo(
     () => filteredN4.flatMap((r) => r.children.filter((c) => matchN7Filters(c, filters)).map((c) => ({ ...c, parentServicio: r.servicio, parentCodigo: r.codigo }))),
     [filteredN4, filters],
@@ -95,7 +96,6 @@ export function usePreliminares() {
   const paged = activeData.slice((pageSafe - 1) * ROWS_PER_PAGE, pageSafe * ROWS_PER_PAGE)
 
   const activeFilterCount = countActiveFilters(filters)
-  const kpi = calcPrelimKpis(filteredN4)
 
   const toggleSelected = (codigo: string) => setSelected((prev) => toggleInSet(prev, codigo))
 
@@ -120,6 +120,7 @@ export function usePreliminares() {
     activeFilterCount,
     options,
     filteredN4,
+    countryBaseN4,
     activeData,
     paged,
     totalFiltered: activeData.length,
@@ -127,7 +128,6 @@ export function usePreliminares() {
     totalPages,
     pageSize: ROWS_PER_PAGE,
     setPage,
-    kpi,
     totalServicio: filteredN4.length,
     conPrelim: filteredN4.filter((r) => r.children.some((c) => c.estado === 'preliminar')).length,
     definitivos: filteredN4.filter((r) => r.children.every((c) => c.estado === 'definitivo')).length,
