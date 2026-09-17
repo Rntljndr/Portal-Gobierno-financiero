@@ -6,9 +6,13 @@ interface BulkUploadDropzoneProps {
   fileName: string
   disabled: boolean
   onFile: (file: File) => void
+  /** Extensiones aceptadas por el input y el drop — por defecto solo `.csv`, como usan el resto de los ABMs. */
+  accept?: string
+  /** Texto de ayuda bajo el nombre de formato — por defecto "Formato aceptado: .csv". */
+  hint?: string
 }
 
-export function BulkUploadDropzone({ fileName, disabled, onFile }: BulkUploadDropzoneProps) {
+export function BulkUploadDropzone({ fileName, disabled, onFile, accept = '.csv', hint = 'Formato aceptado: .csv' }: BulkUploadDropzoneProps) {
   const [dragOver, setDragOver] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -35,11 +39,11 @@ export function BulkUploadDropzone({ fileName, disabled, onFile }: BulkUploadDro
       <div className="text-[13px] font-semibold text-foreground">
         {fileName || 'Arrastrá tu archivo CSV aquí, o hacé clic para elegirlo'}
       </div>
-      <div className="text-xs text-muted-foreground">Formato aceptado: .csv</div>
+      <div className="text-xs text-muted-foreground">{hint}</div>
       <input
         ref={inputRef}
         type="file"
-        accept=".csv"
+        accept={accept}
         className="hidden"
         onChange={(e) => {
           if (e.target.files?.[0]) onFile(e.target.files[0])

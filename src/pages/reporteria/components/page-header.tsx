@@ -1,4 +1,5 @@
-import { Badge, Breadcrumb, Icon } from '@/shared/ui'
+import { useNavigate } from 'react-router'
+import { Badge, Breadcrumb, Button, Icon } from '@/shared/ui'
 import { forecastVersions } from '../lib/filter-catalog'
 import { useSavedConfigs } from '../lib/use-saved-configs'
 import { ConfiguracionesButton } from './configuraciones-button'
@@ -9,6 +10,7 @@ interface ReporteriaHeaderProps {
 }
 
 export function ReporteriaHeader({ forecastVersion, savedConfigsState }: ReporteriaHeaderProps) {
+  const navigate = useNavigate()
   const forecastLabel = forecastVersions.find((f) => f.value === forecastVersion)?.label ?? forecastVersion
 
   return (
@@ -37,6 +39,9 @@ export function ReporteriaHeader({ forecastVersion, savedConfigsState }: Reporte
             onSave={savedConfigsState.onSave}
             onDelete={savedConfigsState.onDelete}
           />
+          <Button variant="outline" size="sm" onClick={() => navigate('/reporteria-consolidada')}>
+            <Icon name="view_cards" size={14} color="currentColor" /> Reportería Consolidada
+          </Button>
         </div>
       </div>
     </>

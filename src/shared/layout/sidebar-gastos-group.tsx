@@ -12,6 +12,8 @@ interface GastosItem {
 const GASTOS_ITEMS: GastosItem[] = [
   { label: 'Ejercicios', to: '/ejercicios' },
   { label: 'Reportería', to: '/reporteria' },
+  { label: 'Reporte Dirección', to: '/reporte-direccion' },
+  { label: 'Reporte consolidado', to: '/reporte-consolidado' },
   { label: 'Forecast', to: '/forecast' },
   { label: 'Reales', to: '/reales' },
   { label: 'Preliminares', to: '/preliminares' },

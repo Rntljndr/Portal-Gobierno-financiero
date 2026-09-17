@@ -40,6 +40,9 @@ for (const p of paises) {
   tasaPromedio[p] = t ? t.reduce((a, b) => a + b, 0) / t.length : 1
 }
 
+/** Tasa de cambio promedio anual (moneda local por US$ 1), para mostrar como supuesto macro en pantalla. */
+export const paisTasaCambioPromedio: Partial<Record<Pais, number>> = tasaPromedio
+
 /** Convierte un monto de la moneda de `from` a la de `to`, vía USD. */
 export function convertMoneda(amount: number, from: Pais, to: Pais): number {
   if (from === to) return amount

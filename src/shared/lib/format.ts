@@ -2,6 +2,17 @@ export function formatNumber(n: number): string {
   return Math.round(n).toLocaleString('es-CL')
 }
 
+/** Porcentaje con coma decimal y espacio antes del símbolo, ej. "16,27 %" / "-3,20 %". */
+export function formatPercentCL(n: number, decimals = 2): string {
+  return `${n.toFixed(decimals).replace('.', ',')} %`
+}
+
+/** Vista en millones con coma decimal CL, ej. "4,1 MM" / "-0,2 MM". */
+export function formatMillones(n: number): string {
+  const mm = n / 1e6
+  return `${mm.toLocaleString('es-CL', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} MM`
+}
+
 /** Formato compacto: 10.5M, 710K */
 export function formatCompact(n: number): string {
   const abs = Math.abs(n)

@@ -1,4 +1,7 @@
-import { servicios } from '@/data/services'
+import { servicios, filtroOpciones, banderasByDivision } from '@/data/services'
+
+export { optionsFor } from '@/shared/lib/utils'
+export { banderasByDivision }
 
 function uniqSorted(values: string[]): string[] {
   return [...new Set(values)].filter(Boolean).sort((a, b) => a.localeCompare(b, 'es'))
@@ -13,9 +16,8 @@ function buildCascadeMap(pairs: [string, string][]): Record<string, string[]> {
   return Object.fromEntries(Object.entries(map).map(([k, v]) => [k, uniqSorted([...v])]))
 }
 
-export const divisionOptions = uniqSorted(servicios.map((s) => s.division))
-export const banderasByDivision = buildCascadeMap(servicios.map((s) => [s.division, s.bandera]))
-export const allBanderas = uniqSorted(servicios.map((s) => s.bandera))
+export const divisionOptions = filtroOpciones.division
+export const allBanderas = filtroOpciones.bandera
 
 export const gerenciaPadreOptions = uniqSorted(servicios.map((s) => s.gerenciaPadre))
 export const gerenciasByPadre = buildCascadeMap(servicios.map((s) => [s.gerenciaPadre, s.gerencia]))
@@ -23,13 +25,6 @@ export const allGerencias = uniqSorted(servicios.map((s) => s.gerencia))
 
 export const equiposByGerencia = buildCascadeMap(servicios.map((s) => [s.gerencia, s.equipo]))
 export const allEquipos = uniqSorted(servicios.map((s) => s.equipo))
-
-export function optionsFor(map: Record<string, string[]>, selected: string[], fallback: string[]): string[] {
-  if (selected.length === 0) return fallback
-  const merged = new Set<string>()
-  selected.forEach((s) => (map[s] ?? []).forEach((v) => merged.add(v)))
-  return merged.size > 0 ? uniqSorted([...merged]) : fallback
-}
 
 export const forecastVersions = [
   { value: 'F1_2027', label: 'Forecast 1 — 2027' },

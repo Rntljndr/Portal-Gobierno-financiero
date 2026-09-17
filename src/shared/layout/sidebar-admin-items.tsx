@@ -17,6 +17,7 @@ const ADMIN_ITEMS: AdminItem[] = [
   { label: 'Gerencias y Equipos', to: '/administracion/gerencias-equipos' },
   { label: 'Tipos de Solicitud', to: '/administracion/tipos-solicitud' },
   { label: 'PEPS', to: '/administracion/peps' },
+  { label: 'Ingresos', to: '/administracion/ingresos' },
 ]
 
 interface SidebarAdminItemsProps {

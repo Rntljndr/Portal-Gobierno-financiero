@@ -1,4 +1,5 @@
-import { countryBudgets, countryFlags, type AnalysisGroup } from '@/data/reporteria'
+import { countryBudgets, countryFlags } from './country-budgets'
+import type { AnalysisGroup } from './types'
 
 const DIVISION_WEIGHTS: [string, number][] = [
   ['Supermercado', 0.38],

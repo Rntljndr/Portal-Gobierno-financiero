@@ -3,7 +3,7 @@ import type { CurrencyView, MetricMode } from '@/data/reporteria'
 import { TOGGLEABLE_COL_KEYS } from './pep-n4-table-cols'
 import { useReporteriaFilters } from './use-reporteria-filters'
 import { useSavedConfigs } from './use-saved-configs'
-import type { ScrollTarget } from './scroll-target'
+import type { ScrollTarget } from '@/features/analysis-hier/lib/scroll-target'
 
 export function useReporteriaPageState() {
   const [vistaMoneda, setVistaMoneda] = useState<CurrencyView>('origen')

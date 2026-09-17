@@ -1,6 +1,11 @@
 export type CurrencyView = 'origen' | 'destino' | 'dolar'
 export type MetricMode = 'ipc' | 'target'
 
+/** true si esta vista necesita elegir un país (Origen ML / Destino ML); Destino USD consolida sin acotar. */
+export function requierePaisUnico(vista: CurrencyView): boolean {
+  return vista !== 'dolar'
+}
+
 export interface CountryBudget {
   pais: string
   plan: number

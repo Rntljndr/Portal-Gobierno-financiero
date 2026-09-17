@@ -4,7 +4,7 @@ import { SidebarGastosGroup } from './sidebar-gastos-group'
 import { SidebarAdminItems } from './sidebar-admin-items'
 import { getActiveTopTab } from './top-tabs'
 
-const GASTOS_PREFIXES = ['/ejercicios', '/reporteria', '/reales', '/preliminares', '/forecast']
+const GASTOS_PREFIXES = ['/ejercicios', '/reporteria', '/reales', '/preliminares', '/forecast', '/reporte-direccion', '/reporte-consolidado']
 
 const sectionLabel = 'px-[22px] pt-[18px] pb-2.5 text-[10.5px] font-semibold tracking-[0.18em] text-white/45 uppercase'
 

@@ -10,6 +10,9 @@ import { NotificacionesPage } from '@/pages/notificaciones/notificaciones-page'
 import { ReportesPage } from '@/pages/reportes/reportes-page'
 import { MisServiciosPage } from '@/pages/mis-servicios/mis-servicios-page'
 import { ReporteriaPage } from '@/pages/reporteria/reporteria-page'
+import { ReporteDireccionPage } from '@/pages/reporte-direccion/reporte-direccion-page'
+import { ReporteriaConsolidadaPage } from '@/pages/reporteria-consolidada/reporteria-consolidada-page'
+import { ConsolidadoPage } from '@/pages/consolidado/consolidado-page'
 import { ServicioDetallePage } from '@/pages/servicio-detalle/servicio-detalle-page'
 import { DriversPage } from '@/pages/drivers/drivers-page'
 import { CentrosCostoPage } from '@/pages/centros-costo/centros-costo-page'
@@ -20,6 +23,7 @@ import { RealesN7Page } from '@/pages/reales/reales-n7-page'
 import { RealesSubPepPage } from '@/pages/reales/reales-subpep-page'
 import { ConfiguracionesPage } from '@/pages/configuraciones/configuraciones-page'
 import { PepsPage } from '@/pages/peps/peps-page'
+import { IngresosPage } from '@/pages/ingresos/ingresos-page'
 import { EditarPepN4Page } from '@/pages/peps/editar-pep-n4-page'
 import { AdministracionPlaceholderPage } from '@/pages/administracion/administracion-placeholder-page'
 import { ProyectosPage } from '@/pages/proyectos/proyectos-page'
@@ -52,7 +56,11 @@ export const router = createRouter([
       { path: '/administracion/tipos-solicitud', element: <AdministracionPlaceholderPage title="Tipos de Solicitud" /> },
       { path: '/administracion/peps', element: <PepsPage /> },
       { path: '/administracion/peps/:pep', element: <EditarPepN4Page /> },
+      { path: '/administracion/ingresos', element: <IngresosPage /> },
       { path: '/reporteria', element: <ReporteriaPage /> },
+      { path: '/reporte-direccion', element: <ReporteDireccionPage /> },
+      { path: '/reporteria-consolidada', element: <ReporteriaConsolidadaPage /> },
+      { path: '/reporte-consolidado', element: <ConsolidadoPage /> },
       { path: '/reales', element: <RealesPage /> },
       { path: '/reales/:codigo', element: <RealesN7Page /> },
       { path: '/reales/:codigo/:n7codigo', element: <RealesSubPepPage /> },

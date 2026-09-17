@@ -1,6 +1,6 @@
 import type { AnalysisGroup } from '@/data/reporteria'
 import { formatTableAmount, formatTableAmountUSD } from '@/shared/lib/format'
-import type { ScrollTarget } from '../lib/scroll-target'
+import type { ScrollTarget } from '@/features/analysis-hier/lib/scroll-target'
 
 interface Top5Item {
   nombre: string

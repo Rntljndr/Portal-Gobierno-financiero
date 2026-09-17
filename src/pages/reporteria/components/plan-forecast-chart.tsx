@@ -2,9 +2,8 @@ import { useState } from 'react'
 import { Icon } from '@/shared/ui'
 import { monthlyBase, monthKeys, monthLabelsShort } from '@/data/reporteria'
 import { toUSD } from '@/shared/lib/format'
-import { CHART_W, CHART_H, PAD_L, chartScale, fmtK, type ChartMonth } from '../lib/chart-geometry'
-import { ChartBars, ChartDots } from './chart-marks'
-import { ChartTooltip, type TooltipState } from './chart-tooltip'
+import { CHART_W, CHART_H, PAD_L, chartScale, fmtK, type ChartMonth } from '@/shared/lib/chart-geometry'
+import { ChartBars, ChartDots, ChartTooltip, type TooltipState } from '@/shared/ui'
 
 interface PlanForecastChartProps {
   title: string

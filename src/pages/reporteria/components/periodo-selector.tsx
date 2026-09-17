@@ -2,7 +2,7 @@ import { useState } from 'react'
 import * as Popover from '@radix-ui/react-popover'
 import { cn } from '@/shared/lib/utils'
 import { Icon } from '@/shared/ui'
-import { MONTHS_BY_QUARTER, MONTH_KEYS, periodoLabel, quarterState, type Quarter, type SelMonths } from '../lib/periodo'
+import { MONTHS_BY_QUARTER, MONTH_KEYS, periodoLabel, quarterState, type Quarter, type SelMonths } from '@/shared/lib/periodo'
 
 function TriStateCheck({ state }: { state: 'all' | 'none' | 'partial' }) {
   return (

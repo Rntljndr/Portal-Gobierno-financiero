@@ -1,10 +1,8 @@
 import { useMemo } from 'react'
-import { gerenciaEquipoData, rubroCuentaData, type MetricMode } from '@/data/reporteria'
-import { AnalysisHierCard } from './analysis-hier-card'
+import { gerenciaEquipoData, rubroCuentaData, buildConsolidadoPorPais, type MetricMode } from '@/data/reporteria'
+import { AnalysisHierCard, type ScrollTarget } from '@/features/analysis-hier'
 import { Top5Card } from './top5-card'
 import { PlanForecastChart } from './plan-forecast-chart'
-import { buildConsolidadoPorPais } from '../lib/consolidado-data'
-import type { ScrollTarget } from '../lib/scroll-target'
 
 interface ConsolidadoViewProps {
   metricMode: MetricMode

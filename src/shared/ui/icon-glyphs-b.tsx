@@ -127,6 +127,13 @@ export const GLYPHS_B: Partial<Record<IconName, (p: GlyphProps) => React.ReactNo
       <path d="M6.5 9V6.5a3.5 3.5 0 017 0V9" stroke={color} strokeWidth={sw} strokeLinecap="round" />
     </svg>
   ),
+  save: ({ s, color, sw }) => (
+    <svg width={s} height={s} viewBox="0 0 20 20" fill="none">
+      <path d="M4 3.5h8.5L16 7v9.5a1 1 0 01-1 1H4a1 1 0 01-1-1V4.5a1 1 0 011-1z" stroke={color} strokeWidth={sw} strokeLinejoin="round" />
+      <path d="M6.5 3.5V8h5.5V3.5" stroke={color} strokeWidth={sw} strokeLinejoin="round" />
+      <rect x="6" y="11.5" width="8" height="5" stroke={color} strokeWidth={sw} strokeLinejoin="round" />
+    </svg>
+  ),
   flagCL: ({ s }) => (
     <svg width={s} height={Math.round(s * 0.72)} viewBox="0 0 25 18" fill="none">
       <rect width="25" height="9" fill="#fff" />

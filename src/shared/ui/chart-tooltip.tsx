@@ -9,9 +9,10 @@ interface ChartTooltipProps {
   tooltip: TooltipState
   months: ChartMonth[]
   isDolar: boolean
+  secondaryLabel?: string
 }
 
-export function ChartTooltip({ tooltip, months, isDolar }: ChartTooltipProps) {
+export function ChartTooltip({ tooltip, months, isDolar, secondaryLabel = 'Forecast' }: ChartTooltipProps) {
   const m = months[tooltip.mi]
   if (!m) return null
   const scale = chartScale(months)
@@ -36,7 +37,7 @@ export function ChartTooltip({ tooltip, months, isDolar }: ChartTooltipProps) {
       <div className="mt-1 flex items-center justify-between gap-2 text-[11px]">
         <span className="flex items-center gap-1.5 text-[#A0A0A0]">
           <span className="inline-block size-2 rounded-full bg-primary opacity-45" />
-          Forecast
+          {secondaryLabel}
         </span>
         <span className="font-normal whitespace-nowrap text-[#E0E0E0]">{fmt(m.fBase)}</span>
       </div>

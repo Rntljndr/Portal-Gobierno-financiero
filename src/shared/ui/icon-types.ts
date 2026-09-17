@@ -40,6 +40,7 @@ export type IconName =
   | 'minus'
   | 'sparkles'
   | 'lock'
+  | 'save'
 
 export interface GlyphProps {
   s: number

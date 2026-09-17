@@ -1,8 +1,8 @@
 import { divisionData, gerenciaEquipoData, rubroCuentaData, type MetricMode } from '@/data/reporteria'
-import { AnalysisHierCard } from './analysis-hier-card'
+import { AnalysisHierCard } from '@/features/analysis-hier'
 import { Top5Card } from './top5-card'
 import { PlanForecastChart } from './plan-forecast-chart'
-import type { ScrollTarget } from '../lib/scroll-target'
+import type { ScrollTarget } from '@/features/analysis-hier/lib/scroll-target'
 
 interface CountryAnalysisProps {
   country: string

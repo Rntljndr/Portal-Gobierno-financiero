@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { allMonthsSelected, isPeriodoActive, type SelMonths } from './periodo'
+import { allMonthsSelected, isPeriodoActive, type SelMonths } from '@/shared/lib/periodo'
 
 export interface ReporteriaFilters {
   paisOrigen: string[]

@@ -1,6 +1,8 @@
 export type { CurrencyView, MetricMode, CountryBudget, AnalysisChild, AnalysisGroup, PepN4Row, PepN7Row, PaisMacroData } from './types'
+export { requierePaisUnico } from './types'
 export { currencyViews, countryTabs, countryFlags, countryBudgets } from './country-budgets'
 export { divisionData, rubroCuentaData, gerenciaEquipoData } from './analysis-groups'
+export { buildConsolidadoPorPais } from './consolidado-pais'
 export { monthKeys, monthLabels, monthLabelsShort, monthlyBase, ipcFactorByMonth, type MonthlyBase } from './monthly-base'
 export { pepN4Tablon } from './pep-n4-tablon'
 export { paisMacroData } from './pais-macro'
