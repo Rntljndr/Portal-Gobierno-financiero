@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Button, Drawer, Textarea } from '@/shared/ui'
-import { formatNumber } from '@/shared/lib/format'
 import type { ForecastMesNota } from '@/data/forecast-lineas'
 import type { LlaveSegment } from '../lib/forecast-llave'
+import { formatForecastAmount } from '../lib/format-forecast-amount'
 import { ForecastLlaveBar } from './forecast-llave-bar'
 
 const label = 'mb-1.5 block text-[12px] font-semibold text-cs-gris-oscuro'
@@ -61,7 +61,7 @@ export function ForecastEditDrawer({ open, onClose, level, codigo, nombre, month
           onChange={(e) => setMonto(e.target.value)}
           className="w-full rounded-lg border border-border px-3 py-2 text-right text-[13px] outline-none focus:border-primary"
         />
-        <div className="mt-1 text-[11px] text-muted-foreground">Valor actual: {formatNumber(currentValue)}</div>
+        <div className="mt-1 text-[11px] text-muted-foreground">Valor actual: {formatForecastAmount(currentValue)}</div>
       </div>
 
       {level === 'n4' && llave && llave.length > 0 && (

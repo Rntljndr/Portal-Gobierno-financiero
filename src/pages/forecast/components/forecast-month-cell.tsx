@@ -1,6 +1,6 @@
 import { cn } from '@/shared/lib/utils'
 import { Icon } from '@/shared/ui'
-import { formatNumber } from '@/shared/lib/format'
+import { formatForecastAmount } from '../lib/format-forecast-amount'
 
 interface ForecastMonthCellProps {
   value: number
@@ -21,7 +21,7 @@ export function ForecastMonthCell({ value, locked, manual = false, disabledReaso
         className={cn('group p-[10px_6px] text-right text-[11.5px] tabular-nums whitespace-nowrap bg-primary/[0.03] text-foreground cursor-not-allowed', positionClassName)}
       >
         <span className="inline-flex items-center justify-end gap-1">
-          {formatNumber(value)}
+          {formatForecastAmount(value)}
           <span className="opacity-0 transition-opacity group-hover:opacity-100">
             <Icon name={disabledReason ? 'alert' : 'lock'} size={10} color="#8A90A2" />
           </span>
@@ -41,7 +41,7 @@ export function ForecastMonthCell({ value, locked, manual = false, disabledReaso
       )}
     >
       <span className="inline-flex items-center justify-end gap-1">
-        {formatNumber(value)}
+        {formatForecastAmount(value)}
         <span className="opacity-0 transition-opacity group-hover:opacity-100">
           <Icon name="edit" size={10} color="#0047B0" />
         </span>

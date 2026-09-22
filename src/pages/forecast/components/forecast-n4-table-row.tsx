@@ -1,10 +1,10 @@
 import { Link } from 'react-router'
 import { cn } from '@/shared/lib/utils'
 import { Icon, ResumenCells } from '@/shared/ui'
-import { formatNumber } from '@/shared/lib/format'
 import { monthKeys, monthLabels } from '@/data/reporteria'
 import type { ForecastN4Linea } from '@/data/forecast-lineas'
 import { calcN4Meses, calcN4Totals } from '../lib/forecast-edit-calc'
+import { formatForecastAmount } from '../lib/format-forecast-amount'
 import { ForecastMonthCell } from './forecast-month-cell'
 
 const td = 'p-[10px_8px] text-[12px] whitespace-nowrap text-cs-gris-oscuro'
@@ -47,7 +47,7 @@ export function ForecastN4TableRow({ roundId, n4, cutoff, onEditMonth }: Forecas
           />
         )
       })}
-      <ResumenCells totals={totals} fmt={formatNumber} />
+      <ResumenCells totals={totals} fmt={formatForecastAmount} />
     </tr>
   )
 }

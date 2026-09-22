@@ -1,9 +1,9 @@
 import { cn } from '@/shared/lib/utils'
 import { Badge, Button, Icon, ResumenCells } from '@/shared/ui'
-import { formatNumber } from '@/shared/lib/format'
 import { monthKeys, monthLabels } from '@/data/reporteria'
 import type { ForecastN7Linea } from '@/data/forecast-lineas'
 import { calcN7Totals } from '../lib/forecast-edit-calc'
+import { formatForecastAmount } from '../lib/format-forecast-amount'
 import { ForecastMonthCell } from './forecast-month-cell'
 
 const td = 'p-[10px_8px] text-[12px] whitespace-nowrap text-cs-gris-oscuro'
@@ -54,7 +54,7 @@ export function ForecastN7TableRow({ n4Codigo, n7, cutoff, onEditMonth, onResetL
           />
         )
       })}
-      <ResumenCells totals={totals} fmt={formatNumber} />
+      <ResumenCells totals={totals} fmt={formatForecastAmount} />
     </tr>
   )
 }
