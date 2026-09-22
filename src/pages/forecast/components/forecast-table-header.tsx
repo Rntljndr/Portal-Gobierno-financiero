@@ -1,6 +1,6 @@
 import { cn } from '@/shared/lib/utils'
 import { monthLabels } from '@/data/reporteria'
-import { PROYECCION_ANUAL_COLS, PROYECCION_ANUAL_LABEL, resumenAcumuladoLabel, RESUMEN_ACUMULADO_COLS } from '@/shared/lib/resumen-blocks'
+import { FORECAST_ACUMULADO_COLS, FORECAST_PROYECCION_COLS, FORECAST_PROYECCION_LABEL } from '../lib/forecast-resumen-labels'
 
 const thGroup = 'p-[6px_8px] text-center text-[10.5px] font-bold whitespace-nowrap border-b border-border'
 const th = 'p-[9px_8px] text-left text-[10.5px] font-bold tracking-[0.04em] text-muted-foreground uppercase whitespace-nowrap border-b-2 border-border bg-[#F4F6FB]'
@@ -16,16 +16,16 @@ export function ForecastTableHeader({ cutoff, identityLabel }: ForecastTableHead
       <tr>
         <th className={cn(th, 'sticky left-0 z-[2]')} />
         <th colSpan={cutoff} className={cn(thGroup, 'border-l-2 border-l-[#C4DFFF] bg-[#EEF4FF] text-primary')}>
-          Real · {monthLabels[0].slice(0, 3)}-{monthLabels[cutoff - 1].slice(0, 3)} (meses cerrados)
+          Real (YTD) · {monthLabels[0].slice(0, 3)}-{monthLabels[cutoff - 1].slice(0, 3)}
         </th>
         <th colSpan={12 - cutoff} className={cn(thGroup, 'border-l-2 border-l-[#CBD5E1] text-muted-foreground')}>
-          Forecast · {monthLabels[cutoff].slice(0, 3)}-{monthLabels[11].slice(0, 3)} (proyectado)
+          Forecast (YTG) · {monthLabels[cutoff].slice(0, 3)}-{monthLabels[11].slice(0, 3)}
         </th>
-        <th colSpan={RESUMEN_ACUMULADO_COLS.length} className={cn(thGroup, 'border-l-2 border-l-border text-cs-gris-oscuro')}>
-          {resumenAcumuladoLabel(cutoff)}
+        <th colSpan={FORECAST_ACUMULADO_COLS.length} className={cn(thGroup, 'border-l-2 border-l-border text-cs-gris-oscuro')}>
+          {cutoff > 0 ? `Acumulado ${monthLabels[0]}–${monthLabels[cutoff - 1]}` : 'Acumulado'}
         </th>
-        <th colSpan={PROYECCION_ANUAL_COLS.length} className={cn(thGroup, 'border-l-2 border-l-border bg-primary/5 text-primary')}>
-          {PROYECCION_ANUAL_LABEL}
+        <th colSpan={FORECAST_PROYECCION_COLS.length} className={cn(thGroup, 'border-l-2 border-l-border bg-primary/5 text-primary')}>
+          {FORECAST_PROYECCION_LABEL}
         </th>
       </tr>
       <tr>
@@ -47,12 +47,12 @@ export function ForecastTableHeader({ cutoff, identityLabel }: ForecastTableHead
             </th>
           )
         })}
-        {RESUMEN_ACUMULADO_COLS.map((c, i) => (
+        {FORECAST_ACUMULADO_COLS.map((c, i) => (
           <th key={c.key} className={cn(th, i === 0 && 'border-l-2 border-l-border', c.key.startsWith('desvioAcumPct') ? 'text-center' : 'text-right')}>
             {c.label}
           </th>
         ))}
-        {PROYECCION_ANUAL_COLS.map((c, i) => (
+        {FORECAST_PROYECCION_COLS.map((c, i) => (
           <th key={c.key} className={cn(th, 'bg-primary/5 text-primary', i === 0 && 'border-l-2 border-l-border', c.key === 'desvioAnualPct' ? 'text-center' : 'text-right')}>
             {c.label}
           </th>

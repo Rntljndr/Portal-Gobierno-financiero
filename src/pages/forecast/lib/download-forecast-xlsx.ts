@@ -14,7 +14,7 @@ function monthHeaders(cutoff: number): string[] {
   return monthLabels.map((label, i) => `${label} (${i < cutoff ? 'Real' : 'FC'})`)
 }
 
-const TOTALS_HEADERS = ['Total (Acum.)', 'Desvío (Acum.)', 'Desvío % (Acum.)', 'Total Anual', 'Desvío (Anual)', 'Desvío % (Anual)']
+const TOTALS_HEADERS = ['Real (YTD)', 'Desvío (Acum.)', 'Desvío % (Acum.)', 'Real + Forecast (Full Year)', 'Desvío (Anual)', 'Desvío % (Anual)']
 
 function totalsCols(t: ResumenTotals): (number | string)[] {
   return [round2(t.real), round2(t.desvioAcumMonto), t.desvioAcumPct === null ? '' : round2(t.desvioAcumPct), round2(t.realMasForecast), round2(t.desvio), round2(t.pctDesvio)]
