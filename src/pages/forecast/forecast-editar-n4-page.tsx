@@ -1,9 +1,10 @@
 import { useNavigate, useParams } from 'react-router'
-import { Breadcrumb, EmptyState, PageHeader, Toast, VolverBar } from '@/shared/ui'
+import { Breadcrumb, Button, EmptyState, Icon, PageHeader, Toast, VolverBar } from '@/shared/ui'
 import { useForecastEditarN4 } from './lib/use-forecast-editar-n4'
 import { ForecastN4Table } from './components/forecast-n4-table'
 import { ForecastEditDrawer } from './components/forecast-edit-drawer'
 import { EstadoBadge } from './components/estado-badge'
+import { downloadForecastN4Xlsx } from './lib/download-forecast-xlsx'
 
 export function ForecastEditarN4Page() {
   const { id } = useParams()
@@ -17,21 +18,29 @@ export function ForecastEditarN4Page() {
       </div>
     )
   }
+  const round = s.round
 
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 overflow-y-auto">
-        <Breadcrumb items={[{ label: 'SIP', to: '/' }, { label: 'Forecast', to: '/forecast' }, { label: s.round.titulo, to: `/forecast/${s.round.id}` }, { label: 'Editar' }]} />
+        <Breadcrumb items={[{ label: 'SIP', to: '/' }, { label: 'Forecast', to: '/forecast' }, { label: round.titulo, to: `/forecast/${round.id}` }, { label: 'Editar' }]} />
         <PageHeader
-          title={`Editar Forecast — ${s.round.titulo}`}
+          title={`Editar Forecast — ${round.titulo}`}
           subtitle="Edición mensual por servicio N4. Los meses con Real cerrado no son editables."
-          action={<EstadoBadge estado={s.round.estado} cerradoManual={s.round.cerradoManual} />}
+          action={
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={() => downloadForecastN4Xlsx(round.titulo, round.lineas, s.cutoff)}>
+                <Icon name="download" size={12} color="#0047B0" /> Descargar
+              </Button>
+              <EstadoBadge estado={round.estado} cerradoManual={round.cerradoManual} />
+            </div>
+          }
         />
 
-        <ForecastN4Table roundId={s.round.id} rows={s.round.lineas} cutoff={s.cutoff} onEditMonth={s.openEdit} />
+        <ForecastN4Table roundId={round.id} rows={round.lineas} cutoff={s.cutoff} onEditMonth={s.openEdit} />
       </div>
 
-      <VolverBar label="Volver al Forecast" onBack={() => navigate(`/forecast/${s.round?.id}`)} />
+      <VolverBar label="Volver al Forecast" onBack={() => navigate(`/forecast/${round.id}`)} />
 
       <ForecastEditDrawer
         open={s.editTarget !== null}
