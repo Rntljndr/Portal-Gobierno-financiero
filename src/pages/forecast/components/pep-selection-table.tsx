@@ -1,8 +1,5 @@
-import { useEffect, useState } from 'react'
-import { Pagination } from '@/shared/ui'
+import { useState } from 'react'
 import { forecastPepList } from '@/data/forecast'
-
-const PAGE_SIZE = 8
 
 interface PepSelectionTableProps {
   selected: Set<string>
@@ -10,9 +7,10 @@ interface PepSelectionTableProps {
   readOnly?: boolean
 }
 
+/** Sin paginación (Ajuste T6): la lista de PEPs es chica (~40) y se recorre entera con scroll,
+ * en vez de forzar al usuario a pasar de página para verla completa. */
 export function PepSelectionTable({ selected, onToggle, readOnly = false }: PepSelectionTableProps) {
   const [filters, setFilters] = useState({ pep: '', pais: '', area: '', desc: '' })
-  const [page, setPage] = useState(1)
 
   const filtered = forecastPepList.filter(
     (p) =>
@@ -22,16 +20,11 @@ export function PepSelectionTable({ selected, onToggle, readOnly = false }: PepS
       (!filters.desc || p.nombre.toLowerCase().includes(filters.desc.toLowerCase())),
   )
 
-  useEffect(() => setPage(1), [filters])
+  const allSelected = filtered.length > 0 && filtered.every((p) => selected.has(p.codigo))
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
-  const pageSafe = Math.min(page, totalPages)
-  const pageData = filtered.slice((pageSafe - 1) * PAGE_SIZE, pageSafe * PAGE_SIZE)
-  const pageAllSelected = pageData.length > 0 && pageData.every((p) => selected.has(p.codigo))
-
-  const togglePageAll = () => {
+  const toggleAll = () => {
     if (readOnly) return
-    pageData.forEach((p) => (pageAllSelected ? selected.has(p.codigo) && onToggle(p.codigo) : !selected.has(p.codigo) && onToggle(p.codigo)))
+    filtered.forEach((p) => (allSelected ? selected.has(p.codigo) && onToggle(p.codigo) : !selected.has(p.codigo) && onToggle(p.codigo)))
   }
 
   const inputClass = 'h-9 rounded-lg border border-border bg-white px-2.5 text-[12px] outline-none placeholder:text-muted-foreground focus:border-primary'
@@ -46,29 +39,30 @@ export function PepSelectionTable({ selected, onToggle, readOnly = false }: PepS
         <input className={inputClass} placeholder="Área" value={filters.area} onChange={(e) => setFilters((f) => ({ ...f, area: e.target.value }))} />
         <input className={inputClass} placeholder="Descripción" value={filters.desc} onChange={(e) => setFilters((f) => ({ ...f, desc: e.target.value }))} />
       </div>
-      <div className="overflow-x-auto rounded-lg border border-border">
+      <div className="mb-1.5 text-[11px] text-muted-foreground">{filtered.length} PEPs</div>
+      <div className="max-h-[420px] overflow-y-auto overflow-x-auto rounded-lg border border-border">
         <table className="w-full border-collapse text-xs">
           <thead>
             <tr>
-              <th className={`${th} w-9 text-center`}>
-                <input type="checkbox" checked={pageAllSelected} disabled={readOnly} onChange={togglePageAll} className="accent-primary" />
+              <th className={`${th} sticky top-0 z-[1] w-9 text-center`}>
+                <input type="checkbox" checked={allSelected} disabled={readOnly} onChange={toggleAll} className="accent-primary" />
               </th>
-              <th className={th}>PEP</th>
-              <th className={th}>País</th>
-              <th className={th}>Área</th>
-              <th className={th}>Descripción</th>
-              <th className={th}>Cta.</th>
+              <th className={`${th} sticky top-0 z-[1]`}>PEP</th>
+              <th className={`${th} sticky top-0 z-[1]`}>País</th>
+              <th className={`${th} sticky top-0 z-[1]`}>Área</th>
+              <th className={`${th} sticky top-0 z-[1]`}>Descripción</th>
+              <th className={`${th} sticky top-0 z-[1]`}>Cta.</th>
             </tr>
           </thead>
           <tbody>
-            {pageData.length === 0 ? (
+            {filtered.length === 0 ? (
               <tr>
                 <td colSpan={6} className="p-5 text-center text-muted-foreground">
                   Sin resultados
                 </td>
               </tr>
             ) : (
-              pageData.map((p) => {
+              filtered.map((p) => {
                 const checked = selected.has(p.codigo)
                 return (
                   <tr
@@ -92,7 +86,6 @@ export function PepSelectionTable({ selected, onToggle, readOnly = false }: PepS
           </tbody>
         </table>
       </div>
-      {totalPages > 1 && <Pagination page={pageSafe} totalPages={totalPages} totalItems={filtered.length} pageSize={PAGE_SIZE} onPageChange={setPage} itemLabel="PEPs" />}
     </div>
   )
 }
