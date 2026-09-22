@@ -6,11 +6,13 @@ import { ForecastEditDrawer } from './components/forecast-edit-drawer'
 import { EstadoBadge } from './components/estado-badge'
 import { HideZeroToggle } from './components/hide-zero-toggle'
 import { downloadForecastN4Xlsx } from './lib/download-forecast-xlsx'
+import { useRestoreScroll } from './lib/use-restore-scroll'
 
 export function ForecastEditarN4Page() {
   const { id } = useParams()
   const navigate = useNavigate()
   const s = useForecastEditarN4(id)
+  const scrollRef = useRestoreScroll<HTMLDivElement>(id ?? '')
 
   if (!s.round) {
     return (
@@ -23,7 +25,7 @@ export function ForecastEditarN4Page() {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex-1 overflow-y-auto">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto">
         <Breadcrumb items={[{ label: 'SIP', to: '/' }, { label: 'Forecast', to: '/forecast' }, { label: round.titulo, to: `/forecast/${round.id}` }, { label: 'Editar' }]} />
         <PageHeader
           title={`Editar Forecast — ${round.titulo}`}

@@ -8,11 +8,13 @@ import { ForecastRupturaLlaveModal } from './components/forecast-ruptura-llave-m
 import { ForecastChartSection } from './components/forecast-chart-section'
 import { HideZeroToggle } from './components/hide-zero-toggle'
 import { downloadForecastN7Xlsx } from './lib/download-forecast-xlsx'
+import { useRestoreScroll } from './lib/use-restore-scroll'
 
 export function ForecastEditarN7Page() {
   const { id, n4codigo } = useParams()
   const navigate = useNavigate()
   const s = useForecastEditarN7(id, n4codigo)
+  const scrollRef = useRestoreScroll<HTMLDivElement>(n4codigo ?? '')
 
   if (!s.round || !s.n4) {
     return (
@@ -26,7 +28,7 @@ export function ForecastEditarN7Page() {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex-1 overflow-y-auto">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto">
         <Breadcrumb
           items={[
             { label: 'SIP', to: '/' },
