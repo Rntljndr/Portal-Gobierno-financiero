@@ -3,6 +3,8 @@ import { useToast } from '@/shared/lib/use-toast'
 import { FORECAST_MES_ACTUAL } from '@/data/forecast'
 import type { ForecastN7Linea, ForecastMesNota } from '@/data/forecast-lineas'
 import { useForecastStore } from './use-forecast-store'
+import { calcN7Totals } from './forecast-edit-calc'
+import { estaEnCero } from './hide-zero-lines'
 
 interface EditTarget {
   n7: ForecastN7Linea
@@ -26,6 +28,7 @@ export function useForecastEditarN7(roundId: string | undefined, n4Codigo: strin
 
   const [editTarget, setEditTarget] = useState<EditTarget | null>(null)
   const [pending, setPending] = useState<PendingSubmit | null>(null)
+  const [ocultarCeros, setOcultarCeros] = useState(true)
 
   const onDrawerSubmit = (monto: number, nota: ForecastMesNota) => {
     if (!editTarget) return
@@ -46,9 +49,15 @@ export function useForecastEditarN7(roundId: string | undefined, n4Codigo: strin
     showToast('Llave de distribución restablecida para este PEP N7.')
   }
 
+  const n7s = n4?.n7 ?? []
+  const n7Visibles = n4 ? (ocultarCeros ? n7s.filter((n7) => !estaEnCero(calcN7Totals(n4.n4Codigo, n7, FORECAST_MES_ACTUAL))) : n7s) : []
+
   return {
     round,
     n4,
+    n7Visibles,
+    ocultarCeros,
+    setOcultarCeros,
     cutoff: FORECAST_MES_ACTUAL,
     message,
     editTarget,
