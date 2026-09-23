@@ -30,16 +30,17 @@ interface ConsolidadoRowProps {
   row: DimFlatRow
   zebra: boolean
   levelLabels: string[]
+  leafLabel: string
   totalPlanFiltrado: number
 }
 
-export function ConsolidadoRow({ row, zebra, levelLabels, totalPlanFiltrado }: ConsolidadoRowProps) {
+export function ConsolidadoRow({ row, zebra, levelLabels, leafLabel, totalPlanFiltrado }: ConsolidadoRowProps) {
   const { depth, node, hasChildren, isOpen, onToggle } = row
   const m = computeDimMetrics(node, totalPlanFiltrado)
   const isLeaf = depth >= levelLabels.length
   const text = textStyleFor(depth, isLeaf)
   const rowBg = isLeaf ? (zebra ? 'bg-[#F8FAFC]' : 'bg-white') : isOpen ? (depth === 0 ? 'bg-[#EFF4FF]' : 'bg-[#F0F6FF]') : ''
-  const nivel = isLeaf ? 'PEP N4' : levelLabels[depth]
+  const nivel = isLeaf ? leafLabel : levelLabels[depth]
   const count = isLeaf ? 0 : countLeaves(node)
 
   return (
@@ -51,7 +52,7 @@ export function ConsolidadoRow({ row, zebra, levelLabels, totalPlanFiltrado }: C
             <span className="min-w-0 truncate">
               {node.codigo && <Badge variant="primary" shape="chip" className="mr-1.5 text-[10px]">{node.codigo}</Badge>}
               {node.nombre}
-              {!isLeaf && <div className="text-[10.5px] font-normal text-muted-foreground">{count} PEP N4</div>}
+              {!isLeaf && <div className="text-[10.5px] font-normal text-muted-foreground">{count} {leafLabel}</div>}
             </span>
           </span>
           <Badge variant="neutral" shape="chip" className="shrink-0 text-[9.5px] tracking-wide uppercase">{nivel}</Badge>

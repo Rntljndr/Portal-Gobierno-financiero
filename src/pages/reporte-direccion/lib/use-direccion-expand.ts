@@ -7,5 +7,14 @@ export function useDireccionExpand() {
   const onTogglePais = (pais: string) => setExpandedPais((prev) => ({ ...prev, [pais]: !prev[pais] }))
   const onToggleDivision = (key: string) => setExpandedDivision((prev) => ({ ...prev, [key]: !prev[key] }))
 
-  return { expandedPais, onTogglePais, expandedDivision, onToggleDivision }
+  const expandAll = (paisKeys: string[], divisionKeys: string[]) => {
+    setExpandedPais(Object.fromEntries(paisKeys.map((k) => [k, true])))
+    setExpandedDivision(Object.fromEntries(divisionKeys.map((k) => [k, true])))
+  }
+  const collapseAll = () => {
+    setExpandedPais({})
+    setExpandedDivision({})
+  }
+
+  return { expandedPais, onTogglePais, expandedDivision, onToggleDivision, expandAll, collapseAll }
 }

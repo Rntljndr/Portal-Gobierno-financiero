@@ -42,9 +42,16 @@ function buildLevel(map: GroupMap, depth: number, maxDepth: number): DimNode[] {
 
 /**
  * Cada dimensión define su propia cadena de niveles en `DIMENSION_LEVELS` (2 a 4 niveles de
- * agrupación según la pestaña) antes de llegar siempre al PEP N4 como hoja final.
+ * agrupación según la pestaña) antes de llegar siempre al PEP N4 como hoja final. El árbol se
+ * construye siempre ordenado por Plan descendente; el ordenamiento por columna/dirección elegido
+ * por la persona usuaria se aplica después con `sortDimTree`.
  */
-export function buildDimensionTree(servicios: Servicio[], dim: DimensionKey, vista: CurrencyView, paisMoneda?: Pais | null): DimNode[] {
+export function buildDimensionTree(
+  servicios: Servicio[],
+  dim: DimensionKey,
+  vista: CurrencyView,
+  paisMoneda?: Pais | null,
+): DimNode[] {
   const levels = DIMENSION_LEVELS[dim]
   const root: GroupMap = new Map()
 

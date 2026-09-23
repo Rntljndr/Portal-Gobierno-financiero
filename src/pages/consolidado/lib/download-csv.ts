@@ -7,12 +7,12 @@ function csvCell(v: string | number): string {
   return /[",\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
 }
 
-export function downloadConsolidadoCsv(rows: DimFlatRow[], levelLabels: string[], vista: CurrencyView) {
+export function downloadConsolidadoCsv(rows: DimFlatRow[], levelLabels: string[], leafLabel: string, vista: CurrencyView) {
   const totalPlan = rows.filter((r) => r.depth === 0).reduce((a, r) => a + r.node.plan, 0) || 1
-  const header = ['Agrupador / PEP N4', 'Nivel', 'Código', 'Plan', 'Forecast + IPC', 'Variación', 'Variación %', '% del Plan']
+  const header = [`Agrupador / ${leafLabel}`, 'Nivel', 'Código', 'Plan', 'Forecast + IPC', 'Variación', 'Variación %', '% del Plan']
   const lines = rows.map((r) => {
     const m = computeDimMetrics(r.node, totalPlan)
-    const nivel = levelLabels[r.depth] ?? 'PEP N4'
+    const nivel = levelLabels[r.depth] ?? leafLabel
     return [r.node.nombre, nivel, r.node.codigo ?? '', r.node.plan, r.node.fIPC, m.varMonto, m.varPct.toFixed(1), m.pctPlan.toFixed(1)].map(csvCell).join(';')
   })
   const csv = [header.join(';'), ...lines].join('\n')
