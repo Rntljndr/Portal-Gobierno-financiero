@@ -11,11 +11,12 @@ interface ForecastN7DetalleDesvioProps {
   onChangeComentario: (v: string) => void
 }
 
-/** Justificación de Desvío + Comentarios (F) — una sola vez para todo el conjunto de meses editados,
- * no por celda (a diferencia de ForecastEditDrawer). */
+/** Justificación de Desvío + Comentarios (F) — al lado del gráfico, bajo la tabla de Forecast. Se
+ * guarda con el botón "Guardar" del pie de página (F: "El botón de guardar"), no tiene uno propio. */
 export function ForecastN7DetalleDesvio({ justificacion, onChangeJustificacion, comentario, onChangeComentario }: ForecastN7DetalleDesvioProps) {
   return (
-    <div className="mx-8 mb-5 rounded-xl border border-border bg-white p-[20px]">
+    <div className="h-full rounded-xl border border-border bg-white p-[20px]">
+      <div className="mb-4 text-[14px] font-bold text-foreground">Justificación y comentario del desvío</div>
       <div className="mb-4">
         <label className={label}>Justificación de Desvío</label>
         <select value={justificacion} onChange={(e) => onChangeJustificacion(e.target.value)} className={select}>
@@ -28,7 +29,7 @@ export function ForecastN7DetalleDesvio({ justificacion, onChangeJustificacion, 
       </div>
       <div>
         <label className={label}>Comentarios</label>
-        <Textarea value={comentario} onChange={(e) => onChangeComentario(e.target.value)} placeholder="Comentarios adicionales..." />
+        <Textarea value={comentario} onChange={(e) => onChangeComentario(e.target.value)} placeholder="Comentarios adicionales..." rows={5} />
       </div>
     </div>
   )

@@ -41,7 +41,7 @@ export function ForecastListPage() {
 
   return (
     <div className="h-full overflow-y-auto">
-      <Breadcrumb items={[{ label: 'SIP', to: '/' }, { label: 'Presupuesto', to: '/ejercicios' }, { label: 'Ejercicios', to: '/ejercicios' }, { label: 'Forecast' }]} />
+      <Breadcrumb items={[{ label: 'SIP', to: '/' }, { label: 'Forecast' }]} />
       <PageHeader
         title="Forecast"
         subtitle="Gestión de ejercicios de proyección presupuestaria"

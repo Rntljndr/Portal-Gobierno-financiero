@@ -1,18 +1,22 @@
 import { useState } from 'react'
-import { Icon } from '@/shared/ui'
+import { Icon, SegmentedTabs } from '@/shared/ui'
 import { ForecastEvolucionChart } from './forecast-evolucion-chart'
+import { ForecastEvolucionPointsChart } from './forecast-evolucion-points-chart'
 
 interface ForecastChartSectionProps {
   meses: Record<string, number>
   cutoff: number
 }
 
-/** Sección colapsable (colapsada por defecto), patrón hand-rolled de pep-n4-card.tsx — no existe un Collapsible genérico en shared/ui. */
+/** Sección colapsable (colapsada por defecto), patrón hand-rolled de pep-n4-card.tsx — no existe un
+ * Collapsible genérico en shared/ui. Dos visiones con selector (F): barras (ForecastEvolucionChart) o
+ * puntos (ForecastEvolucionPointsChart), misma escala/datos en ambas. */
 export function ForecastChartSection({ meses, cutoff }: ForecastChartSectionProps) {
   const [open, setOpen] = useState(false)
+  const [vista, setVista] = useState<'barras' | 'puntos'>('barras')
 
   return (
-    <div className="mx-8 mb-8 overflow-hidden rounded-xl border border-border bg-white">
+    <div className="overflow-hidden rounded-xl border border-border bg-white">
       <button type="button" onClick={() => setOpen((v) => !v)} className="flex w-full items-center justify-between p-[16px_20px] text-left">
         <span className="flex items-center gap-2 text-[14px] font-bold text-foreground">
           <Icon name="chart" size={15} color="#0047B0" /> Evolución Forecast vs. Real
@@ -21,7 +25,17 @@ export function ForecastChartSection({ meses, cutoff }: ForecastChartSectionProp
       </button>
       {open && (
         <div className="border-t border-[#eef0f8] p-[20px]">
-          <ForecastEvolucionChart meses={meses} cutoff={cutoff} />
+          <div className="mb-3 flex justify-end">
+            <SegmentedTabs
+              value={vista}
+              onChange={setVista}
+              options={[
+                { value: 'barras', label: 'Barras' },
+                { value: 'puntos', label: 'Puntos' },
+              ]}
+            />
+          </div>
+          {vista === 'barras' ? <ForecastEvolucionChart meses={meses} cutoff={cutoff} /> : <ForecastEvolucionPointsChart meses={meses} cutoff={cutoff} />}
         </div>
       )}
     </div>

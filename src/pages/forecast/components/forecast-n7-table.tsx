@@ -16,9 +16,13 @@ interface ForecastN7TableProps {
   cutoff: number
   onEditMonth: (n7: ForecastN7Linea, monthKey: string, monthLabel: string, currentValue: number) => void
   onResetLlave: (n7Codigo: string) => void
+  /** Hermanos reales para el cálculo de Llave de Distribución Forecast (forecast-llave.ts) — por
+   * defecto son las mismas `rows` que se renderizan, pero ForecastN7DetallePage muestra una sola fila
+   * y necesita pasar los hermanos completos del N4 para que la llave no dé 100% por estar sola. */
+  siblings?: ForecastN7Linea[]
 }
 
-export function ForecastN7Table({ roundId, n4Codigo, rows, cutoff, onEditMonth, onResetLlave }: ForecastN7TableProps) {
+export function ForecastN7Table({ roundId, n4Codigo, rows, cutoff, onEditMonth, onResetLlave, siblings }: ForecastN7TableProps) {
   const { col, dir, onSort } = useForecastSort(n4Codigo)
   const sortedRows = useMemo(
     () => sortForecastRows(rows, col, dir, (n7) => n7.n7Nombre, (n7) => calcN7Totals(n4Codigo, n7, cutoff)),
@@ -43,7 +47,7 @@ export function ForecastN7Table({ roundId, n4Codigo, rows, cutoff, onEditMonth, 
         <tbody>
           {sortedRows.map((n7) => (
             <Fragment key={n7.n7Codigo}>
-              <ForecastN7TableRow roundId={roundId} n4Codigo={n4Codigo} n7={n7} siblings={rows} cutoff={cutoff} onEditMonth={onEditMonth} onResetLlave={onResetLlave} />
+              <ForecastN7TableRow roundId={roundId} n4Codigo={n4Codigo} n7={n7} siblings={siblings ?? rows} cutoff={cutoff} onEditMonth={onEditMonth} onResetLlave={onResetLlave} />
               <ForecastPlanRow plan={findPlanN7(n4Codigo, n7.n7Codigo)} cutoff={cutoff} variant="n7" />
             </Fragment>
           ))}

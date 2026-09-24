@@ -33,8 +33,7 @@ export function ForecastEditarN7Page() {
           items={[
             { label: 'SIP', to: '/' },
             { label: 'Forecast', to: '/forecast' },
-            { label: round.titulo, to: `/forecast/${round.id}` },
-            { label: 'Editar', to: `/forecast/${round.id}/editar` },
+            { label: round.titulo, to: `/forecast/${round.id}/editar` },
             { label: n4.n4Nombre },
           ]}
         />
@@ -50,7 +49,9 @@ export function ForecastEditarN7Page() {
 
         <ForecastN7Table roundId={round.id} n4Codigo={n4.n4Codigo} rows={s.n7Visibles} cutoff={s.cutoff} onEditMonth={s.openEdit} onResetLlave={s.onResetLlave} />
 
-        <ForecastChartSection meses={calcN4Meses(n4)} cutoff={s.cutoff} />
+        <div className="mx-8 mb-8">
+          <ForecastChartSection meses={calcN4Meses(n4)} cutoff={s.cutoff} />
+        </div>
       </div>
 
       <VolverBar label="Volver a Servicios N4" onBack={() => navigate(`/forecast/${round.id}/editar`)} />

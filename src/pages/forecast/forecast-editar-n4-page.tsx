@@ -26,7 +26,7 @@ export function ForecastEditarN4Page() {
   return (
     <div className="flex h-full flex-col">
       <div ref={scrollRef} className="flex-1 overflow-y-auto">
-        <Breadcrumb items={[{ label: 'SIP', to: '/' }, { label: 'Forecast', to: '/forecast' }, { label: round.titulo, to: `/forecast/${round.id}` }, { label: 'Editar' }]} />
+        <Breadcrumb items={[{ label: 'SIP', to: '/' }, { label: 'Forecast', to: '/forecast' }, { label: round.titulo }]} />
         <PageHeader
           title={`Editar Forecast — ${round.titulo}`}
           subtitle="Edición mensual por servicio N4. Los meses con Real cerrado no son editables."
