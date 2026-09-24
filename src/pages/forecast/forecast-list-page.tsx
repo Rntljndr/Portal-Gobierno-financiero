@@ -42,28 +42,22 @@ export function ForecastListPage() {
       <PageHeader
         title="Forecast"
         subtitle="Gestión de ejercicios de proyección presupuestaria"
-        action={
-          <ForecastListHeaderActions
-            activo={activo}
-            borrador={borrador}
-            anterioresCount={anteriores.length}
-            tab={tab}
-            onTabChange={setTab}
-            onOpenAnteriores={() => setAnterioresOpen(true)}
-            onCerrar={() => activo && setCloseTarget(activo)}
-          />
-        }
+        action={<ForecastListHeaderActions tab={tab} onTabChange={setTab} />}
       />
 
       <ForecastListBody
         rounds={rounds}
         activo={activo}
+        borrador={borrador}
+        anterioresCount={anteriores.length}
         tab={tab}
         tabla={tabla}
         flatN7Rows={flatN7Rows}
         detalleOpen={detalleOpen}
         onToggleDetalle={() => setDetalleOpen((v) => !v)}
         onVerTasas={() => setTasasOpen(true)}
+        onOpenAnteriores={() => setAnterioresOpen(true)}
+        onCerrar={() => activo && setCloseTarget(activo)}
         onImportar={cm.openDrawer}
         onDescargar={() => activo && downloadForecastN4Xlsx(activo.titulo, tabla.lineasVisibles, tabla.cutoff)}
       />
