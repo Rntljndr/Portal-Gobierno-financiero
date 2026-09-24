@@ -21,8 +21,8 @@ interface EditTarget {
 }
 
 /** Estado de ForecastN7DetallePage: edición celda a celda (igual patrón que el resto de Forecast, vía
- * ForecastEditDrawer sobre ForecastN7Table) + el drawer de "Mes Conjunto" (varios meses a la vez) +
- * la Justificación de Desvío / Comentarios general del PEP, que se guarda como nota del primer mes
+ * ForecastEditDrawer sobre ForecastN7Table) + el drawer de "Distribuir Montos" (varios meses a la vez)
+ * + la Justificación de Desvío / Comentarios general del PEP, que se guarda como nota del primer mes
  * abierto (mismo lugar de donde ya lee "Motivo" el resto del módulo — ver forecast-identidad.ts). */
 export function useForecastEditarN7Detalle(roundId: string | undefined, n4Codigo: string | undefined, n7Codigo: string | undefined) {
   const { rounds, updateN7Monto, updateN7MesesBatch, resetLlaveN7 } = useForecastStore()
@@ -33,7 +33,7 @@ export function useForecastEditarN7Detalle(roundId: string | undefined, n4Codigo
   const cutoff = FORECAST_MES_ACTUAL
 
   const [editTarget, setEditTarget] = useState<EditTarget | null>(null)
-  const [mesConjuntoOpen, setMesConjuntoOpen] = useState(false)
+  const [distribuirOpen, setDistribuirOpen] = useState(false)
   const [justificacion, setJustificacion] = useState(FORECAST_JUSTIFICACION_OPTIONS[0])
   const [comentario, setComentario] = useState('')
 
@@ -64,7 +64,7 @@ export function useForecastEditarN7Detalle(roundId: string | undefined, n4Codigo
   const aplicarDistribucion = (meses: Record<string, number>) => {
     if (!round || !n4 || !n7 || Object.keys(meses).length === 0) return
     updateN7MesesBatch(round.id, [{ n4Codigo: n4.n4Codigo, n7Codigo: n7.n7Codigo, meses }])
-    setMesConjuntoOpen(false)
+    setDistribuirOpen(false)
     showToast('Distribución aplicada.')
   }
 
@@ -88,8 +88,8 @@ export function useForecastEditarN7Detalle(roundId: string | undefined, n4Codigo
     closeEdit,
     submitEdit,
     onResetLlave,
-    mesConjuntoOpen,
-    setMesConjuntoOpen,
+    distribuirOpen,
+    setDistribuirOpen,
     aplicarDistribucion,
     justificacion,
     setJustificacion,

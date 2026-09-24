@@ -3,19 +3,20 @@ import { Button, Drawer } from '@/shared/ui'
 import { monthKeys, monthLabels } from '@/data/reporteria'
 import { formatForecastAmount } from '../lib/format-forecast-amount'
 
-interface ForecastMesConjuntoDrawerProps {
+interface ForecastDistribuirMontosDrawerProps {
   open: boolean
   onClose: () => void
-  n7Nombre: string
+  nombre: string
   meses: Record<string, number>
   cutoff: number
   onAplicar: (meses: Record<string, number>) => void
 }
 
-/** "Mes Conjunto" (F): seleccionar varios meses aún no cerrados y asignarles un monto cada uno, con un
- * total que ya considera los meses en Real — reemplaza el copiado-a-todos anterior. Vive al pie de la
- * tabla de Forecast; "Aplicar distribución" guarda solo los meses tildados, "Cancelar" descarta. */
-export function ForecastMesConjuntoDrawer({ open, onClose, n7Nombre, meses, cutoff, onAplicar }: ForecastMesConjuntoDrawerProps) {
+/** "Distribuir Montos" (F, antes "Mes Conjunto"): seleccionar varios meses aún no cerrados y
+ * asignarles un monto cada uno, con un total que ya considera los meses en Real. Vive al pie de la
+ * tabla de Forecast (N4 o N7); "Aplicar distribución" guarda solo los meses tildados, "Cancelar"
+ * descarta. "Seleccionar todo" tilda (o destilda, si ya estaban todos) los meses restantes de una vez. */
+export function ForecastDistribuirMontosDrawer({ open, onClose, nombre, meses, cutoff, onAplicar }: ForecastDistribuirMontosDrawerProps) {
   const editables = monthKeys.map((k, i) => ({ k, i, label: monthLabels[i] })).filter((m) => m.i >= cutoff)
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [montos, setMontos] = useState<Record<string, string>>({})
@@ -29,6 +30,8 @@ export function ForecastMesConjuntoDrawer({ open, onClose, n7Nombre, meses, cuto
 
   const toggle = (k: string) => setSelected((s) => (s.has(k) ? new Set([...s].filter((x) => x !== k)) : new Set([...s, k])))
   const setMonto = (k: string, v: string) => setMontos((m) => ({ ...m, [k]: v }))
+  const todoSeleccionado = editables.length > 0 && editables.every((m) => selected.has(m.k))
+  const toggleTodo = () => setSelected(todoSeleccionado ? new Set() : new Set(editables.map((m) => m.k)))
 
   const realTotal = monthKeys.slice(0, cutoff).reduce((s, k) => s + (meses[k] || 0), 0)
   const forecastTotal = editables.reduce((s, m) => s + (selected.has(m.k) ? Number(montos[m.k]) || 0 : meses[m.k] || 0), 0)
@@ -43,8 +46,8 @@ export function ForecastMesConjuntoDrawer({ open, onClose, n7Nombre, meses, cuto
     <Drawer
       open={open}
       onClose={onClose}
-      eyebrow="Mes Conjunto"
-      title={n7Nombre}
+      eyebrow="Distribuir Montos"
+      title={nombre}
       subtitle="Seleccioná los meses a distribuir y asigná un monto a cada uno"
       footer={
         <>
@@ -57,6 +60,12 @@ export function ForecastMesConjuntoDrawer({ open, onClose, n7Nombre, meses, cuto
         </>
       }
     >
+      <div className="mb-3 flex justify-end">
+        <Button variant="outline" size="sm" onClick={toggleTodo}>
+          {todoSeleccionado ? 'Deseleccionar todo' : 'Seleccionar todo'}
+        </Button>
+      </div>
+
       <div className="flex flex-col gap-2.5">
         {editables.map((m) => (
           <label key={m.k} className="flex items-center gap-3 rounded-lg border border-border p-2.5 has-[:checked]:border-primary/40 has-[:checked]:bg-[#F8FAFF]">

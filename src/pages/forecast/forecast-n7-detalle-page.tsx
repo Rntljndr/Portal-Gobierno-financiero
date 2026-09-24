@@ -4,18 +4,19 @@ import { useForecastEditarN7Detalle } from './lib/use-forecast-editar-n7-detalle
 import { ForecastN7DetalleDatosCard } from './components/forecast-n7-detalle-datos-card'
 import { ForecastN7Table } from './components/forecast-n7-table'
 import { ForecastEditDrawer } from './components/forecast-edit-drawer'
-import { ForecastMesConjuntoDrawer } from './components/forecast-mes-conjunto-drawer'
+import { ForecastDistribuirMontosDrawer } from './components/forecast-distribuir-montos-drawer'
 import { ForecastChartSection } from './components/forecast-chart-section'
 import { ForecastN7DetalleDesvio } from './components/forecast-n7-detalle-desvio'
 import { useRestoreScroll } from './lib/use-restore-scroll'
 
 /** "Forecast Nivel 7": detalle de edición de un PEP N7 puntual. La tabla reutiliza ForecastN7Table
  * (mismo estilo/colores que el resto de Forecast, Reales y Preliminares — F) con una sola fila; la
- * edición celda a celda usa el mismo ForecastEditDrawer del resto del módulo. "Mes Conjunto" (F: al
- * pie de la tabla) abre un drawer aparte para asignar montos a varios meses restantes a la vez. Debajo
- * de la tabla, el gráfico (con selector barras/puntos) y la Justificación de Desvío/Comentarios van
- * lado a lado (F). Se llega acá desde "Editar" en Acciones o desde el nombre del servicio, tanto en la
- * tabla de PEPs N7 de un servicio N4 como en el tab "Forecast N7" del listado. */
+ * edición celda a celda usa el mismo ForecastEditDrawer del resto del módulo. "Distribuir Montos" (F:
+ * al pie de la tabla) abre un drawer aparte para asignar montos a varios meses restantes a la vez.
+ * Debajo de la tabla, el gráfico (con selector barras/puntos) y la Justificación de
+ * Desvío/Comentarios van lado a lado (F). Se llega acá desde "Editar" en Acciones o desde el nombre
+ * del servicio, tanto en la tabla de PEPs N7 de un servicio N4 como en el tab "Forecast N7" del
+ * listado. "Volver" lleva a ForecastN4DetallePage (mismo PEP N4, un nivel arriba). */
 export function ForecastN7DetallePage() {
   const { id, n4codigo, n7codigo } = useParams()
   const navigate = useNavigate()
@@ -60,8 +61,8 @@ export function ForecastN7DetallePage() {
         />
 
         <div className="mx-8 mb-5 flex justify-end">
-          <Button variant="outline" size="sm" onClick={() => s.setMesConjuntoOpen(true)}>
-            Mes Conjunto
+          <Button variant="outline" size="sm" onClick={() => s.setDistribuirOpen(true)}>
+            Distribuir Montos
           </Button>
         </div>
 
@@ -91,10 +92,10 @@ export function ForecastN7DetallePage() {
         onSubmit={s.submitEdit}
       />
 
-      <ForecastMesConjuntoDrawer
-        open={s.mesConjuntoOpen}
-        onClose={() => s.setMesConjuntoOpen(false)}
-        n7Nombre={n7.n7Nombre}
+      <ForecastDistribuirMontosDrawer
+        open={s.distribuirOpen}
+        onClose={() => s.setDistribuirOpen(false)}
+        nombre={n7.n7Nombre}
         meses={n7.meses}
         cutoff={s.cutoff}
         onAplicar={s.aplicarDistribucion}
