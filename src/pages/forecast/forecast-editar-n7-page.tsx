@@ -7,7 +7,6 @@ import { ForecastN7Table } from './components/forecast-n7-table'
 import { ForecastEditDrawer } from './components/forecast-edit-drawer'
 import { ForecastRupturaLlaveModal } from './components/forecast-ruptura-llave-modal'
 import { ForecastChartSection } from './components/forecast-chart-section'
-import { HideZeroToggle } from './components/hide-zero-toggle'
 import { downloadForecastN7Xlsx } from './lib/download-forecast-xlsx'
 import { useRestoreScroll } from './lib/use-restore-scroll'
 
@@ -39,20 +38,15 @@ export function ForecastEditarN7Page() {
             { label: n4.n4Nombre },
           ]}
         />
-        <PageHeader
-          title={n4.n4Nombre}
-          subtitle={`${n4.n4Codigo} · Edición por PEP N7`}
-          action={
-            <div className="flex items-center gap-3">
-              <HideZeroToggle checked={s.ocultarCeros} onChange={s.setOcultarCeros} />
-              <Button variant="outline" size="sm" onClick={() => downloadForecastN7Xlsx(n4.n4Codigo, n4.n4Nombre, s.n7Visibles, s.cutoff)}>
-                <Icon name="download" size={12} color="#0047B0" /> Descargar
-              </Button>
-            </div>
-          }
-        />
+        <PageHeader title={n4.n4Nombre} subtitle={`${n4.n4Codigo} · Edición por PEP N7`} />
 
         <ForecastN4InfoCard n4Codigo={n4.n4Codigo} n4Nombre={n4.n4Nombre} pais={n4.pais} equipo={n4.equipo} />
+
+        <div className="mx-8 mb-3 flex justify-end">
+          <Button variant="outline" size="sm" onClick={() => downloadForecastN7Xlsx(n4.n4Codigo, n4.n4Nombre, s.n7Visibles, s.cutoff)}>
+            <Icon name="download" size={12} color="#0047B0" /> Descargar
+          </Button>
+        </div>
 
         <ForecastN7Table roundId={round.id} n4Codigo={n4.n4Codigo} rows={s.n7Visibles} cutoff={s.cutoff} onEditMonth={s.openEdit} onResetLlave={s.onResetLlave} />
 

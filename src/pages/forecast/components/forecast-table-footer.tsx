@@ -2,7 +2,6 @@ import { cn } from '@/shared/lib/utils'
 import { DesvioChip } from '@/shared/ui'
 import type { ResumenTotals } from '@/shared/lib/resumen-blocks'
 import { formatForecastAmount } from '../lib/format-forecast-amount'
-import { EjecucionBadge } from './ejecucion-badge'
 import { FORECAST_IDENTITY_COL_COUNT } from '../lib/forecast-identity-cols'
 
 interface ForecastTableFooterProps {
@@ -39,10 +38,7 @@ export function ForecastTableFooter({ rowCount, itemLabel, cutoff, variant, mont
           {formatForecastAmount(grandTotals.desvio)}
         </td>
         <td className="p-[13px_8px] text-center">
-          <div className="flex flex-col items-center gap-1">
-            <DesvioChip pct={grandTotals.pctDesvio} />
-            <EjecucionBadge pct={grandTotals.pctDesvio} />
-          </div>
+          <DesvioChip pct={grandTotals.pctDesvio} />
         </td>
         {variant === 'n7' && <td colSpan={3} />}
       </tr>

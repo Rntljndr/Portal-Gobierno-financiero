@@ -1,7 +1,6 @@
 import { cn } from '@/shared/lib/utils'
 import { DesvioChip } from '@/shared/ui'
 import type { ResumenTotals } from '@/shared/lib/resumen-blocks'
-import { EjecucionBadge } from './ejecucion-badge'
 
 const td = 'p-[10px_8px] text-[12px] whitespace-nowrap text-cs-gris-oscuro'
 
@@ -27,10 +26,7 @@ export function ForecastResumenCells({ totals, fmt }: ForecastResumenCellsProps)
         {fmt(totals.desvio)}
       </td>
       <td className={cn(td, 'bg-primary/[0.03] text-center')}>
-        <div className="flex flex-col items-center gap-1">
-          <DesvioChip pct={totals.pctDesvio} />
-          <EjecucionBadge pct={totals.pctDesvio} />
-        </div>
+        <DesvioChip pct={totals.pctDesvio} />
       </td>
     </>
   )

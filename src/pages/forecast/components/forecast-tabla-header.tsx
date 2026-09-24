@@ -16,10 +16,7 @@ interface ForecastTablaHeaderProps {
 export function ForecastTablaHeader({ activo, tab, onImportar, onDescargar }: ForecastTablaHeaderProps) {
   return (
     <div className="mx-8 mb-3 flex flex-wrap items-center justify-between gap-3">
-      <div className="text-[13px] font-bold text-foreground">
-        {tab === 'n4' ? 'Servicios N4' : 'Servicios N7'}
-        {activo ? ` — ${activo.titulo}` : ''}
-      </div>
+      <div className="text-[13px] font-bold text-foreground">{tab === 'n4' ? 'Forecast - Servicios N4' : 'Forecast - Servicios N7'}</div>
       {activo && (
         <div className="flex flex-wrap items-center gap-2.5">
           <Button variant="outline" size="sm" onClick={onImportar}>

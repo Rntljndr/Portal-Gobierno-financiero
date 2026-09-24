@@ -8,6 +8,7 @@ import { downloadForecastN4Xlsx } from './lib/download-forecast-xlsx'
 import { buildFlatN7Rows } from './lib/forecast-flat-n7'
 import { calcN7Totals } from './lib/forecast-edit-calc'
 import { estaEnCero } from './lib/hide-zero-lines'
+import { useForecastFilters } from './lib/use-forecast-filters'
 import { ForecastListHeaderActions } from './components/forecast-list-header-actions'
 import { ForecastListBody } from './components/forecast-list-body'
 import { ForecastAnterioresDrawer } from './components/forecast-anteriores-drawer'
@@ -36,6 +37,8 @@ export function ForecastListPage() {
     return tabla.ocultarCeros ? rows.filter((r) => !estaEnCero(calcN7Totals(r.n4Codigo, r.n7, tabla.cutoff))) : rows
   }, [activo, tabla.ocultarCeros, tabla.cutoff])
 
+  const filtros = useForecastFilters(tab, tabla.lineasVisibles, flatN7Rows, tabla.cutoff)
+
   return (
     <div className="h-full overflow-y-auto">
       <Breadcrumb items={[{ label: 'SIP', to: '/' }, { label: 'Presupuesto', to: '/ejercicios' }, { label: 'Ejercicios', to: '/ejercicios' }, { label: 'Forecast' }]} />
@@ -52,14 +55,14 @@ export function ForecastListPage() {
         anterioresCount={anteriores.length}
         tab={tab}
         tabla={tabla}
-        flatN7Rows={flatN7Rows}
+        filtros={filtros}
         detalleOpen={detalleOpen}
         onToggleDetalle={() => setDetalleOpen((v) => !v)}
         onVerTasas={() => setTasasOpen(true)}
         onOpenAnteriores={() => setAnterioresOpen(true)}
         onCerrar={() => activo && setCloseTarget(activo)}
         onImportar={cm.openDrawer}
-        onDescargar={() => activo && downloadForecastN4Xlsx(activo.titulo, tabla.lineasVisibles, tabla.cutoff)}
+        onDescargar={() => activo && downloadForecastN4Xlsx(activo.titulo, filtros.filteredN4, tabla.cutoff)}
       />
 
       <ForecastAnterioresDrawer open={anterioresOpen} onClose={() => setAnterioresOpen(false)} borrador={borrador} rounds={anteriores} onRequestDelete={setDeleteTarget} />

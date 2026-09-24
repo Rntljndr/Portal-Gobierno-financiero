@@ -42,6 +42,7 @@ export function ForecastN7DetallePage() {
             { label: 'SIP', to: '/' },
             { label: 'Forecast', to: '/forecast' },
             { label: round.titulo, to: `/forecast/${round.id}` },
+            { label: 'Editar', to: `/forecast/${round.id}/editar` },
             { label: n4.n4Nombre, to: volverHref },
             { label: n7.n7Nombre },
           ]}
