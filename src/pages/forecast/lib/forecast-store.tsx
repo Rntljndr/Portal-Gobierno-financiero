@@ -54,6 +54,22 @@ export function ForecastProvider({ children }: { children: ReactNode }) {
           return { ...r, lineas }
         }),
       ),
+
+    updateN7MesesBatch: (roundId, updates) =>
+      setRounds((prev) => {
+        const byN7Codigo = new Map(updates.map((u) => [u.n7Codigo, u]))
+        return prev.map((r) => {
+          if (r.id !== roundId) return r
+          const lineas = r.lineas.map((n4) => ({
+            ...n4,
+            n7: n4.n7.map((line) => {
+              const update = byN7Codigo.get(line.n7Codigo)
+              return update && update.n4Codigo === n4.n4Codigo ? { ...line, meses: { ...line.meses, ...update.meses }, tipoActualizacion: 'manual' as const } : line
+            }),
+          }))
+          return { ...r, lineas }
+        })
+      }),
   }
 
   return <ForecastContext.Provider value={store}>{children}</ForecastContext.Provider>

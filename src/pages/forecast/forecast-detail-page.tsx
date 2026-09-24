@@ -4,7 +4,8 @@ import { Breadcrumb, Button, EmptyState, Icon } from '@/shared/ui'
 import { useForecastStore } from './lib/use-forecast-store'
 import { EstadoBadge } from './components/estado-badge'
 import { CerrarForecastModal } from './components/cerrar-forecast-modal'
-import { CrearForecastFormFields } from './components/crear-forecast-form'
+import { ForecastDatosCard } from './components/forecast-datos-card'
+import { PepSelectionSection } from './components/pep-selection-section'
 import { TasasCambioTable } from './components/tasas-cambio-table'
 import { formatFechaCorta } from './lib/format-date'
 
@@ -57,24 +58,13 @@ export function ForecastDetailPage() {
 
       <div className="mx-8 mb-2 text-[11.5px] text-muted-foreground">Este forecast ya fue creado — los datos a continuación no se pueden modificar.</div>
 
-      <div className="mx-8 mb-4">
-        <CrearForecastFormFields
-          form={{
-            titulo: round.titulo,
-            descripcion: round.descripcion,
-            fechaInicio: round.fechaInicio,
-            fechaTermino: round.fechaTermino,
-            desvio: String(round.desvio),
-            tipo: round.tipo,
-            notificar: round.notificar,
-          }}
-          setField={() => {}}
-          errors={{}}
-          selPeps={selPeps}
-          onTogglePep={() => {}}
-          readOnly
-        />
-      </div>
+      <ForecastDatosCard round={round} />
+
+      {round.tipo === 'parcial' && (
+        <div className="mx-8 mb-5 rounded-xl border border-border bg-white p-[20px_24px]">
+          <PepSelectionSection selPeps={selPeps} onTogglePep={() => {}} readOnly bordered={false} />
+        </div>
+      )}
 
       <div className="mx-8 mb-8">
         <TasasCambioTable value={round.tasasCambio} readOnly />

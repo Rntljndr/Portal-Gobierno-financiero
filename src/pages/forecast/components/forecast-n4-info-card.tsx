@@ -1,17 +1,7 @@
 import { useState } from 'react'
 import { Icon } from '@/shared/ui'
 import { pepN4Meta } from '@/data/pep-n4-meta'
-
-const label = 'mb-1.5 block text-[12px] font-semibold text-cs-gris-oscuro'
-
-function ReadOnlyField({ text, value }: { text: string; value: string }) {
-  return (
-    <div>
-      <label className={label}>{text}</label>
-      <div className="min-h-10 rounded-lg border border-[#eef0f8] bg-[#f4f6fb] px-3 py-2 text-[13px] text-foreground">{value || '—'}</div>
-    </div>
-  )
-}
+import { DataField } from '@/pages/servicio-detalle/components/data-field'
 
 interface ForecastN4InfoCardProps {
   n4Codigo: string
@@ -20,14 +10,18 @@ interface ForecastN4InfoCardProps {
   equipo: string
 }
 
-/** Tarjeta colapsable con la ficha del servicio N4 — mismo patrón visual que PepN4Card (ABM PEPS), en solo lectura porque Gerencia/Equipo son datos administrativos, no de Forecast. */
+/** Mismo diseño y estructura que DataAccordion (servicio-detalle/components/data-accordion.tsx,
+ * "Datos del servicio" — la ficha que se ve al seleccionar un PEP en Próximo ejercicio): acordeón sin
+ * borde divisor entre header y body, 3 grids de 3 campos (grid-cols-3 gap-5), DataField para
+ * label/valor en texto plano. Se reutiliza DataField tal cual (componente puro, sin acoplamiento a
+ * servicio-detalle) en vez de duplicarlo, para garantizar que ambas fichas se vean idénticas. */
 export function ForecastN4InfoCard({ n4Codigo, n4Nombre, pais, equipo }: ForecastN4InfoCardProps) {
   const [open, setOpen] = useState(true)
   const meta = pepN4Meta[n4Codigo]
 
   return (
-    <div className="mx-8 mb-6 overflow-hidden rounded-xl border border-border bg-white">
-      <button type="button" onClick={() => setOpen((v) => !v)} className="flex w-full min-w-0 items-center gap-2 p-[16px_20px] text-left">
+    <div className="mx-8 mb-5 rounded-xl border border-border bg-white">
+      <button type="button" onClick={() => setOpen((v) => !v)} className="flex w-full items-center justify-between gap-2 p-[16px_20px] text-left">
         <span className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[15px] font-bold text-primary">
           {n4Codigo} – {n4Nombre}
         </span>
@@ -35,16 +29,21 @@ export function ForecastN4InfoCard({ n4Codigo, n4Nombre, pais, equipo }: Forecas
       </button>
 
       {open && (
-        <div className="border-t border-[#eef0f8] p-[20px]">
-          <div className="grid grid-cols-4 gap-4">
-            <ReadOnlyField text="País" value={pais} />
-            <ReadOnlyField text="Equipo" value={equipo} />
-            <ReadOnlyField text="Gerencia padre" value={meta?.gerenciaPadre ?? '—'} />
-            <ReadOnlyField text="Gerencia" value={meta?.gerencia ?? '—'} />
-            <ReadOnlyField text="Centro de costo" value={meta?.centroCosto ?? '—'} />
-            <ReadOnlyField text="Cuenta contable" value={meta?.cuentaContable ?? '—'} />
-            <ReadOnlyField text="Bandera" value={meta?.bandera ?? '—'} />
-            <ReadOnlyField text="Moneda" value={meta?.moneda ?? '—'} />
+        <div className="p-[0_20px_20px]">
+          <div className="mb-5 grid grid-cols-3 gap-5">
+            <DataField label="País" value={pais} />
+            <DataField label="Gerencia padre" value={meta?.gerenciaPadre ?? ''} />
+            <DataField label="Cuenta contable" value={meta?.cuentaContable ?? ''} />
+          </div>
+          <div className="mb-5 grid grid-cols-3 gap-5">
+            <DataField label="Gerencia" value={meta?.gerencia ?? ''} />
+            <DataField label="Equipo" value={equipo} />
+            <DataField label="Bandera" value={meta?.bandera ?? ''} />
+          </div>
+          <div className="grid grid-cols-3 gap-5">
+            <DataField label="Centro de costo" value={meta?.centroCosto ?? ''} />
+            <DataField label="Moneda" value={meta?.moneda ?? ''} />
+            <DataField label="Código de servicio" value={n4Codigo} />
           </div>
         </div>
       )}

@@ -6,11 +6,13 @@ interface PepSelectionSectionProps {
   onTogglePep: (codigo: string) => void
   error?: string
   readOnly?: boolean
+  /** false cuando ya vive dentro de su propia card (ej. forecast-detail-page.tsx) — evita un borde superior duplicado. Default true, para el uso dentro de CrearForecastFormFields. */
+  bordered?: boolean
 }
 
-export function PepSelectionSection({ selPeps, onTogglePep, error, readOnly = false }: PepSelectionSectionProps) {
+export function PepSelectionSection({ selPeps, onTogglePep, error, readOnly = false, bordered = true }: PepSelectionSectionProps) {
   return (
-    <div className="mt-1 mb-4 border-t border-border pt-4">
+    <div className={cn('mb-4', bordered && 'mt-1 border-t border-border pt-4')}>
       <div className="mb-2.5 flex items-center justify-between">
         <div className="text-[13px] font-bold text-foreground">Selección de PEPs</div>
         <div className={cn('rounded-full border px-3 py-1 text-xs font-bold', selPeps.size > 0 ? 'border-[#C7DEFF] bg-[#EEF4FF] text-primary' : 'border-border bg-[#F4F6FB] text-muted-foreground')}>
