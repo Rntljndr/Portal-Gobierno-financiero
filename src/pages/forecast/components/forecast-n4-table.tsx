@@ -38,16 +38,16 @@ export function ForecastN4Table({ roundId, rows, cutoff, onEditMonth, readOnly =
   return (
     <div className="mx-8 mb-6 overflow-x-auto rounded-xl border border-border shadow-[0_1px_4px_rgba(0,20,60,0.06)]">
       <table className="w-full border-collapse text-xs">
-        <ForecastTableHeader cutoff={cutoff} identityLabel="Servicio N4" sortCol={col} sortDir={dir} onSort={onSort} />
+        <ForecastTableHeader cutoff={cutoff} identityLabel="Servicio N4" variant="n4" sortCol={col} sortDir={dir} onSort={onSort} />
         <tbody>
           {sortedRows.map((n4) => (
             <Fragment key={n4.n4Codigo}>
               <ForecastN4TableRow roundId={roundId} n4={n4} cutoff={cutoff} onEditMonth={onEditMonth} readOnly={readOnly} />
-              <ForecastPlanRow plan={findPlanN4(n4.n4Codigo)} cutoff={cutoff} />
+              <ForecastPlanRow plan={findPlanN4(n4.n4Codigo)} cutoff={cutoff} variant="n4" />
             </Fragment>
           ))}
         </tbody>
-        <ForecastTableFooter rowCount={rows.length} itemLabel="servicios N4" cutoff={cutoff} monthTotals={monthTotals} grandTotals={grandTotals} />
+        <ForecastTableFooter rowCount={rows.length} itemLabel="servicios N4" cutoff={cutoff} variant="n4" monthTotals={monthTotals} grandTotals={grandTotals} />
       </table>
     </div>
   )

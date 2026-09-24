@@ -1,10 +1,13 @@
 import { cn } from '@/shared/lib/utils'
-import { Badge, Button, Icon } from '@/shared/ui'
+import { Badge, Icon } from '@/shared/ui'
 import { monthKeys, monthLabels } from '@/data/reporteria'
 import type { ForecastN7Linea } from '@/data/forecast-lineas'
 import { calcN7Totals } from '../lib/forecast-edit-calc'
+import { n7Identidad } from '../lib/forecast-identidad'
 import { formatForecastAmount } from '../lib/format-forecast-amount'
 import { ForecastResumenCells } from './forecast-resumen-cells'
+import { ForecastIdentityCells } from './forecast-identity-cells'
+import { ForecastN7TailExtraCells } from './forecast-n7-tail-extra'
 import { ForecastMonthCell } from './forecast-month-cell'
 
 const td = 'p-[10px_8px] text-[12px] whitespace-nowrap text-cs-gris-oscuro'
@@ -16,14 +19,16 @@ function positionClass(closed: boolean, i: number, cutoff: number) {
 interface ForecastN7TableRowProps {
   n4Codigo: string
   n7: ForecastN7Linea
+  siblings: ForecastN7Linea[]
   cutoff: number
   onEditMonth: (n7: ForecastN7Linea, monthKey: string, monthLabel: string, currentValue: number) => void
   onResetLlave: (n7Codigo: string) => void
 }
 
-export function ForecastN7TableRow({ n4Codigo, n7, cutoff, onEditMonth, onResetLlave }: ForecastN7TableRowProps) {
+export function ForecastN7TableRow({ n4Codigo, n7, siblings, cutoff, onEditMonth, onResetLlave }: ForecastN7TableRowProps) {
   const totals = calcN7Totals(n4Codigo, n7, cutoff)
   const isManual = n7.tipoActualizacion === 'manual'
+  const identidad = n7Identidad(n4Codigo, n7, siblings, cutoff)
 
   return (
     <tr className="border-t border-border">
@@ -35,13 +40,9 @@ export function ForecastN7TableRow({ n4Codigo, n7, cutoff, onEditMonth, onResetL
               <Icon name="alert" size={9} color="currentColor" /> Edición manual
             </Badge>
           )}
-          {isManual && (
-            <Button variant="outline" size="sm" onClick={() => onResetLlave(n7.n7Codigo)}>
-              Restablecer llave
-            </Button>
-          )}
         </div>
       </td>
+      <ForecastIdentityCells identidad={identidad} />
       {monthKeys.map((k, i) => {
         const closed = i < cutoff
         return (
@@ -56,6 +57,7 @@ export function ForecastN7TableRow({ n4Codigo, n7, cutoff, onEditMonth, onResetL
         )
       })}
       <ForecastResumenCells totals={totals} fmt={formatForecastAmount} />
+      <ForecastN7TailExtraCells motivo={identidad.motivo} ultimaEdicion={identidad.ultimaEdicion} onResetLlave={isManual ? () => onResetLlave(n7.n7Codigo) : undefined} />
     </tr>
   )
 }

@@ -1,20 +1,23 @@
 import { cn } from '@/shared/lib/utils'
 import { Icon } from '@/shared/ui'
 import { monthLabels } from '@/data/reporteria'
-import { FORECAST_ACUMULADO_COLS, FORECAST_PROYECCION_COLS, FORECAST_PROYECCION_LABEL } from '../lib/forecast-resumen-labels'
+import { FORECAST_TAIL_COLS, FORECAST_TAIL_LABEL } from '../lib/forecast-resumen-labels'
 import type { ForecastSortCol, SortDir } from '../lib/forecast-sort'
+import { FORECAST_IDENTITY_COL_COUNT } from '../lib/forecast-identity-cols'
+import { ForecastIdentityHeaderCells } from './forecast-identity-header-cells'
+import { ForecastN7TailExtraHeaderCells } from './forecast-n7-tail-extra'
 
 const thGroup = 'p-[6px_8px] text-center text-[10.5px] font-bold whitespace-nowrap border-b border-border'
 const th = 'p-[9px_8px] text-left text-[10.5px] font-bold tracking-[0.04em] text-muted-foreground uppercase whitespace-nowrap border-b-2 border-border bg-[#F4F6FB]'
 
-/** Mapea cada columna de resumen a su `ForecastSortCol` — ambos bloques (Acumulado/Anual) comparten
- * las mismas 3 keys de negocio (total/desvío/desvío %) pero necesitan ordenar por campos distintos. */
-const ACUMULADO_SORT_COLS: NonNullable<ForecastSortCol>[] = ['real', 'desvioAcumMonto', 'desvioAcumPct']
-const PROYECCION_SORT_COLS: NonNullable<ForecastSortCol>[] = ['realMasForecast', 'desvio', 'pctDesvio']
+/** key por columna de FORECAST_TAIL_COLS — 'disponible' no es ordenable (no es un campo propio de
+ * ResumenTotals, se deriva en el momento). */
+const TAIL_SORT_COLS: (NonNullable<ForecastSortCol> | null)[] = ['plan', 'real', null, 'realMasForecast', 'desvio', 'pctDesvio']
 
 interface ForecastTableHeaderProps {
   cutoff: number
   identityLabel: string
+  variant: 'n4' | 'n7'
   sortCol: ForecastSortCol
   sortDir: SortDir
   onSort: (col: NonNullable<ForecastSortCol>) => void
@@ -46,29 +49,32 @@ function Sortable({ col, label, align = 'right', bordL, bg, sortCol, sortDir, on
   )
 }
 
-/** Cabecera compartida por las tablas N4 y N7 de edición de Forecast — identidad y las 6 columnas de
- * resumen son ordenables (Ajuste T2); los meses individuales no, para no sumar ruido. */
-export function ForecastTableHeader({ cutoff, identityLabel, sortCol, sortDir, onSort }: ForecastTableHeaderProps) {
+/** Cabecera compartida por las tablas N4 y N7 de edición de Forecast — identidad copiada de
+ * ForecastN4Historico/N7Historico (F) entre el nombre del servicio y los meses; el nombre y las
+ * columnas de cierre (Ajuste T2) son ordenables, identidad y meses no (para no sumar ruido). */
+export function ForecastTableHeader({ cutoff, identityLabel, variant, sortCol, sortDir, onSort }: ForecastTableHeaderProps) {
   const p = { sortCol, sortDir, onSort }
+  const identityColCount = FORECAST_IDENTITY_COL_COUNT[variant]
+  const tailExtraCount = variant === 'n7' ? 3 : 0
+
   return (
     <thead>
       <tr>
-        <th className={cn(th, 'sticky left-0 z-[2]')} />
+        <th colSpan={identityColCount} className={cn(th, 'sticky left-0 z-[2]')} />
         <th colSpan={cutoff} className={cn(thGroup, 'border-l-2 border-l-[#C4DFFF] bg-[#EEF4FF] text-primary')}>
           Real (YTD) · {monthLabels[0].slice(0, 3)}-{monthLabels[cutoff - 1].slice(0, 3)}
         </th>
         <th colSpan={12 - cutoff} className={cn(thGroup, 'border-l-2 border-l-[#CBD5E1] text-muted-foreground')}>
           Forecast (YTG) · {monthLabels[cutoff].slice(0, 3)}-{monthLabels[11].slice(0, 3)}
         </th>
-        <th colSpan={FORECAST_ACUMULADO_COLS.length} className={cn(thGroup, 'border-l-2 border-l-border text-cs-gris-oscuro')}>
-          {cutoff > 0 ? `Acumulado ${monthLabels[0]}–${monthLabels[cutoff - 1]}` : 'Acumulado'}
+        <th colSpan={FORECAST_TAIL_COLS.length} className={cn(thGroup, 'border-l-2 border-l-border bg-primary/5 text-primary')}>
+          {FORECAST_TAIL_LABEL}
         </th>
-        <th colSpan={FORECAST_PROYECCION_COLS.length} className={cn(thGroup, 'border-l-2 border-l-border bg-primary/5 text-primary')}>
-          {FORECAST_PROYECCION_LABEL}
-        </th>
+        {tailExtraCount > 0 && <th colSpan={tailExtraCount} className={cn(thGroup, 'border-l-2 border-l-border text-cs-gris-oscuro')} />}
       </tr>
       <tr>
         <Sortable col="nombre" label={identityLabel} align="left" {...p} />
+        <ForecastIdentityHeaderCells variant={variant} />
         {monthLabels.map((label, i) => {
           const closed = i < cutoff
           return (
@@ -86,20 +92,18 @@ export function ForecastTableHeader({ cutoff, identityLabel, sortCol, sortDir, o
             </th>
           )
         })}
-        {FORECAST_ACUMULADO_COLS.map((c, i) => (
-          <Sortable key={c.key} col={ACUMULADO_SORT_COLS[i]} label={c.label} align={c.key === 'desvioAcumPct' ? 'center' : 'right'} bordL={i === 0} {...p} />
-        ))}
-        {FORECAST_PROYECCION_COLS.map((c, i) => (
-          <Sortable
-            key={c.key}
-            col={PROYECCION_SORT_COLS[i]}
-            label={c.label}
-            align={c.key === 'desvioAnualPct' ? 'center' : 'right'}
-            bg="bg-primary/5 text-primary"
-            bordL={i === 0}
-            {...p}
-          />
-        ))}
+        {FORECAST_TAIL_COLS.map((c, i) => {
+          const col = TAIL_SORT_COLS[i]
+          const align = c.key === 'pctDesvio' ? 'center' : 'right'
+          return col ? (
+            <Sortable key={c.key} col={col} label={c.label} align={align} bg="bg-primary/5 text-primary" bordL={i === 0} {...p} />
+          ) : (
+            <th key={c.key} className={cn(th, 'bg-primary/5 text-primary', i === 0 && 'border-l-2 border-l-border', ALIGN_TH[align])}>
+              {c.label}
+            </th>
+          )
+        })}
+        {variant === 'n7' && <ForecastN7TailExtraHeaderCells />}
       </tr>
     </thead>
   )

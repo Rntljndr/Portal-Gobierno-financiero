@@ -13,8 +13,10 @@ function realAcumulado(meses: Record<string, number>, cutoff: number): number {
   return monthKeys.slice(0, cutoff).reduce((s, k) => s + (meses[k] || 0), 0)
 }
 
-/** % de cada N7 sobre el real acumulado del N4 — se recalcula en vivo a medida que caen Reales, nunca se persiste. */
-export function calcLlaveDistribucion(n4: ForecastN4Linea, cutoff: number): LlaveSegment[] {
+/** % de cada N7 sobre el real acumulado del N4 — se recalcula en vivo a medida que caen Reales, nunca se persiste.
+ * Solo usa `n4.n7`, así que acepta cualquier objeto con esa forma (p.ej. para recalcular la llave de un
+ * listado plano de N7 sin tener el ForecastN4Linea completo a mano — ver forecast-identidad.ts). */
+export function calcLlaveDistribucion(n4: { n7: ForecastN7Linea[] }, cutoff: number): LlaveSegment[] {
   const totals = n4.n7.map((n7) => ({ n7, real: realAcumulado(n7.meses, cutoff) }))
   const totalReal = totals.reduce((s, t) => s + t.real, 0)
   if (totalReal <= 0) {

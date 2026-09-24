@@ -38,16 +38,16 @@ export function ForecastN7Table({ n4Codigo, rows, cutoff, onEditMonth, onResetLl
   return (
     <div className="mx-8 mb-6 overflow-x-auto rounded-xl border border-border shadow-[0_1px_4px_rgba(0,20,60,0.06)]">
       <table className="w-full border-collapse text-xs">
-        <ForecastTableHeader cutoff={cutoff} identityLabel="PEP N7" sortCol={col} sortDir={dir} onSort={onSort} />
+        <ForecastTableHeader cutoff={cutoff} identityLabel="PEP N7" variant="n7" sortCol={col} sortDir={dir} onSort={onSort} />
         <tbody>
           {sortedRows.map((n7) => (
             <Fragment key={n7.n7Codigo}>
-              <ForecastN7TableRow n4Codigo={n4Codigo} n7={n7} cutoff={cutoff} onEditMonth={onEditMonth} onResetLlave={onResetLlave} />
-              <ForecastPlanRow plan={findPlanN7(n4Codigo, n7.n7Codigo)} cutoff={cutoff} />
+              <ForecastN7TableRow n4Codigo={n4Codigo} n7={n7} siblings={rows} cutoff={cutoff} onEditMonth={onEditMonth} onResetLlave={onResetLlave} />
+              <ForecastPlanRow plan={findPlanN7(n4Codigo, n7.n7Codigo)} cutoff={cutoff} variant="n7" />
             </Fragment>
           ))}
         </tbody>
-        <ForecastTableFooter rowCount={rows.length} itemLabel="PEPs N7" cutoff={cutoff} monthTotals={monthTotals} grandTotals={grandTotals} />
+        <ForecastTableFooter rowCount={rows.length} itemLabel="PEPs N7" cutoff={cutoff} variant="n7" monthTotals={monthTotals} grandTotals={grandTotals} />
       </table>
     </div>
   )

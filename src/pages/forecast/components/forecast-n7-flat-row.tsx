@@ -2,9 +2,12 @@ import { Link } from 'react-router'
 import { cn } from '@/shared/lib/utils'
 import { monthKeys } from '@/data/reporteria'
 import { calcN7Totals } from '../lib/forecast-edit-calc'
+import { n7Identidad } from '../lib/forecast-identidad'
 import { formatForecastAmount } from '../lib/format-forecast-amount'
 import type { ForecastFlatN7Row } from '../lib/forecast-flat-n7'
 import { ForecastResumenCells } from './forecast-resumen-cells'
+import { ForecastIdentityCells } from './forecast-identity-cells'
+import { ForecastN7TailExtraCells } from './forecast-n7-tail-extra'
 import { ForecastMonthCell } from './forecast-month-cell'
 
 const td = 'p-[10px_8px] text-[12px] whitespace-nowrap text-cs-gris-oscuro'
@@ -23,8 +26,9 @@ interface ForecastN7FlatRowProps {
  * sin scope a un N4 puntual. Solo lectura acá; el link al servicio lleva a la pantalla de edición
  * dedicada (que convive con este tab, sin reemplazarla). */
 export function ForecastN7FlatRow({ roundId, row, cutoff }: ForecastN7FlatRowProps) {
-  const { n4Codigo, n4Nombre, n7 } = row
+  const { n4Codigo, n4Nombre, n7, n4Siblings } = row
   const totals = calcN7Totals(n4Codigo, n7, cutoff)
+  const identidad = n7Identidad(n4Codigo, n7, n4Siblings, cutoff)
 
   return (
     <tr className="border-t border-border">
@@ -34,6 +38,7 @@ export function ForecastN7FlatRow({ roundId, row, cutoff }: ForecastN7FlatRowPro
           <div className="text-[10.5px] font-normal text-muted-foreground">{n4Nombre}</div>
         </Link>
       </td>
+      <ForecastIdentityCells identidad={identidad} />
       {monthKeys.map((k, i) => {
         const closed = i < cutoff
         return (
@@ -47,6 +52,7 @@ export function ForecastN7FlatRow({ roundId, row, cutoff }: ForecastN7FlatRowPro
         )
       })}
       <ForecastResumenCells totals={totals} fmt={formatForecastAmount} />
+      <ForecastN7TailExtraCells motivo={identidad.motivo} ultimaEdicion={identidad.ultimaEdicion} />
     </tr>
   )
 }

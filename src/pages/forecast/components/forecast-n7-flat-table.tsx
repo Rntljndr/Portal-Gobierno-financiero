@@ -38,16 +38,16 @@ export function ForecastN7FlatTable({ roundId, rows, cutoff }: ForecastN7FlatTab
   return (
     <div className="mx-8 mb-6 overflow-x-auto rounded-xl border border-border shadow-[0_1px_4px_rgba(0,20,60,0.06)]">
       <table className="w-full border-collapse text-xs">
-        <ForecastTableHeader cutoff={cutoff} identityLabel="PEP N7 · Servicio N4" sortCol={col} sortDir={dir} onSort={onSort} />
+        <ForecastTableHeader cutoff={cutoff} identityLabel="PEP N7 · Servicio N4" variant="n7" sortCol={col} sortDir={dir} onSort={onSort} />
         <tbody>
           {sortedRows.map((r) => (
             <Fragment key={r.n7.n7Codigo}>
               <ForecastN7FlatRow roundId={roundId} row={r} cutoff={cutoff} />
-              <ForecastPlanRow plan={findPlanN7(r.n4Codigo, r.n7.n7Codigo)} cutoff={cutoff} />
+              <ForecastPlanRow plan={findPlanN7(r.n4Codigo, r.n7.n7Codigo)} cutoff={cutoff} variant="n7" />
             </Fragment>
           ))}
         </tbody>
-        <ForecastTableFooter rowCount={rows.length} itemLabel="PEPs N7" cutoff={cutoff} monthTotals={monthTotals} grandTotals={grandTotals} />
+        <ForecastTableFooter rowCount={rows.length} itemLabel="PEPs N7" cutoff={cutoff} variant="n7" monthTotals={monthTotals} grandTotals={grandTotals} />
       </table>
     </div>
   )

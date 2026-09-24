@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { ResumenTotals } from '@/shared/lib/resumen-blocks'
 
-export type ForecastSortCol = 'nombre' | 'real' | 'desvioAcumMonto' | 'desvioAcumPct' | 'realMasForecast' | 'desvio' | 'pctDesvio' | null
+export type ForecastSortCol = 'nombre' | 'plan' | 'real' | 'realMasForecast' | 'desvio' | 'pctDesvio' | null
 
 export type SortDir = 'asc' | 'desc'
 

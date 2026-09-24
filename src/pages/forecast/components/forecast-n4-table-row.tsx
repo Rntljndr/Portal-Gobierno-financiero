@@ -4,9 +4,11 @@ import { Icon } from '@/shared/ui'
 import { monthKeys, monthLabels } from '@/data/reporteria'
 import type { ForecastN4Linea } from '@/data/forecast-lineas'
 import { calcN4Meses, calcN4Totals } from '../lib/forecast-edit-calc'
+import { n4Identidad } from '../lib/forecast-identidad'
 import { formatForecastAmount } from '../lib/format-forecast-amount'
 import { ForecastMonthCell } from './forecast-month-cell'
 import { ForecastResumenCells } from './forecast-resumen-cells'
+import { ForecastIdentityCells } from './forecast-identity-cells'
 
 const td = 'p-[10px_8px] text-[12px] whitespace-nowrap text-cs-gris-oscuro'
 
@@ -37,6 +39,7 @@ export function ForecastN4TableRow({ roundId, n4, cutoff, onEditMonth, readOnly 
           <span>{n4.n4Nombre}</span>
         </Link>
       </td>
+      <ForecastIdentityCells identidad={n4Identidad(n4)} />
       {monthKeys.map((k, i) => {
         const closed = readOnly || i < cutoff
         return (
