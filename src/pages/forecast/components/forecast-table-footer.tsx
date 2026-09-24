@@ -21,9 +21,10 @@ export function ForecastTableFooter({ rowCount, itemLabel, cutoff, variant, mont
   return (
     <tfoot>
       <tr className="border-t-2 border-border bg-[#FAFBFE] font-bold">
-        <td colSpan={FORECAST_IDENTITY_COL_COUNT[variant]} className="sticky left-0 z-[1] bg-[#FAFBFE] p-[13px_14px] text-[12.5px] whitespace-nowrap text-cs-gris-oscuro">
+        <td className="sticky left-0 z-[1] bg-[#FAFBFE] p-[13px_14px] text-[12.5px] whitespace-nowrap text-cs-gris-oscuro">
           Total <span className="ml-2 text-[10.5px] font-medium text-muted-foreground">{rowCount} {itemLabel}</span>
         </td>
+        {FORECAST_IDENTITY_COL_COUNT[variant] > 1 && <td colSpan={FORECAST_IDENTITY_COL_COUNT[variant] - 1} className="bg-[#FAFBFE]" />}
         {monthTotals.map((v, i) => (
           <td key={i} className={cn('p-[13px_6px] text-right text-[12.5px] tabular-nums whitespace-nowrap text-cs-gris-oscuro', (i === 0 || i === cutoff) && 'border-l-2 border-l-[#D5DCF0]')}>
             {formatForecastAmount(v)}

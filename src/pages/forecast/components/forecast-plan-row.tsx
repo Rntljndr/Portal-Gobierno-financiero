@@ -25,9 +25,10 @@ export function ForecastPlanRow({ plan, cutoff, variant }: ForecastPlanRowProps)
 
   return (
     <tr className="border-t border-dashed border-border bg-[#F8F9FD]">
-      <td colSpan={FORECAST_IDENTITY_COL_COUNT[variant]} className="sticky left-0 z-[1] bg-[#F8F9FD] p-[6px_8px]">
+      <td className="sticky left-0 z-[1] bg-[#F8F9FD] p-[6px_8px]">
         <span className="rounded border border-[#C8D9F5] bg-[#F7FAFF] px-1.5 py-0.5 text-[10px] font-bold text-[#0047B0]">Plan</span>
       </td>
+      {FORECAST_IDENTITY_COL_COUNT[variant] > 1 && <td colSpan={FORECAST_IDENTITY_COL_COUNT[variant] - 1} className="bg-[#F8F9FD]" />}
       {monthKeys.map((k, i) => (
         <td key={k} className={cn(td, positionClass(i, cutoff))}>
           {formatForecastAmount(plan[k] || 0)}

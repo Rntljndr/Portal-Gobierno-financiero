@@ -60,7 +60,8 @@ export function ForecastTableHeader({ cutoff, identityLabel, variant, sortCol, s
   return (
     <thead>
       <tr>
-        <th colSpan={identityColCount} className={cn(th, 'sticky left-0 z-[2]')} />
+        <th className={cn(th, 'sticky left-0 z-[2]')} />
+        {identityColCount > 1 && <th colSpan={identityColCount - 1} className={th} />}
         <th colSpan={cutoff} className={cn(thGroup, 'border-l-2 border-l-[#C4DFFF] bg-[#EEF4FF] text-primary')}>
           Real (YTD) · {monthLabels[0].slice(0, 3)}-{monthLabels[cutoff - 1].slice(0, 3)}
         </th>
