@@ -70,6 +70,18 @@ export function ForecastProvider({ children }: { children: ReactNode }) {
           return { ...r, lineas }
         })
       }),
+
+    updateRoundDatos: (roundId, patch) => setRounds((prev) => prev.map((r) => (r.id === roundId ? { ...r, ...patch } : r))),
+
+    updateTasaCambio: (roundId, moneda, mesIndex, valor) =>
+      setRounds((prev) =>
+        prev.map((r) => {
+          if (r.id !== roundId) return r
+          const serie = [...(r.tasasCambio[moneda] ?? [])]
+          serie[mesIndex] = valor
+          return { ...r, tasasCambio: { ...r.tasasCambio, [moneda]: serie } }
+        }),
+      ),
   }
 
   return <ForecastContext.Provider value={store}>{children}</ForecastContext.Provider>

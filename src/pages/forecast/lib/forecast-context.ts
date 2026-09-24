@@ -14,6 +14,13 @@ export interface ForecastStore {
    * llamadas a updateN7Monto (una por celda), que dispararían N re-renders. Marca cada línea tocada
    * como manual, igual que updateN7Monto. */
   updateN7MesesBatch: (roundId: string, updates: { n4Codigo: string; n7Codigo: string; meses: Record<string, number> }[]) => void
+  /** Edita los campos de "Datos del Forecast" (drawer de detalle del Activo) — solo Control de Gestión. */
+  updateRoundDatos: (
+    roundId: string,
+    patch: Partial<Pick<ForecastRound, 'titulo' | 'descripcion' | 'fechaInicio' | 'fechaTermino' | 'desvio' | 'tipo' | 'notificar'>>,
+  ) => void
+  /** Edita una celda de la tabla de tasas de cambio (mismo contrato que TasasCambioTable#onChange). */
+  updateTasaCambio: (roundId: string, moneda: string, mesIndex: number, valor: string) => void
 }
 
 export const ForecastContext = createContext<ForecastStore | null>(null)

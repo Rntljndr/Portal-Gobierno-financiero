@@ -1,15 +1,18 @@
-import { useNavigate } from 'react-router'
 import { Badge, Button, Icon } from '@/shared/ui'
 import type { ForecastRound } from '@/data/forecast'
 import { formatFechaCorta } from '../lib/format-date'
 import { EstadoBadge } from './estado-badge'
 
-/** Card con la información del último forecast activo (estado "Abierto") — a lo sumo puede haber uno
- * a la vez (ver forecast-store.tsx#addRound). Vive junto a ForecastAnterioresCard en la pantalla
- * principal de Forecast. */
-export function ForecastActivoCard({ round }: { round: ForecastRound | undefined }) {
-  const navigate = useNavigate()
+interface ForecastActivoCardProps {
+  round: ForecastRound | undefined
+  onVerDetalle: () => void
+}
 
+/** Card con la información del último forecast activo (estado "Abierto") — a lo sumo puede haber uno
+ * a la vez (ver forecast-store.tsx#addRound). Sin botón "Editar": la edición vive en la tabla de
+ * servicios de la propia pantalla principal, no hace falta un atajo acá. "Ver detalle" abre un drawer
+ * (ForecastActivoDetalleDrawer) en vez de navegar a otra pantalla. */
+export function ForecastActivoCard({ round, onVerDetalle }: ForecastActivoCardProps) {
   if (!round) {
     return (
       <div className="flex-1 rounded-xl border border-dashed border-border-strong bg-white p-5">
@@ -34,14 +37,9 @@ export function ForecastActivoCard({ round }: { round: ForecastRound | undefined
         <span>Desvío máx: {round.desvio}%</span>
         {round.pepsCount !== null && <span>{round.pepsCount} PEPs habilitados</span>}
       </div>
-      <div className="flex gap-2">
-        <Button variant="outline" size="sm" onClick={() => navigate(`/forecast/${round.id}/editar`)}>
-          <Icon name="edit" size={12} color="#0047B0" /> Editar
-        </Button>
-        <Button variant="outline" size="sm" onClick={() => navigate(`/forecast/${round.id}`)}>
-          Ver detalle
-        </Button>
-      </div>
+      <Button variant="outline" size="sm" onClick={onVerDetalle}>
+        Ver detalle
+      </Button>
     </div>
   )
 }

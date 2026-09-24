@@ -18,10 +18,12 @@ interface ForecastN4TableRowProps {
   roundId: string
   n4: ForecastN4Linea
   cutoff: number
-  onEditMonth: (n4: ForecastN4Linea, monthKey: string, monthLabel: string, currentValue: number) => void
+  onEditMonth?: (n4: ForecastN4Linea, monthKey: string, monthLabel: string, currentValue: number) => void
+  /** Forecast anterior (F): todas las celdas quedan bloqueadas sin importar el cutoff, sin necesidad de onEditMonth. */
+  readOnly?: boolean
 }
 
-export function ForecastN4TableRow({ roundId, n4, cutoff, onEditMonth }: ForecastN4TableRowProps) {
+export function ForecastN4TableRow({ roundId, n4, cutoff, onEditMonth, readOnly = false }: ForecastN4TableRowProps) {
   const meses = calcN4Meses(n4)
   const totals = calcN4Totals(n4, cutoff)
   const hasManual = n4.n7.some((l) => l.tipoActualizacion === 'manual')
@@ -36,7 +38,7 @@ export function ForecastN4TableRow({ roundId, n4, cutoff, onEditMonth }: Forecas
         </Link>
       </td>
       {monthKeys.map((k, i) => {
-        const closed = i < cutoff
+        const closed = readOnly || i < cutoff
         return (
           <ForecastMonthCell
             key={k}
@@ -44,7 +46,7 @@ export function ForecastN4TableRow({ roundId, n4, cutoff, onEditMonth }: Forecas
             locked={closed}
             disabledReason={!closed && allManual ? 'Todos los N7 están en edición manual — editá cada N7 o restablecé la llave' : undefined}
             positionClassName={positionClass(closed, i, cutoff)}
-            onEdit={closed || allManual ? undefined : () => onEditMonth(n4, k, monthLabels[i], meses[k] || 0)}
+            onEdit={closed || allManual || !onEditMonth ? undefined : () => onEditMonth(n4, k, monthLabels[i], meses[k] || 0)}
           />
         )
       })}

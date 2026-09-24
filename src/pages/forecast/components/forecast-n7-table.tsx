@@ -1,11 +1,12 @@
-import { useMemo } from 'react'
+import { Fragment, useMemo } from 'react'
 import { EmptyState } from '@/shared/ui'
 import { monthKeys } from '@/data/reporteria'
 import type { ForecastN7Linea } from '@/data/forecast-lineas'
-import { calcN7Totals, sumN7Totals } from '../lib/forecast-edit-calc'
+import { calcN7Totals, findPlanN7, sumN7Totals } from '../lib/forecast-edit-calc'
 import { sortForecastRows, useForecastSort } from '../lib/forecast-sort'
 import { ForecastTableHeader } from './forecast-table-header'
 import { ForecastN7TableRow } from './forecast-n7-table-row'
+import { ForecastPlanRow } from './forecast-plan-row'
 import { ForecastTableFooter } from './forecast-table-footer'
 
 interface ForecastN7TableProps {
@@ -40,7 +41,10 @@ export function ForecastN7Table({ n4Codigo, rows, cutoff, onEditMonth, onResetLl
         <ForecastTableHeader cutoff={cutoff} identityLabel="PEP N7" sortCol={col} sortDir={dir} onSort={onSort} />
         <tbody>
           {sortedRows.map((n7) => (
-            <ForecastN7TableRow key={n7.n7Codigo} n4Codigo={n4Codigo} n7={n7} cutoff={cutoff} onEditMonth={onEditMonth} onResetLlave={onResetLlave} />
+            <Fragment key={n7.n7Codigo}>
+              <ForecastN7TableRow n4Codigo={n4Codigo} n7={n7} cutoff={cutoff} onEditMonth={onEditMonth} onResetLlave={onResetLlave} />
+              <ForecastPlanRow plan={findPlanN7(n4Codigo, n7.n7Codigo)} cutoff={cutoff} />
+            </Fragment>
           ))}
         </tbody>
         <ForecastTableFooter rowCount={rows.length} itemLabel="PEPs N7" cutoff={cutoff} monthTotals={monthTotals} grandTotals={grandTotals} />

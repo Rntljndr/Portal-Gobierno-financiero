@@ -63,3 +63,9 @@ export function sumN4Totals(rows: ForecastN4Linea[], cutoff: number): ResumenTot
 export function sumN7Totals(n4Codigo: string, rows: ForecastN7Linea[], cutoff: number): ResumenTotals {
   return aggregateTotals(rows.map((r) => calcN7Totals(n4Codigo, r, cutoff)))
 }
+
+/** Variante de sumN7Totals para listados aplanados (F: tab "Forecast N7") donde cada línea N7 puede
+ * pertenecer a un N4 distinto — no se puede asumir un único n4Codigo para todas como hace sumN7Totals. */
+export function sumN7TotalsFlat(rows: { n4Codigo: string; n7: ForecastN7Linea }[], cutoff: number): ResumenTotals {
+  return aggregateTotals(rows.map((r) => calcN7Totals(r.n4Codigo, r.n7, cutoff)))
+}
