@@ -29,6 +29,7 @@ interface SortableProps {
   align?: 'left' | 'right' | 'center'
   bordL?: boolean
   bg?: string
+  sticky?: boolean
   sortCol: ForecastSortCol
   sortDir: SortDir
   onSort: (col: NonNullable<ForecastSortCol>) => void
@@ -37,10 +38,10 @@ interface SortableProps {
 const ALIGN_TH: Record<NonNullable<SortableProps['align']>, string> = { left: 'min-w-[170px]', right: 'text-right', center: 'text-center' }
 const ALIGN_BTN: Record<NonNullable<SortableProps['align']>, string> = { left: 'justify-start', right: 'flex-row-reverse', center: 'justify-center' }
 
-function Sortable({ col, label, align = 'right', bordL, bg, sortCol, sortDir, onSort }: SortableProps) {
+function Sortable({ col, label, align = 'right', bordL, bg, sticky, sortCol, sortDir, onSort }: SortableProps) {
   const active = sortCol === col
   return (
-    <th className={cn(th, bg, bordL && 'border-l-2 border-l-border', ALIGN_TH[align])}>
+    <th className={cn(th, bg, bordL && 'border-l-2 border-l-border', sticky && 'sticky left-0 z-[2]', ALIGN_TH[align])}>
       <button type="button" onClick={() => onSort(col)} className={cn('inline-flex items-center gap-1 normal-case', ALIGN_BTN[align], active ? 'text-primary' : 'hover:text-primary')}>
         {label}
         <Icon name={active && sortDir === 'asc' ? 'chevron_up' : 'chevron_down'} size={10} color="currentColor" />
@@ -74,7 +75,7 @@ export function ForecastTableHeader({ cutoff, identityLabel, variant, sortCol, s
         {tailExtraCount > 0 && <th colSpan={tailExtraCount} className={cn(thGroup, 'border-l-2 border-l-border text-cs-gris-oscuro')} />}
       </tr>
       <tr>
-        <Sortable col="nombre" label={identityLabel} align="left" {...p} />
+        <Sortable col="nombre" label={identityLabel} align="left" sticky {...p} />
         <ForecastIdentityHeaderCells variant={variant} />
         {monthLabels.map((label, i) => {
           const closed = i < cutoff
