@@ -56,6 +56,7 @@ export function ForecastN7DetallePage() {
           cutoff={s.cutoff}
           onEditMonth={(_n7, monthKey, monthLabel, currentValue) => s.openEdit(monthKey, monthLabel, currentValue)}
           onResetLlave={() => s.onResetLlave()}
+          hideEditLink
         />
 
         <div className="mx-8 mb-5 flex justify-end">

@@ -23,8 +23,9 @@ interface ForecastN7TailExtraCellsProps {
   motivo: string
   ultimaEdicion: string
   /** Ruta a ForecastN7DetallePage — "Editar" en Acciones (F) lleva a la tabla de meses restantes del
-   * año con todo el detalle del PEP N7, igual que hacer clic en el nombre del servicio. */
-  editHref: string
+   * año con todo el detalle del PEP N7, igual que hacer clic en el nombre del servicio. `undefined`
+   * en ForecastN7DetallePage mismo: no tiene sentido linkear a la página en la que ya estás. */
+  editHref?: string
   /** Solo hay algo más que hacer acá cuando la línea está en edición manual (restablecer la llave
    * automática). */
   onResetLlave?: () => void
@@ -36,16 +37,22 @@ export function ForecastN7TailExtraCells({ motivo, ultimaEdicion, editHref, onRe
       <td className={td}>{motivo}</td>
       <td className={td}>{ultimaEdicion}</td>
       <td className={td}>
-        <div className="flex items-center gap-2">
-          <Link to={editHref} className="font-semibold text-primary hover:underline">
-            Editar
-          </Link>
-          {onResetLlave && (
-            <Button variant="outline" size="sm" onClick={onResetLlave}>
-              Restablecer llave
-            </Button>
-          )}
-        </div>
+        {editHref || onResetLlave ? (
+          <div className="flex items-center gap-2">
+            {editHref && (
+              <Link to={editHref} className="font-semibold text-primary hover:underline">
+                Editar
+              </Link>
+            )}
+            {onResetLlave && (
+              <Button variant="outline" size="sm" onClick={onResetLlave}>
+                Restablecer llave
+              </Button>
+            )}
+          </div>
+        ) : (
+          '—'
+        )}
       </td>
     </>
   )
