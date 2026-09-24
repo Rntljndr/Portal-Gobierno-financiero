@@ -10,36 +10,19 @@ import { ForecastN7FlatTable } from './forecast-n7-flat-table'
 interface ForecastListBodyProps {
   rounds: ForecastRound[]
   activo: ForecastRound | undefined
-  borrador: ForecastRound | undefined
-  anteriores: ForecastRound[]
   tab: 'n4' | 'n7'
   tabla: ReturnType<typeof useForecastEditarN4>
   flatN7Rows: ForecastFlatN7Row[]
   detalleOpen: boolean
   onToggleDetalle: () => void
   onVerTasas: () => void
-  onOpenAnteriores: () => void
   onImportar: () => void
   onDescargar: () => void
 }
 
-/** Cards de resumen + header de tabla + la tabla N4 o N7 activa — extraído aparte para mantener
+/** Barra de resumen + header de tabla + la tabla N4 o N7 activa — extraído aparte para mantener
  * ForecastListPage bajo el límite de líneas del linter. */
-export function ForecastListBody({
-  rounds,
-  activo,
-  borrador,
-  anteriores,
-  tab,
-  tabla,
-  flatN7Rows,
-  detalleOpen,
-  onToggleDetalle,
-  onVerTasas,
-  onOpenAnteriores,
-  onImportar,
-  onDescargar,
-}: ForecastListBodyProps) {
+export function ForecastListBody({ rounds, activo, tab, tabla, flatN7Rows, detalleOpen, onToggleDetalle, onVerTasas, onImportar, onDescargar }: ForecastListBodyProps) {
   if (rounds.length === 0) {
     return (
       <div className="mx-8 mb-8">
@@ -50,15 +33,7 @@ export function ForecastListBody({
 
   return (
     <>
-      <ForecastResumenSection
-        activo={activo}
-        borrador={borrador}
-        anterioresCount={anteriores.length}
-        detalleOpen={detalleOpen}
-        onToggleDetalle={onToggleDetalle}
-        onVerTasas={onVerTasas}
-        onOpenAnteriores={onOpenAnteriores}
-      />
+      <ForecastResumenSection activo={activo} detalleOpen={detalleOpen} onToggleDetalle={onToggleDetalle} onVerTasas={onVerTasas} />
 
       <ForecastTablaHeader activo={activo} tab={tab} onImportar={onImportar} onDescargar={onDescargar} />
 

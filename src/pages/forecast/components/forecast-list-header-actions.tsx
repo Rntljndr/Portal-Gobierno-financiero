@@ -1,18 +1,22 @@
 import { useNavigate } from 'react-router'
 import { Button, Icon, SegmentedTabs } from '@/shared/ui'
 import type { ForecastRound } from '@/data/forecast'
+import { ForecastBorradorAnterioresButton } from './forecast-borrador-anteriores-button'
 
 interface ForecastListHeaderActionsProps {
   activo: ForecastRound | undefined
+  borrador: ForecastRound | undefined
+  anterioresCount: number
   tab: 'n4' | 'n7'
   onTabChange: (tab: 'n4' | 'n7') => void
+  onOpenAnteriores: () => void
   onCerrar: () => void
 }
 
-/** Tabs N4/N7 + "Nuevo Forecast"/"Cerrar Forecast", ahora de nuevo en el header de página (F), a la
- * derecha de los tabs. Extraído aparte para mantener ForecastListPage bajo el límite de líneas del
- * linter. */
-export function ForecastListHeaderActions({ activo, tab, onTabChange, onCerrar }: ForecastListHeaderActionsProps) {
+/** Tabs N4/N7 + "Nuevo Forecast" + "Borrador y Anteriores" + "Cerrar Forecast", todos en el header de
+ * página (F: "Borrador y Anteriores ... en la parte superior antes del botón cerrar forecast").
+ * Extraído aparte para mantener ForecastListPage bajo el límite de líneas del linter. */
+export function ForecastListHeaderActions({ activo, borrador, anterioresCount, tab, onTabChange, onOpenAnteriores, onCerrar }: ForecastListHeaderActionsProps) {
   const navigate = useNavigate()
 
   return (
@@ -29,6 +33,7 @@ export function ForecastListHeaderActions({ activo, tab, onTabChange, onCerrar }
       <Button variant="primary" size="sm" onClick={() => navigate('/forecast/nuevo')}>
         <Icon name="plus" size={12} color="#fff" /> Nuevo Forecast
       </Button>
+      <ForecastBorradorAnterioresButton borrador={borrador} anterioresCount={anterioresCount} onClick={onOpenAnteriores} />
       <Button
         variant="outline"
         size="sm"

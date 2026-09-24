@@ -11,16 +11,16 @@ export function ReportesPage() {
       <div className="mx-8 mb-6 grid grid-cols-2 gap-[18px]">
         <NavShortcutCard
           icon={<Icon name="dashboard" size={18} color="#1F6F47" />}
-          label="Dirección"
-          title="Reporte de dirección"
+          label="Negocio"
+          title="Reporte Negocio"
           description="Consolidado ejecutivo por país, división y bandera"
           buttonLabel="Ver"
           onNavigate={() => navigate('/reporte-direccion', { state: { from: 'reportes' } })}
         />
         <NavShortcutCard
           icon={<Icon name="view_cards" size={18} color="#1F6F47" />}
-          label="Consolidado"
-          title="Reporte consolidado"
+          label="Tecnología"
+          title="Reporte Tecnología"
           description="Presupuesto consolidado por país, gerencia y rubro"
           buttonLabel="Ver"
           onNavigate={() => navigate('/reporte-consolidado', { state: { from: 'reportes' } })}

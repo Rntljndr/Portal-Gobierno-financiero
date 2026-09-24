@@ -12,7 +12,7 @@ interface PaisMonedaSelectorProps {
 
 /** Selector obligatorio de país cuando la vista es Origen ML o Destino ML: sin él no hay una moneda
  * común para totalizar (a diferencia de Destino USD, que sí consolida varios países a la vez).
- * Compartido entre Consolidado y Reporte de dirección — de ahí que viva en `features/`. */
+ * Compartido entre Reporte Tecnología y Reporte Negocio — de ahí que viva en `features/`. */
 export function PaisMonedaSelector({ vista, value, onChange }: PaisMonedaSelectorProps) {
   const label = vista === 'origen' ? 'País origen' : 'País destino'
   const options = PAISES.map((p) => ({ value: p, label: `${p} · ${paisMonedaMap[p]}` }))

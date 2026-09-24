@@ -43,8 +43,8 @@ export function NextExerciseSection() {
         />
         <NavShortcutCard
           icon={<Icon name="dashboard" size={18} color="#1F6F47" />}
-          label="Dirección"
-          title="Reporte de dirección"
+          label="Negocio"
+          title="Reporte Negocio"
           description="Consolidado ejecutivo por país, división y bandera"
           buttonLabel="Ver"
           onNavigate={() => navigate('/reporte-direccion')}

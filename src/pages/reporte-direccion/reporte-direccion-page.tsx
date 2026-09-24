@@ -14,9 +14,9 @@ const BREADCRUMB_TRAILS: Record<'default' | 'reportes', { label: string; to?: st
     { label: 'SIP', to: '/' },
     { label: 'Presupuesto', to: '/ejercicios' },
     { label: 'Ejercicios', to: '/ejercicios' },
-    { label: 'Reporte de dirección' },
+    { label: 'Reporte Negocio' },
   ],
-  reportes: [{ label: 'SIP', to: '/' }, { label: 'Reportes', to: '/reportes' }, { label: 'Reporte de dirección' }],
+  reportes: [{ label: 'SIP', to: '/' }, { label: 'Reportes', to: '/reportes' }, { label: 'Reporte Negocio' }],
 }
 
 export function ReporteDireccionPage() {
@@ -38,7 +38,7 @@ export function ReporteDireccionPage() {
     <div className="h-full overflow-y-auto">
       <Breadcrumb items={BREADCRUMB_TRAILS[breadcrumbFrom === 'reportes' ? 'reportes' : 'default']} />
       <PageHeader
-        title="Reporte de dirección"
+        title="Reporte Negocio"
         subtitle="Consolidado ejecutivo por país, división y bandera"
         action={
           <div className="flex items-center gap-3">

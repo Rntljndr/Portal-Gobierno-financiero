@@ -15,8 +15,8 @@ import { filterServicios } from './lib/filter-servicios'
 import { requierePaisUnico } from './lib/vista-amounts'
 
 const BREADCRUMB_TRAILS: Record<'default' | 'reportes', { label: string; to?: string }[]> = {
-  default: [{ label: 'SIP', to: '/' }, { label: 'Presupuesto', to: '/ejercicios' }, { label: 'Consolidado' }],
-  reportes: [{ label: 'SIP', to: '/' }, { label: 'Reportes', to: '/reportes' }, { label: 'Consolidado' }],
+  default: [{ label: 'SIP', to: '/' }, { label: 'Presupuesto', to: '/ejercicios' }, { label: 'Tecnología' }],
+  reportes: [{ label: 'SIP', to: '/' }, { label: 'Reportes', to: '/reportes' }, { label: 'Tecnología' }],
 }
 
 export function ConsolidadoPage() {
@@ -38,7 +38,7 @@ export function ConsolidadoPage() {
     <div className="h-full overflow-y-auto">
       <Breadcrumb items={BREADCRUMB_TRAILS[breadcrumbFrom === 'reportes' ? 'reportes' : 'default']} />
       <PageHeader
-        title="Reporte Consolidado Cencosud"
+        title="Reporte Tecnología Cencosud"
         subtitle="Propuesta de plan, composición del gasto y distribución regional."
         action={
           <div className="flex flex-col items-end gap-1.5">
