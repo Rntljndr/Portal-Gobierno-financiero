@@ -6,6 +6,7 @@ import { ForecastCreatePage } from '@/pages/forecast/forecast-create-page'
 import { ForecastDetailPage } from '@/pages/forecast/forecast-detail-page'
 import { ForecastEditarN4Page } from '@/pages/forecast/forecast-editar-n4-page'
 import { ForecastEditarN7Page } from '@/pages/forecast/forecast-editar-n7-page'
+import { ForecastN7DetallePage } from '@/pages/forecast/forecast-n7-detalle-page'
 import { NotificacionesPage } from '@/pages/notificaciones/notificaciones-page'
 import { ReportesPage } from '@/pages/reportes/reportes-page'
 import { MisServiciosPage } from '@/pages/mis-servicios/mis-servicios-page'
@@ -78,6 +79,7 @@ export const router = createRouter([
       { path: '/forecast/:id', element: <ForecastDetailPage /> },
       { path: '/forecast/:id/editar', element: <ForecastEditarN4Page /> },
       { path: '/forecast/:id/editar/:n4codigo', element: <ForecastEditarN7Page /> },
+      { path: '/forecast/:id/editar/:n4codigo/:n7codigo', element: <ForecastN7DetallePage /> },
       { path: '/notificaciones', element: <NotificacionesPage /> },
       { path: '/reportes', element: <ReportesPage /> },
       { path: '/proyectos', element: <ProyectosPage /> },

@@ -1,15 +1,14 @@
 import { useState } from 'react'
 import { Icon } from '@/shared/ui'
-import type { ForecastN4Linea } from '@/data/forecast-lineas'
 import { ForecastEvolucionChart } from './forecast-evolucion-chart'
 
 interface ForecastChartSectionProps {
-  n4: ForecastN4Linea
+  meses: Record<string, number>
   cutoff: number
 }
 
 /** Sección colapsable (colapsada por defecto), patrón hand-rolled de pep-n4-card.tsx — no existe un Collapsible genérico en shared/ui. */
-export function ForecastChartSection({ n4, cutoff }: ForecastChartSectionProps) {
+export function ForecastChartSection({ meses, cutoff }: ForecastChartSectionProps) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -22,7 +21,7 @@ export function ForecastChartSection({ n4, cutoff }: ForecastChartSectionProps) 
       </button>
       {open && (
         <div className="border-t border-[#eef0f8] p-[20px]">
-          <ForecastEvolucionChart n4={n4} cutoff={cutoff} />
+          <ForecastEvolucionChart meses={meses} cutoff={cutoff} />
         </div>
       )}
     </div>

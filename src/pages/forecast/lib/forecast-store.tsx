@@ -64,7 +64,11 @@ export function ForecastProvider({ children }: { children: ReactNode }) {
             ...n4,
             n7: n4.n7.map((line) => {
               const update = byN7Codigo.get(line.n7Codigo)
-              return update && update.n4Codigo === n4.n4Codigo ? { ...line, meses: { ...line.meses, ...update.meses }, tipoActualizacion: 'manual' as const } : line
+              if (!update || update.n4Codigo !== n4.n4Codigo) return line
+              const notas = update.notas
+                ? { ...line.notas, ...Object.fromEntries(Object.keys(update.meses).map((k) => [k, update.notas!])) }
+                : line.notas
+              return { ...line, meses: { ...line.meses, ...update.meses }, tipoActualizacion: 'manual' as const, notas }
             }),
           }))
           return { ...r, lineas }

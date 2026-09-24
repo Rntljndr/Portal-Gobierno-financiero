@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from 'react-router'
 import { Breadcrumb, Button, EmptyState, Icon, PageHeader, Toast, VolverBar } from '@/shared/ui'
 import { useForecastEditarN7 } from './lib/use-forecast-editar-n7'
+import { calcN4Meses } from './lib/forecast-edit-calc'
 import { ForecastN4InfoCard } from './components/forecast-n4-info-card'
 import { ForecastN7Table } from './components/forecast-n7-table'
 import { ForecastEditDrawer } from './components/forecast-edit-drawer'
@@ -53,9 +54,9 @@ export function ForecastEditarN7Page() {
 
         <ForecastN4InfoCard n4Codigo={n4.n4Codigo} n4Nombre={n4.n4Nombre} pais={n4.pais} equipo={n4.equipo} />
 
-        <ForecastN7Table n4Codigo={n4.n4Codigo} rows={s.n7Visibles} cutoff={s.cutoff} onEditMonth={s.openEdit} onResetLlave={s.onResetLlave} />
+        <ForecastN7Table roundId={round.id} n4Codigo={n4.n4Codigo} rows={s.n7Visibles} cutoff={s.cutoff} onEditMonth={s.openEdit} onResetLlave={s.onResetLlave} />
 
-        <ForecastChartSection n4={n4} cutoff={s.cutoff} />
+        <ForecastChartSection meses={calcN4Meses(n4)} cutoff={s.cutoff} />
       </div>
 
       <VolverBar label="Volver a Servicios N4" onBack={() => navigate(`/forecast/${round.id}/editar`)} />

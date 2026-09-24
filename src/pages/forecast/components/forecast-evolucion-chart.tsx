@@ -1,17 +1,17 @@
 import { monthKeys, monthLabelsShort } from '@/data/reporteria'
 import { formatCompact } from '@/shared/lib/format'
-import type { ForecastN4Linea } from '@/data/forecast-lineas'
-import { calcN4Meses } from '../lib/forecast-edit-calc'
 import { buildChartScale, CHART_H, CHART_W } from '../lib/forecast-chart-scale'
 
 interface ForecastEvolucionChartProps {
-  n4: ForecastN4Linea
+  meses: Record<string, number>
   cutoff: number
 }
 
-/** Evolución mensual del forecast vs. real acumulado. SVG a mano (patrón visual de reporteria/plan-forecast-chart.tsx), sin librería de charting nueva. */
-export function ForecastEvolucionChart({ n4, cutoff }: ForecastEvolucionChartProps) {
-  const meses = calcN4Meses(n4)
+/** Evolución mensual del forecast vs. real acumulado. SVG a mano (patrón visual de reporteria/plan-forecast-chart.tsx),
+ * sin librería de charting nueva. Recibe `meses` ya calculado en vez de un ForecastN4Linea — así lo
+ * reutiliza también ForecastN7DetallePage (F: "Gráfico de línea Forecast") pasando directamente
+ * `n7.meses`, sin necesitar un N4 completo. */
+export function ForecastEvolucionChart({ meses, cutoff }: ForecastEvolucionChartProps) {
   const values = monthKeys.map((k) => meses[k] || 0)
   const scale = buildChartScale(values, values.length)
   const zeroY = scale.yVal(0)

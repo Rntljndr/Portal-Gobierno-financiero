@@ -10,10 +10,11 @@ export interface ForecastStore {
   updateN4Monto: (roundId: string, n4Codigo: string, monthKey: string, monto: number, nota?: ForecastMesNota) => void
   updateN7Monto: (roundId: string, n4Codigo: string, n7Codigo: string, monthKey: string, monto: number, nota?: ForecastMesNota) => void
   resetLlaveN7: (roundId: string, n4Codigo: string, n7Codigo: string) => void
-  /** Aplica varios meses de varias líneas N7 en una sola actualización (carga masiva) — evita N
-   * llamadas a updateN7Monto (una por celda), que dispararían N re-renders. Marca cada línea tocada
-   * como manual, igual que updateN7Monto. */
-  updateN7MesesBatch: (roundId: string, updates: { n4Codigo: string; n7Codigo: string; meses: Record<string, number> }[]) => void
+  /** Aplica varios meses de varias líneas N7 en una sola actualización (carga masiva o edición
+   * conjunta de meses restantes — ver ForecastN7DetallePage) — evita N llamadas a updateN7Monto (una
+   * por celda), que dispararían N re-renders. Marca cada línea tocada como manual, igual que
+   * updateN7Monto. `notas`, si viene, se aplica a cada monthKey editado de esa línea. */
+  updateN7MesesBatch: (roundId: string, updates: { n4Codigo: string; n7Codigo: string; meses: Record<string, number>; notas?: ForecastMesNota }[]) => void
   /** Edita los campos de "Datos del Forecast" (drawer de detalle del Activo) — solo Control de Gestión. */
   updateRoundDatos: (
     roundId: string,

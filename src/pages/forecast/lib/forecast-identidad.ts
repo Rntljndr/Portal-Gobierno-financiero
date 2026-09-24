@@ -1,29 +1,8 @@
 import { monthKeys, pepN4Tablon } from '@/data/reporteria'
-import { forecastPaisesMoneda } from '@/data/forecast'
+import { pepN4Meta } from '@/data/pep-n4-meta'
 import type { ForecastN4Linea, ForecastN7Linea } from '@/data/forecast-lineas'
 import { calcLlaveDistribucion } from './forecast-llave'
 import { findPlanN4, findPlanN7 } from './forecast-edit-calc'
-
-const MONEDA_POR_PAIS: Record<string, string> = Object.fromEntries(forecastPaisesMoneda.map((p) => [p.pais, p.moneda]))
-
-/** Agrupación Gerencia por Equipo — dato de ejemplo (no existe en el modelo real): junta los equipos
- * técnicos ya existentes en pepN4Tablon bajo gerencias plausibles, para poblar las columnas de
- * identidad copiadas de ForecastN4Historico/N7Historico (F). */
-const GERENCIA_POR_EQUIPO: Record<string, string> = {
-  Oracle: 'Aplicaciones Corporativas',
-  SAP: 'Aplicaciones Corporativas',
-  AWS: 'Infraestructura Cloud',
-  'Google Cloud': 'Infraestructura Cloud',
-  'Azure DevOps': 'Infraestructura Cloud',
-  Salesforce: 'CRM y Canales',
-  Microsoft: 'Seguridad y Colaboración',
-  Cisco: 'Redes y Telecomunicaciones',
-  UiPath: 'Automatización',
-}
-
-function gerenciaDe(equipo: string): string {
-  return GERENCIA_POR_EQUIPO[equipo] ?? 'Tecnología'
-}
 
 export interface ForecastIdentidadBase {
   codServicio: string
@@ -38,18 +17,21 @@ export interface ForecastIdentidadBase {
 }
 
 /** Identidad de un servicio N4 para las columnas copiadas de ForecastN4Historico (F) — Estado se
- * deriva de datos reales (¿algún N7 hijo quedó en edición manual?), el resto son valores de ejemplo
- * razonables (no hay Gerencia/Cuenta Contable por PEP en el modelo actual). */
+ * deriva de datos reales (¿algún N7 hijo quedó en edición manual?); el resto sale de `pepN4Meta`
+ * (data/pep-n4-meta.ts), la misma metadata de gestión que ya usan Reales y Preliminares para estos
+ * PEP N4 — evita inventar una segunda fuente de Gerencia/Cuenta Contable/Bandera que quede
+ * inconsistente entre módulos. */
 export function n4Identidad(n4: ForecastN4Linea): ForecastIdentidadBase {
+  const meta = pepN4Meta[n4.n4Codigo]
   const hasManual = n4.n7.some((l) => l.tipoActualizacion === 'manual')
   return {
     codServicio: n4.n4Codigo.replace('N4-', 'SVC-'),
     pais: n4.pais,
-    moneda: MONEDA_POR_PAIS[n4.pais] ?? '—',
-    gerenciaPadre: 'Tecnología',
-    gerencia: gerenciaDe(n4.equipo),
+    moneda: meta?.moneda ?? '—',
+    gerenciaPadre: meta?.gerenciaPadre ?? '—',
+    gerencia: meta?.gerencia ?? '—',
     equipo: n4.equipo,
-    cuentaContable: 'OPEX',
+    cuentaContable: meta?.cuentaContable ?? '—',
     pep: n4.n4Codigo,
     estado: hasManual ? 'Manual' : 'Automático',
   }
@@ -69,13 +51,16 @@ export interface ForecastIdentidadN7 extends ForecastIdentidadBase {
   ultimaEdicion: string
 }
 
-/** Identidad de un PEP N7 para las columnas copiadas de ForecastN7Historico (F). Estado y las dos
- * Llave de Distribución usan datos reales del propio forecast (tipoActualizacion, y el mismo cálculo
- * de llave que ya distribuye montos automáticos — ver forecast-llave.ts); el resto son de ejemplo. */
+/** Identidad de un PEP N7 para las columnas copiadas de ForecastN7Historico (F) — mismos datos de
+ * `pepN4Meta` que el N4 padre (Gerencia/Cuenta Contable/Centro de costo/Bandera se gestionan a nivel
+ * de servicio, no por PEP N7 individual). Estado y las dos Llave de Distribución usan datos reales
+ * del propio forecast (tipoActualizacion, y el mismo cálculo de llave que ya distribuye montos
+ * automáticos — ver forecast-llave.ts). */
 export function n7Identidad(n4Codigo: string, n7: ForecastN7Linea, siblings: ForecastN7Linea[], cutoff: number): ForecastIdentidadN7 {
   const seed = findPepN7Seed(n4Codigo, n7.n7Codigo)
   const pais = seed?.pais ?? '—'
   const equipo = seed?.equipo ?? '—'
+  const meta = pepN4Meta[n4Codigo]
 
   const planTotalN7 = monthKeys.reduce((s, k) => s + (findPlanN7(n4Codigo, n7.n7Codigo)[k] || 0), 0)
   const planTotalN4 = monthKeys.reduce((s, k) => s + (findPlanN4(n4Codigo)[k] || 0), 0)
@@ -87,14 +72,14 @@ export function n7Identidad(n4Codigo: string, n7: ForecastN7Linea, siblings: For
   return {
     codServicio: n7.n7Codigo.replace('N7-', 'SVC7-'),
     pais,
-    moneda: MONEDA_POR_PAIS[pais] ?? '—',
-    gerenciaPadre: 'Tecnología',
-    gerencia: gerenciaDe(equipo),
+    moneda: meta?.moneda ?? '—',
+    gerenciaPadre: meta?.gerenciaPadre ?? '—',
+    gerencia: meta?.gerencia ?? '—',
     equipo,
-    centroCosto: `CC-${n7.n7Codigo.replace(/\D/g, '').padStart(4, '0')}`,
-    bandera: 'Corporativo',
-    cuentaContable: 'OPEX',
-    asignacion: 'Directo',
+    centroCosto: meta?.centroCosto ?? '—',
+    bandera: meta?.bandera ?? '—',
+    cuentaContable: meta?.cuentaContable ?? '—',
+    asignacion: meta?.asignacion ?? '—',
     llavePlanPct,
     llaveForecastPct,
     pep: n7.n7Codigo,

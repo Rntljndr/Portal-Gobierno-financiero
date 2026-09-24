@@ -1,3 +1,4 @@
+import { Link } from 'react-router'
 import { cn } from '@/shared/lib/utils'
 import { Badge, Icon } from '@/shared/ui'
 import { monthKeys, monthLabels } from '@/data/reporteria'
@@ -17,6 +18,7 @@ function positionClass(closed: boolean, i: number, cutoff: number) {
 }
 
 interface ForecastN7TableRowProps {
+  roundId: string
   n4Codigo: string
   n7: ForecastN7Linea
   siblings: ForecastN7Linea[]
@@ -25,16 +27,19 @@ interface ForecastN7TableRowProps {
   onResetLlave: (n7Codigo: string) => void
 }
 
-export function ForecastN7TableRow({ n4Codigo, n7, siblings, cutoff, onEditMonth, onResetLlave }: ForecastN7TableRowProps) {
+export function ForecastN7TableRow({ roundId, n4Codigo, n7, siblings, cutoff, onEditMonth, onResetLlave }: ForecastN7TableRowProps) {
   const totals = calcN7Totals(n4Codigo, n7, cutoff)
   const isManual = n7.tipoActualizacion === 'manual'
   const identidad = n7Identidad(n4Codigo, n7, siblings, cutoff)
+  const editHref = `/forecast/${roundId}/editar/${encodeURIComponent(n4Codigo)}/${encodeURIComponent(n7.n7Codigo)}`
 
   return (
     <tr className="border-t border-border">
       <td className={cn(td, 'sticky left-0 z-[1] bg-white font-semibold text-foreground')}>
         <div className="flex flex-wrap items-center gap-2">
-          <span>{n7.n7Nombre}</span>
+          <Link to={editHref} className="hover:text-primary hover:underline">
+            {n7.n7Nombre}
+          </Link>
           {isManual && (
             <Badge variant="warning">
               <Icon name="alert" size={9} color="currentColor" /> Edición manual
@@ -57,7 +62,7 @@ export function ForecastN7TableRow({ n4Codigo, n7, siblings, cutoff, onEditMonth
         )
       })}
       <ForecastResumenCells totals={totals} fmt={formatForecastAmount} />
-      <ForecastN7TailExtraCells motivo={identidad.motivo} ultimaEdicion={identidad.ultimaEdicion} onResetLlave={isManual ? () => onResetLlave(n7.n7Codigo) : undefined} />
+      <ForecastN7TailExtraCells motivo={identidad.motivo} ultimaEdicion={identidad.ultimaEdicion} editHref={editHref} onResetLlave={isManual ? () => onResetLlave(n7.n7Codigo) : undefined} />
     </tr>
   )
 }

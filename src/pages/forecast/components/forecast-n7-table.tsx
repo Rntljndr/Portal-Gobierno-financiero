@@ -10,6 +10,7 @@ import { ForecastPlanRow } from './forecast-plan-row'
 import { ForecastTableFooter } from './forecast-table-footer'
 
 interface ForecastN7TableProps {
+  roundId: string
   n4Codigo: string
   rows: ForecastN7Linea[]
   cutoff: number
@@ -17,7 +18,7 @@ interface ForecastN7TableProps {
   onResetLlave: (n7Codigo: string) => void
 }
 
-export function ForecastN7Table({ n4Codigo, rows, cutoff, onEditMonth, onResetLlave }: ForecastN7TableProps) {
+export function ForecastN7Table({ roundId, n4Codigo, rows, cutoff, onEditMonth, onResetLlave }: ForecastN7TableProps) {
   const { col, dir, onSort } = useForecastSort(n4Codigo)
   const sortedRows = useMemo(
     () => sortForecastRows(rows, col, dir, (n7) => n7.n7Nombre, (n7) => calcN7Totals(n4Codigo, n7, cutoff)),
@@ -42,7 +43,7 @@ export function ForecastN7Table({ n4Codigo, rows, cutoff, onEditMonth, onResetLl
         <tbody>
           {sortedRows.map((n7) => (
             <Fragment key={n7.n7Codigo}>
-              <ForecastN7TableRow n4Codigo={n4Codigo} n7={n7} siblings={rows} cutoff={cutoff} onEditMonth={onEditMonth} onResetLlave={onResetLlave} />
+              <ForecastN7TableRow roundId={roundId} n4Codigo={n4Codigo} n7={n7} siblings={rows} cutoff={cutoff} onEditMonth={onEditMonth} onResetLlave={onResetLlave} />
               <ForecastPlanRow plan={findPlanN7(n4Codigo, n7.n7Codigo)} cutoff={cutoff} variant="n7" />
             </Fragment>
           ))}

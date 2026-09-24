@@ -29,11 +29,12 @@ export function ForecastN7FlatRow({ roundId, row, cutoff }: ForecastN7FlatRowPro
   const { n4Codigo, n4Nombre, n7, n4Siblings } = row
   const totals = calcN7Totals(n4Codigo, n7, cutoff)
   const identidad = n7Identidad(n4Codigo, n7, n4Siblings, cutoff)
+  const editHref = `/forecast/${roundId}/editar/${encodeURIComponent(n4Codigo)}/${encodeURIComponent(n7.n7Codigo)}`
 
   return (
     <tr className="border-t border-border">
       <td className={cn(td, 'sticky left-0 z-[1] bg-white font-semibold text-foreground')}>
-        <Link to={`/forecast/${roundId}/editar/${encodeURIComponent(n4Codigo)}`} className="block hover:text-primary hover:underline">
+        <Link to={editHref} className="block hover:text-primary hover:underline">
           <div>{n7.n7Nombre}</div>
           <div className="text-[10.5px] font-normal text-muted-foreground">{n4Nombre}</div>
         </Link>
@@ -52,7 +53,7 @@ export function ForecastN7FlatRow({ roundId, row, cutoff }: ForecastN7FlatRowPro
         )
       })}
       <ForecastResumenCells totals={totals} fmt={formatForecastAmount} />
-      <ForecastN7TailExtraCells motivo={identidad.motivo} ultimaEdicion={identidad.ultimaEdicion} />
+      <ForecastN7TailExtraCells motivo={identidad.motivo} ultimaEdicion={identidad.ultimaEdicion} editHref={editHref} />
     </tr>
   )
 }
