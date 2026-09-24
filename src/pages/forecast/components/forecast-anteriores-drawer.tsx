@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router'
-import { Badge, Drawer, EmptyState, Select } from '@/shared/ui'
+import { Badge, Button, Drawer, EmptyState, Icon, Select } from '@/shared/ui'
 import type { ForecastRound } from '@/data/forecast'
 import { monthLabels } from '@/data/reporteria'
 import { formatFechaCorta } from '../lib/format-date'
@@ -9,17 +9,43 @@ import { anteriorAnios, applyAnterioresFilters, EMPTY_ANTERIORES_FILTERS } from 
 interface ForecastAnterioresDrawerProps {
   open: boolean
   onClose: () => void
+  borrador: ForecastRound | undefined
   rounds: ForecastRound[]
+  onRequestDelete: (round: ForecastRound) => void
 }
 
 const inputClass = 'h-[38px] w-full rounded-[10px] border-[1.5px] border-border bg-white px-3 text-[12.5px] outline-none placeholder:text-muted-foreground focus:border-primary'
 const labelClass = 'mb-1 block text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase'
 
-/** Filtros (Año → Mes → Buscador) + listado completo de forecasts anteriores (F) — a diferencia del
- * diseño previo, seleccionar uno navega a la pantalla completa (/forecast/:id) en vez de mostrar sus
- * datos acá mismo: con potencialmente muchos años de forecasts anteriores, el drawer es para
- * encontrar el que se busca, no para verlo. */
-export function ForecastAnterioresDrawer({ open, onClose, rounds }: ForecastAnterioresDrawerProps) {
+function BorradorSection({ round, onNavigar, onEliminar }: { round: ForecastRound; onNavigar: () => void; onEliminar: () => void }) {
+  return (
+    <div className="mb-5 rounded-xl border border-border bg-[#F8FAFF] p-4">
+      <div className="mb-1.5 flex items-center justify-between">
+        <div className="text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase">Forecast en Borrador</div>
+        <Badge variant="primary">{round.tipo === 'global' ? 'Global' : 'Parcial'}</Badge>
+      </div>
+      <div className="mb-1 text-[14px] font-bold text-foreground">{round.titulo}</div>
+      <div className="mb-3 text-[11.5px] text-muted-foreground">
+        {formatFechaCorta(round.fechaInicio)} — {formatFechaCorta(round.fechaTermino)} · Desvío máx: {round.desvio}%
+      </div>
+      <div className="flex gap-2">
+        <Button variant="outline" size="sm" onClick={onNavigar}>
+          Ver detalle
+        </Button>
+        <Button variant="outline" size="sm" className="border-[#FECACA] text-[#B42318] hover:bg-[#FEE8E8]" onClick={onEliminar}>
+          <Icon name="trash" size={12} color="#B42318" /> Eliminar
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+/** Drawer único de "Borrador y Anteriores" (F: "debe ser una y en un solo botón"): el forecast en
+ * Borrador arriba (si existe), y debajo el buscador de forecasts cerrados con filtros Año → Mes →
+ * Buscador — el mismo buscador también permite encontrar distintas versiones de un mismo mes (p.ej.
+ * "Forecast Julio — 2026 (v1/v2/v3)", ver data/forecast.ts) filtrando por nombre. Seleccionar un
+ * anterior navega a la pantalla completa (/forecast/:id) en vez de mostrar sus datos acá mismo. */
+export function ForecastAnterioresDrawer({ open, onClose, borrador, rounds, onRequestDelete }: ForecastAnterioresDrawerProps) {
   const navigate = useNavigate()
   const [filters, setFilters] = useState(EMPTY_ANTERIORES_FILTERS)
   const anios = useMemo(() => anteriorAnios(rounds), [rounds])
@@ -31,7 +57,10 @@ export function ForecastAnterioresDrawer({ open, onClose, rounds }: ForecastAnte
   }
 
   return (
-    <Drawer open={open} onClose={onClose} wide eyebrow="Forecast" title="Forecasts anteriores">
+    <Drawer open={open} onClose={onClose} wide eyebrow="Forecast" title="Borrador y Anteriores">
+      {borrador && <BorradorSection round={borrador} onNavigar={() => seleccionar(borrador)} onEliminar={() => onRequestDelete(borrador)} />}
+
+      <div className="mb-3 text-[13px] font-bold text-foreground">Buscar forecasts anteriores</div>
       <div className="mb-4 grid grid-cols-3 gap-3">
         <div>
           <label className={labelClass}>Año</label>

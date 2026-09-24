@@ -15,13 +15,12 @@ interface ForecastListBodyProps {
   tab: 'n4' | 'n7'
   tabla: ReturnType<typeof useForecastEditarN4>
   flatN7Rows: ForecastFlatN7Row[]
+  detalleOpen: boolean
+  onToggleDetalle: () => void
+  onVerTasas: () => void
   onOpenAnteriores: () => void
-  onOpenDetalleActivo: () => void
-  onRequestDelete: (round: ForecastRound) => void
   onImportar: () => void
   onDescargar: () => void
-  onNuevo: () => void
-  onCerrar: () => void
 }
 
 /** Cards de resumen + header de tabla + la tabla N4 o N7 activa — extraído aparte para mantener
@@ -34,13 +33,12 @@ export function ForecastListBody({
   tab,
   tabla,
   flatN7Rows,
+  detalleOpen,
+  onToggleDetalle,
+  onVerTasas,
   onOpenAnteriores,
-  onOpenDetalleActivo,
-  onRequestDelete,
   onImportar,
   onDescargar,
-  onNuevo,
-  onCerrar,
 }: ForecastListBodyProps) {
   if (rounds.length === 0) {
     return (
@@ -56,21 +54,13 @@ export function ForecastListBody({
         activo={activo}
         borrador={borrador}
         anterioresCount={anteriores.length}
+        detalleOpen={detalleOpen}
+        onToggleDetalle={onToggleDetalle}
+        onVerTasas={onVerTasas}
         onOpenAnteriores={onOpenAnteriores}
-        onOpenDetalleActivo={onOpenDetalleActivo}
-        onRequestDelete={onRequestDelete}
       />
 
-      <ForecastTablaHeader
-        activo={activo}
-        tab={tab}
-        ocultarCeros={tabla.ocultarCeros}
-        onToggleOcultarCeros={tabla.setOcultarCeros}
-        onImportar={onImportar}
-        onDescargar={onDescargar}
-        onNuevo={onNuevo}
-        onCerrar={onCerrar}
-      />
+      <ForecastTablaHeader activo={activo} tab={tab} onImportar={onImportar} onDescargar={onDescargar} />
 
       {!activo ? (
         <div className="mx-8 mb-8">

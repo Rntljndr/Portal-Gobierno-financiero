@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router'
-import { Breadcrumb, PageHeader, SegmentedTabs } from '@/shared/ui'
+import { Breadcrumb, PageHeader } from '@/shared/ui'
 import type { ForecastRound } from '@/data/forecast'
 import { useForecastStore } from './lib/use-forecast-store'
 import { useForecastEditarN4 } from './lib/use-forecast-editar-n4'
@@ -9,19 +8,20 @@ import { downloadForecastN4Xlsx } from './lib/download-forecast-xlsx'
 import { buildFlatN7Rows } from './lib/forecast-flat-n7'
 import { calcN7Totals } from './lib/forecast-edit-calc'
 import { estaEnCero } from './lib/hide-zero-lines'
+import { ForecastListHeaderActions } from './components/forecast-list-header-actions'
 import { ForecastListBody } from './components/forecast-list-body'
 import { ForecastAnterioresDrawer } from './components/forecast-anteriores-drawer'
-import { ForecastActivoDetalleDrawer } from './components/forecast-activo-detalle-drawer'
+import { ForecastTasasDrawer } from './components/forecast-tasas-drawer'
 import { ForecastListOverlays } from './components/forecast-list-overlays'
 import { ForecastRoundModals } from './components/forecast-round-modals'
 
 export function ForecastListPage() {
-  const navigate = useNavigate()
   const { rounds, closeRound, deleteRound } = useForecastStore()
   const [closeTarget, setCloseTarget] = useState<ForecastRound | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<ForecastRound | null>(null)
   const [anterioresOpen, setAnterioresOpen] = useState(false)
   const [detalleOpen, setDetalleOpen] = useState(false)
+  const [tasasOpen, setTasasOpen] = useState(false)
   const [tab, setTab] = useState<'n4' | 'n7'>('n4')
 
   const activo = rounds.find((r) => r.estado === 'Abierto')
@@ -42,19 +42,7 @@ export function ForecastListPage() {
       <PageHeader
         title="Forecast"
         subtitle="Gestión de ejercicios de proyección presupuestaria"
-        action={
-          <div className="flex items-center gap-2.5">
-            <span className="text-[10px] font-bold tracking-[0.1em] text-primary/70 uppercase">Ver</span>
-            <SegmentedTabs
-              value={tab}
-              onChange={setTab}
-              options={[
-                { value: 'n4', label: 'Forecast N4' },
-                { value: 'n7', label: 'Forecast N7' },
-              ]}
-            />
-          </div>
-        }
+        action={<ForecastListHeaderActions activo={activo} tab={tab} onTabChange={setTab} onCerrar={() => activo && setCloseTarget(activo)} />}
       />
 
       <ForecastListBody
@@ -65,20 +53,19 @@ export function ForecastListPage() {
         tab={tab}
         tabla={tabla}
         flatN7Rows={flatN7Rows}
+        detalleOpen={detalleOpen}
+        onToggleDetalle={() => setDetalleOpen((v) => !v)}
+        onVerTasas={() => setTasasOpen(true)}
         onOpenAnteriores={() => setAnterioresOpen(true)}
-        onOpenDetalleActivo={() => setDetalleOpen(true)}
-        onRequestDelete={setDeleteTarget}
         onImportar={cm.openDrawer}
         onDescargar={() => activo && downloadForecastN4Xlsx(activo.titulo, tabla.lineasVisibles, tabla.cutoff)}
-        onNuevo={() => navigate('/forecast/nuevo')}
-        onCerrar={() => activo && setCloseTarget(activo)}
       />
 
-      <ForecastAnterioresDrawer open={anterioresOpen} onClose={() => setAnterioresOpen(false)} rounds={anteriores} />
+      <ForecastAnterioresDrawer open={anterioresOpen} onClose={() => setAnterioresOpen(false)} borrador={borrador} rounds={anteriores} onRequestDelete={setDeleteTarget} />
 
       {activo && (
         <>
-          <ForecastActivoDetalleDrawer open={detalleOpen} onClose={() => setDetalleOpen(false)} round={activo} />
+          <ForecastTasasDrawer open={tasasOpen} onClose={() => setTasasOpen(false)} round={activo} />
           <ForecastListOverlays activo={activo} tabla={tabla} cm={cm} />
         </>
       )}

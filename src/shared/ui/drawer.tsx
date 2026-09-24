@@ -10,12 +10,15 @@ interface DrawerProps {
   eyebrow?: string
   subtitle?: string
   wide?: boolean
+  /** Ancho extra (1260px) para contenido que no debe tener scroll lateral, p.ej. la tabla de Tasas de
+   * Cambio con sus 12 columnas de mes. Tiene prioridad sobre `wide`. */
+  xwide?: boolean
   closeDisabled?: boolean
   footer?: ReactNode
   children: ReactNode
 }
 
-export function Drawer({ open, onClose, title, eyebrow, subtitle, wide, closeDisabled, footer, children }: DrawerProps) {
+export function Drawer({ open, onClose, title, eyebrow, subtitle, wide, xwide, closeDisabled, footer, children }: DrawerProps) {
   return (
     <Dialog.Root open={open} onOpenChange={(next) => !next && !closeDisabled && onClose()}>
       <Dialog.Portal>
@@ -25,7 +28,7 @@ export function Drawer({ open, onClose, title, eyebrow, subtitle, wide, closeDis
           onPointerDownOutside={(e) => closeDisabled && e.preventDefault()}
           className={cn(
             'fixed inset-y-0 right-0 z-[9001] flex h-full max-w-[92vw] flex-col bg-white shadow-[0_0_40px_rgba(6,20,148,0.2)]',
-            wide ? 'w-[640px]' : 'w-[460px]',
+            xwide ? 'w-[1260px]' : wide ? 'w-[640px]' : 'w-[460px]',
           )}
         >
           <div className="flex items-start justify-between border-b border-border p-[18px_22px]">
