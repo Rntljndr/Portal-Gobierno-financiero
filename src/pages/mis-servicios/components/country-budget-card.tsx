@@ -3,8 +3,10 @@ import { paisFlag } from '@/data/services'
 import type { CountryBudgetRow } from '../lib/budget-by-country'
 
 function MetricRow({ label, value, tone }: { label: string; value: React.ReactNode; tone?: 'up' | 'down' | 'ipc' | 'hl' | 'muted' }) {
+  // Bug corregido: "up" significa que Forecast+IPC subió respecto a Forecast base (gasto al alza) — debe
+  // verse en rojo, no en verde. Estaba invertido (mismo bug que service-card-metrics.tsx).
   const toneClass =
-    tone === 'up' ? 'text-[#067647]' : tone === 'down' ? 'text-[#DC2626]' : tone === 'ipc' ? 'text-[#E0A500]' : tone === 'hl' ? 'text-primary' : tone === 'muted' ? 'text-[#8A90A2]' : 'text-foreground'
+    tone === 'up' ? 'text-[#DC2626]' : tone === 'down' ? 'text-[#067647]' : tone === 'ipc' ? 'text-[#E0A500]' : tone === 'hl' ? 'text-primary' : tone === 'muted' ? 'text-[#8A90A2]' : 'text-foreground'
   return (
     <div className="flex items-baseline justify-between gap-3">
       <span className="text-[8.5px] font-semibold tracking-wide text-muted-foreground uppercase">{label}</span>
