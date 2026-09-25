@@ -63,7 +63,7 @@ export function ForecastN7DetallePage() {
 
         <ForecastN7DetalleTabla n7={n7} plan={s.plan} cutoff={s.cutoff} draft={s.draft} onChangeMes={s.setMes} onDistribuir={() => s.setDistribuirOpen(true)} />
 
-        <div className="mx-8 mb-8 grid grid-cols-[1.4fr_1fr] gap-5">
+        <div className="mx-8 mb-8 grid grid-cols-2 gap-5">
           <ForecastChartSection meses={n7.meses} cutoff={s.cutoff} />
           <ForecastN7DetalleDesvio justificacion={s.justificacion} onChangeJustificacion={s.setJustificacion} comentario={s.comentario} onChangeComentario={s.setComentario} />
         </div>
