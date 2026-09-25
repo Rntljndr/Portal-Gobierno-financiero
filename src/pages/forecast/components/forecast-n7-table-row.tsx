@@ -25,13 +25,9 @@ interface ForecastN7TableRowProps {
   cutoff: number
   onEditMonth: (n7: ForecastN7Linea, monthKey: string, monthLabel: string, currentValue: number) => void
   onResetLlave: (n7Codigo: string) => void
-  /** ForecastN7DetallePage ya ES la pantalla de este PEP N7 — el nombre/"Editar" no deben linkear a
-   * la página en la que ya estás (F: "al presionar el botón editar no abre la pantalla", porque
-   * navegaba a la misma URL en la que ya estaba). */
-  hideEditLink?: boolean
 }
 
-export function ForecastN7TableRow({ roundId, n4Codigo, n7, siblings, cutoff, onEditMonth, onResetLlave, hideEditLink }: ForecastN7TableRowProps) {
+export function ForecastN7TableRow({ roundId, n4Codigo, n7, siblings, cutoff, onEditMonth, onResetLlave }: ForecastN7TableRowProps) {
   const totals = calcN7Totals(n4Codigo, n7, cutoff)
   const isManual = n7.tipoActualizacion === 'manual'
   const identidad = n7Identidad(n4Codigo, n7, siblings, cutoff)
@@ -41,7 +37,9 @@ export function ForecastN7TableRow({ roundId, n4Codigo, n7, siblings, cutoff, on
     <tr className="border-t border-border">
       <td className={cn(td, 'sticky left-0 z-[1] bg-white font-semibold text-foreground')}>
         <div className="flex flex-wrap items-center gap-2">
-          {hideEditLink ? <span>{n7.n7Nombre}</span> : <Link to={editHref} className="hover:text-primary hover:underline">{n7.n7Nombre}</Link>}
+          <Link to={editHref} className="hover:text-primary hover:underline">
+            {n7.n7Nombre}
+          </Link>
           {isManual && (
             <Badge variant="warning">
               <Icon name="alert" size={9} color="currentColor" /> Edición manual
@@ -64,12 +62,7 @@ export function ForecastN7TableRow({ roundId, n4Codigo, n7, siblings, cutoff, on
         )
       })}
       <ForecastResumenCells totals={totals} fmt={formatForecastAmount} />
-      <ForecastN7TailExtraCells
-        motivo={identidad.motivo}
-        ultimaEdicion={identidad.ultimaEdicion}
-        editHref={hideEditLink ? undefined : editHref}
-        onResetLlave={isManual ? () => onResetLlave(n7.n7Codigo) : undefined}
-      />
+      <ForecastN7TailExtraCells motivo={identidad.motivo} ultimaEdicion={identidad.ultimaEdicion} editHref={editHref} onResetLlave={isManual ? () => onResetLlave(n7.n7Codigo) : undefined} />
     </tr>
   )
 }

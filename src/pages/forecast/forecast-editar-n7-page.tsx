@@ -54,7 +54,7 @@ export function ForecastEditarN7Page() {
         </div>
       </div>
 
-      <VolverBar label={`Volver a ${n4.n4Nombre}`} onBack={() => navigate(`/forecast/${round.id}/editar/${n4.n4Codigo}`)} />
+      <VolverBar label="Volver a Servicios N4" onBack={() => navigate(`/forecast/${round.id}/editar`)} />
 
       <ForecastEditDrawer
         open={s.editTarget !== null}

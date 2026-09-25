@@ -23,12 +23,9 @@ interface ForecastN4TableRowProps {
   onEditMonth?: (n4: ForecastN4Linea, monthKey: string, monthLabel: string, currentValue: number) => void
   /** Forecast anterior (F): todas las celdas quedan bloqueadas sin importar el cutoff, sin necesidad de onEditMonth. */
   readOnly?: boolean
-  /** ForecastN4DetallePage ya ES la pantalla de este PEP N4 — no linkear a la página en la que ya se
-   * está (mismo criterio que ForecastN7TableRow#hideEditLink). */
-  hideEditLink?: boolean
 }
 
-export function ForecastN4TableRow({ roundId, n4, cutoff, onEditMonth, readOnly = false, hideEditLink }: ForecastN4TableRowProps) {
+export function ForecastN4TableRow({ roundId, n4, cutoff, onEditMonth, readOnly = false }: ForecastN4TableRowProps) {
   const meses = calcN4Meses(n4)
   const totals = calcN4Totals(n4, cutoff)
   const hasManual = n4.n7.some((l) => l.tipoActualizacion === 'manual')
@@ -37,17 +34,10 @@ export function ForecastN4TableRow({ roundId, n4, cutoff, onEditMonth, readOnly 
   return (
     <tr className="border-t border-border">
       <td className={cn(td, 'sticky left-0 z-[1] bg-white font-semibold text-foreground')}>
-        {hideEditLink ? (
-          <span className="flex items-center gap-1.5" title={hasManual ? 'Tiene N7 con edición manual' : undefined}>
-            {hasManual && <Icon name="alert" size={11} color="#B45309" />}
-            <span>{n4.n4Nombre}</span>
-          </span>
-        ) : (
-          <Link to={`/forecast/${roundId}/editar/${encodeURIComponent(n4.n4Codigo)}`} className="flex items-center gap-1.5 hover:text-primary hover:underline" title={hasManual ? 'Tiene N7 con edición manual' : undefined}>
-            {hasManual && <Icon name="alert" size={11} color="#B45309" />}
-            <span>{n4.n4Nombre}</span>
-          </Link>
-        )}
+        <Link to={`/forecast/${roundId}/editar/${encodeURIComponent(n4.n4Codigo)}`} className="flex items-center gap-1.5 hover:text-primary hover:underline" title={hasManual ? 'Tiene N7 con edición manual' : undefined}>
+          {hasManual && <Icon name="alert" size={11} color="#B45309" />}
+          <span>{n4.n4Nombre}</span>
+        </Link>
       </td>
       <ForecastIdentityCells identidad={n4Identidad(n4)} />
       {monthKeys.map((k, i) => {

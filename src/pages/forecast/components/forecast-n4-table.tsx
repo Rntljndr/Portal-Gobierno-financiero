@@ -15,10 +15,9 @@ interface ForecastN4TableProps {
   cutoff: number
   onEditMonth?: (n4: ForecastN4Linea, monthKey: string, monthLabel: string, currentValue: number) => void
   readOnly?: boolean
-  hideEditLink?: boolean
 }
 
-export function ForecastN4Table({ roundId, rows, cutoff, onEditMonth, readOnly = false, hideEditLink }: ForecastN4TableProps) {
+export function ForecastN4Table({ roundId, rows, cutoff, onEditMonth, readOnly = false }: ForecastN4TableProps) {
   const { col, dir, onSort } = useForecastSort(roundId)
   const sortedRows = useMemo(
     () => sortForecastRows(rows, col, dir, (n4) => n4.n4Nombre, (n4) => calcN4Totals(n4, cutoff)),
@@ -43,7 +42,7 @@ export function ForecastN4Table({ roundId, rows, cutoff, onEditMonth, readOnly =
         <tbody>
           {sortedRows.map((n4) => (
             <Fragment key={n4.n4Codigo}>
-              <ForecastN4TableRow roundId={roundId} n4={n4} cutoff={cutoff} onEditMonth={onEditMonth} readOnly={readOnly} hideEditLink={hideEditLink} />
+              <ForecastN4TableRow roundId={roundId} n4={n4} cutoff={cutoff} onEditMonth={onEditMonth} readOnly={readOnly} />
               <ForecastPlanRow plan={findPlanN4(n4.n4Codigo)} cutoff={cutoff} variant="n4" />
             </Fragment>
           ))}
