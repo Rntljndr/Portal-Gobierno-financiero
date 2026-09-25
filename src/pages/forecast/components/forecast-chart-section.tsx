@@ -8,11 +8,12 @@ interface ForecastChartSectionProps {
   cutoff: number
 }
 
-/** Sección colapsable (colapsada por defecto), patrón hand-rolled de pep-n4-card.tsx — no existe un
- * Collapsible genérico en shared/ui. Dos visiones con selector (F): barras (ForecastEvolucionChart) o
- * puntos (ForecastEvolucionPointsChart), misma escala/datos en ambas. */
+/** Sección colapsable, expandida por defecto (F: "se debe ver el gráfico de barras") — patrón
+ * hand-rolled de pep-n4-card.tsx, no existe un Collapsible genérico en shared/ui. Dos visiones con
+ * selector (F): barras (ForecastEvolucionChart, la que se ve por defecto) o puntos
+ * (ForecastEvolucionPointsChart), misma escala/datos en ambas. */
 export function ForecastChartSection({ meses, cutoff }: ForecastChartSectionProps) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(true)
   const [vista, setVista] = useState<'barras' | 'puntos'>('barras')
 
   return (

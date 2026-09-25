@@ -69,5 +69,29 @@ export function useForecastEditarN7Detalle(roundId: string | undefined, n4Codigo
   const identidad = round && n4 && n7 ? n7Identidad(n4.n4Codigo, n7, n4.n7, cutoff) : null
   const plan = n4 && n7 ? findPlanN7(n4.n4Codigo, n7.n7Codigo) : {}
 
-  return { round, n4, n7, identidad, plan, cutoff, draft, setMes, distribuirOpen, setDistribuirOpen, aplicarDistribucion, justificacion, setJustificacion, comentario, setComentario, guardar, message }
+  // ¿Hay algo sin guardar? (F: "si se ha modificado un dato" — confirmar antes de salir). Compara el
+  // draft contra el mismo baseline que lo llenó al entrar, más justificación/comentario tocados.
+  const baseline = buildDraft(n7, cutoff)
+  const hasChanges = Object.keys(baseline).some((k) => draft[k] !== baseline[k]) || justificacion !== FORECAST_JUSTIFICACION_OPTIONS[0] || comentario.trim() !== ''
+
+  return {
+    round,
+    n4,
+    n7,
+    identidad,
+    plan,
+    cutoff,
+    draft,
+    setMes,
+    distribuirOpen,
+    setDistribuirOpen,
+    aplicarDistribucion,
+    justificacion,
+    setJustificacion,
+    comentario,
+    setComentario,
+    guardar,
+    hasChanges,
+    message,
+  }
 }

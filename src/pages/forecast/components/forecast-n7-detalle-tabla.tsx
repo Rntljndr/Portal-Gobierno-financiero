@@ -1,4 +1,5 @@
 import { cn } from '@/shared/lib/utils'
+import { Button } from '@/shared/ui'
 import { monthKeys, monthLabels } from '@/data/reporteria'
 import type { ForecastN7Linea } from '@/data/forecast-lineas'
 import { formatForecastAmount } from '../lib/format-forecast-amount'
@@ -12,13 +13,15 @@ interface ForecastN7DetalleTablaProps {
   cutoff: number
   draft: Record<string, string>
   onChangeMes: (monthKey: string, value: string) => void
+  onDistribuir: () => void
 }
 
 /** Tabla de Forecast (F, copiada de GestionOpex QA — ForecastN7Historico "Editar"/PEP): un mes por
  * fila, Presupuesto (Plan) y Real/Forecast. Los meses ya cerrados muestran el Real como texto fijo;
  * los meses restantes del año son inputs editables — el valor se guarda en `draft` (estado local de
- * la página) hasta que se presiona "Guardar", no celda a celda. */
-export function ForecastN7DetalleTabla({ n7, plan, cutoff, draft, onChangeMes }: ForecastN7DetalleTablaProps) {
+ * la página) hasta que se presiona "Guardar", no celda a celda. "Distribuir Montos" vive dentro de
+ * este mismo recuadro, al pie de la tabla (F: "debe estar dentro de la misma tabla"). */
+export function ForecastN7DetalleTabla({ n7, plan, cutoff, draft, onChangeMes, onDistribuir }: ForecastN7DetalleTablaProps) {
   const planTotal = monthKeys.reduce((s, k) => s + (plan[k] || 0), 0)
   const realForecastTotal = monthKeys.reduce((s, k, i) => s + (i < cutoff ? n7.meses[k] || 0 : Number(draft[k]) || 0), 0)
 
@@ -68,6 +71,11 @@ export function ForecastN7DetalleTabla({ n7, plan, cutoff, draft, onChangeMes }:
           </tr>
         </tfoot>
       </table>
+      <div className="flex justify-end border-t border-border p-[14px_20px]">
+        <Button variant="outline" size="sm" onClick={onDistribuir}>
+          Distribuir Montos
+        </Button>
+      </div>
     </div>
   )
 }
