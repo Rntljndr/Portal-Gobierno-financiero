@@ -1,9 +1,17 @@
 import { createContext } from 'react'
 import type { ForecastRound } from '@/data/forecast'
 import type { ForecastMesNota } from '@/data/forecast-lineas'
+import type { ForecastEnvioTransicion } from './forecast-envio'
+import type { ForecastTablaComparativa } from './forecast-tabla-comparativa'
 
 export interface ForecastStore {
   rounds: ForecastRound[]
+  /** Comparativa de tabla (botón "Comparar") — vive acá, no en cada pantalla, para que la selección
+   * persista al navegar entre el listado (N4/N7) y el detalle de un servicio (F: "debe permanecer en
+   * todas las vistas donde existe el campo de comparación"). También alimenta la serie "anterior" del
+   * gráfico de ForecastN7EditarContent — una sola selección para toda la sesión. */
+  comparativa: ForecastTablaComparativa
+  setComparativa: (next: ForecastTablaComparativa) => void
   addRound: (round: ForecastRound) => void
   closeRound: (id: string) => void
   deleteRound: (id: string) => void
@@ -18,10 +26,14 @@ export interface ForecastStore {
   /** Edita los campos de "Datos del Forecast" (drawer de detalle del Activo) — solo Control de Gestión. */
   updateRoundDatos: (
     roundId: string,
-    patch: Partial<Pick<ForecastRound, 'titulo' | 'descripcion' | 'fechaInicio' | 'fechaTermino' | 'desvio' | 'tipo' | 'notificar'>>,
+    patch: Partial<Pick<ForecastRound, 'titulo' | 'descripcion' | 'fechaInicio' | 'fechaTermino' | 'horaInicio' | 'horaTermino' | 'desvio' | 'tipo' | 'notificar'>>,
   ) => void
   /** Edita una celda de la tabla de tasas de cambio (mismo contrato que TasasCambioTable#onChange). */
   updateTasaCambio: (roundId: string, moneda: string, mesIndex: number, valor: string) => void
+  /** Aplica una transición de estado (M7: enviar/aprobar/rechazar) sobre varias líneas seleccionadas a
+   * la vez — `seleccion` son claves de n4Codigo (si FORECAST_ENVIO_NIVEL es 'n4') o de forecastN7Key
+   * (si es 'n7'), según arme la selección cada tabla. */
+  aplicarTransicionCdG: (roundId: string, transicion: ForecastEnvioTransicion, seleccion: Set<string>) => void
 }
 
 export const ForecastContext = createContext<ForecastStore | null>(null)

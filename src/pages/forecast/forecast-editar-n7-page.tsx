@@ -1,20 +1,32 @@
 import { useNavigate, useParams } from 'react-router'
-import { Breadcrumb, Button, EmptyState, Icon, PageHeader, Toast, VolverBar } from '@/shared/ui'
+import { EmptyState, Toast, VolverBar } from '@/shared/ui'
 import { useForecastEditarN7 } from './lib/use-forecast-editar-n7'
-import { calcN4Meses } from './lib/forecast-edit-calc'
-import { ForecastN4InfoCard } from './components/forecast-n4-info-card'
-import { ForecastN7Table } from './components/forecast-n7-table'
-import { ForecastEditDrawer } from './components/forecast-edit-drawer'
-import { ForecastRupturaLlaveModal } from './components/forecast-ruptura-llave-modal'
-import { ForecastChartSection } from './components/forecast-chart-section'
-import { downloadForecastN7Xlsx } from './lib/download-forecast-xlsx'
+import { findN4EnRound } from './lib/forecast-comparativa'
+import { useForecastStore } from './lib/use-forecast-store'
+import { useForecastSeleccion } from './lib/use-forecast-seleccion'
+import { useForecastColapso } from './lib/use-forecast-colapso'
+import { useForecastN7EditarUi } from './lib/use-forecast-n7-editar-ui'
+import { esRubroNomina, useForecastHeadcount } from './lib/forecast-headcount'
+import { forecastN7Key, type ForecastEnvioTransicion } from './lib/forecast-envio'
+import { ForecastN7EditarTopSection, ForecastN7EditarTablaSection, ForecastN7EditarChartsSection } from './components/forecast-n7-editar-sections'
+import { ForecastN7EditarOverlays } from './components/forecast-n7-editar-overlays'
+import { ForecastN7EditarDrawer } from './components/forecast-n7-editar-drawer'
 import { useRestoreScroll } from './lib/use-restore-scroll'
 
 export function ForecastEditarN7Page() {
   const { id, n4codigo } = useParams()
   const navigate = useNavigate()
   const s = useForecastEditarN7(id, n4codigo)
+  const { rounds, aplicarTransicionCdG, closeRound } = useForecastStore()
   const scrollRef = useRestoreScroll<HTMLDivElement>(n4codigo ?? '')
+  const ui = useForecastN7EditarUi()
+
+  const readOnly = s.round?.estado === 'Cerrado'
+  const seleccionables = !readOnly ? s.n7Visibles.filter((n7) => n7.envioEstado !== 'Validado por Control de Gestión').map((n7) => n7.n7Codigo) : []
+  const seleccion = useForecastSeleccion(seleccionables)
+  const mostrarSeleccion = !readOnly
+  const colapso = useForecastColapso()
+  const headcount = useForecastHeadcount(s.n7Visibles)
 
   if (!s.round || !s.n4) {
     return (
@@ -25,49 +37,68 @@ export function ForecastEditarN7Page() {
   }
   const round = s.round
   const n4 = s.n4
+  // F: la navegación de un servicio N4 a uno N7 siempre vuelve al forecast unificado (/forecast/:id,
+  // con sus tabs N4/N7) — nunca a la pantalla vieja de edición N4 (/forecast/:id/editar).
+  const volverHref = `/forecast/${round.id}`
+  // F: "cuando se ingresa a un forecast anterior, la única línea a comparar es la de plan" — sin botón
+  // "Comparar" acá (ya oculto) para cambiarlo, cualquier "Forecast anterior" elegido mientras se vio el
+  // activo no debe arrastrarse a esta vista de solo lectura.
+  const anteriorRoundComparativa = readOnly ? undefined : rounds.find((r) => r.id === ui.comparativa.forecastRoundId)
+  const anteriorN4 = anteriorRoundComparativa && findN4EnRound(anteriorRoundComparativa, n4.n4Codigo)
+  const esNomina = esRubroNomina(n4.n4Codigo)
+
+  const aplicarTransicion = (transicion: ForecastEnvioTransicion) => {
+    const claves = new Set([...seleccion.seleccion].map((n7Codigo) => forecastN7Key(n4.n4Codigo, n7Codigo)))
+    aplicarTransicionCdG(round.id, transicion, claves)
+    seleccion.clear()
+  }
 
   return (
     <div className="flex h-full flex-col">
       <div ref={scrollRef} className="flex-1 overflow-y-auto">
-        <Breadcrumb
-          items={[
-            { label: 'SIP', to: '/' },
-            { label: 'Forecast', to: '/forecast' },
-            { label: round.titulo, to: `/forecast/${round.id}/editar` },
-            { label: n4.n4Nombre },
-          ]}
+        <ForecastN7EditarTopSection
+          round={round}
+          n4={n4}
+          n4Nombre={n4.n4Nombre}
+          n4Codigo={n4.n4Codigo}
+          pais={n4.pais}
+          equipo={n4.equipo}
+          cutoff={s.cutoff}
+          readOnly={readOnly}
+          ui={ui}
+          onOpenConfiguraciones={() => navigate(`/forecast/${round.id}/configuraciones`)}
         />
-        <PageHeader title={n4.n4Nombre} subtitle={`${n4.n4Codigo} · Edición por PEP N7`} />
 
-        <ForecastN4InfoCard n4Codigo={n4.n4Codigo} n4Nombre={n4.n4Nombre} pais={n4.pais} equipo={n4.equipo} />
+        <ForecastN7EditarTablaSection
+          round={round}
+          n4={n4}
+          n4Codigo={n4.n4Codigo}
+          n4Nombre={n4.n4Nombre}
+          rows={s.n7Visibles}
+          cutoff={s.cutoff}
+          n4Notas={n4.notas}
+          desvioMaximo={round.desvio}
+          onResetLlave={readOnly ? undefined : s.onResetLlave}
+          readOnly={readOnly}
+          seleccion={seleccion}
+          mostrarSeleccion={mostrarSeleccion}
+          ui={ui}
+          anteriorRound={anteriorRoundComparativa}
+          onAplicarTransicion={aplicarTransicion}
+          colapso={colapso}
+          filtros={s.filtros}
+          headcount={esNomina ? headcount : undefined}
+          readOnlyHeadcount={readOnly}
+        />
 
-        <div className="mx-8 mb-3 flex justify-end">
-          <Button variant="outline" size="sm" onClick={() => downloadForecastN7Xlsx(n4.n4Codigo, n4.n4Nombre, s.n7Visibles, s.cutoff)}>
-            <Icon name="download" size={12} color="#0047B0" /> Descargar
-          </Button>
-        </div>
-
-        <ForecastN7Table roundId={round.id} n4Codigo={n4.n4Codigo} rows={s.n7Visibles} cutoff={s.cutoff} onEditMonth={s.openEdit} onResetLlave={s.onResetLlave} />
-
-        <div className="mx-8 mb-8">
-          <ForecastChartSection meses={calcN4Meses(n4)} cutoff={s.cutoff} />
-        </div>
+        <ForecastN7EditarChartsSection n4={n4} cutoff={s.cutoff} anteriorN4={anteriorN4 || undefined} esNomina={esNomina} headcount={headcount} />
       </div>
 
-      <VolverBar label="Volver a Servicios N4" onBack={() => navigate(`/forecast/${round.id}/editar`)} />
+      <VolverBar label="Volver a Servicios N4" onBack={() => navigate(volverHref)} />
 
-      <ForecastEditDrawer
-        open={s.editTarget !== null}
-        onClose={s.closeEdit}
-        level="n7"
-        codigo={s.editTarget?.n7.n7Codigo ?? ''}
-        nombre={s.editTarget?.n7.n7Nombre ?? ''}
-        monthLabel={s.editTarget?.monthLabel ?? ''}
-        currentValue={s.editTarget?.currentValue ?? 0}
-        onSubmit={s.onDrawerSubmit}
-      />
+      {!readOnly && <ForecastN7EditarDrawer roundId={round.id} n4Codigo={n4.n4Codigo} n7Codigo={ui.editandoN7Codigo} onClose={() => ui.setEditandoN7Codigo(null)} />}
 
-      <ForecastRupturaLlaveModal open={s.rupturaOpen} onCancel={s.cancelRuptura} onConfirm={s.confirmRuptura} />
+      <ForecastN7EditarOverlays round={round} rounds={rounds} ui={ui} onConfirmClose={closeRound} />
 
       <Toast message={s.message} />
     </div>

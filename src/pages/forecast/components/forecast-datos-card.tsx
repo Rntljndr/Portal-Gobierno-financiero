@@ -4,6 +4,8 @@ import { cn } from '@/shared/lib/utils'
 import { DataField } from '@/pages/servicio-detalle/components/data-field'
 import type { ForecastRound } from '@/data/forecast'
 import { formatFechaCorta } from '../lib/format-date'
+import { equiposFromN4Codes } from '../lib/forecast-equipos'
+import { gerenciasFromN4Codes } from '../lib/forecast-gerencias'
 
 /** Mismo diseño y estructura que DataAccordion (servicio-detalle/components/data-accordion.tsx,
  * "Datos del servicio" — la ficha que se ve al seleccionar un PEP en Próximo ejercicio): acordeón sin
@@ -27,13 +29,14 @@ const fields = (round: ForecastRound) => (
       <DataField label="Porcentaje desvío" value={`${round.desvio}%`} />
     </div>
     <div className="mb-5 grid grid-cols-3 gap-5">
-      <DataField label="Fecha de inicio" value={formatFechaCorta(round.fechaInicio)} />
-      <DataField label="Fecha de término" value={formatFechaCorta(round.fechaTermino)} />
+      <DataField label="Fecha de inicio" value={`${formatFechaCorta(round.fechaInicio)} ${round.horaInicio}`} />
+      <DataField label="Fecha de término" value={`${formatFechaCorta(round.fechaTermino)} ${round.horaTermino}`} />
       <DataField label="Notificar usuarios" value={round.notificar ? 'Sí' : 'No'} />
     </div>
     <div className="grid grid-cols-3 gap-5">
       <DataField label="Descripción" value={round.descripcion} />
-      {round.tipo === 'parcial' && <DataField label="PEPs habilitados" value={String(round.pepsCount ?? round.selPeps.length)} />}
+      {round.tipo === 'parcial' && <DataField label="Equipos habilitados" value={String(equiposFromN4Codes(round.selPeps).size)} />}
+      {round.tipo === 'parcial' && <DataField label="Gerencias habilitadas" value={String(gerenciasFromN4Codes(round.selPeps).size)} />}
     </div>
   </>
 )

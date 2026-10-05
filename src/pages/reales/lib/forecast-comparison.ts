@@ -10,9 +10,9 @@ function withinWindow(round: ForecastRound, now: Date): boolean {
   return new Date(round.fechaTermino) >= limit
 }
 
-/** Ejercicios disponibles para comparar: no-borrador, dentro de la ventana configurada. */
+/** Ejercicios disponibles para comparar: dentro de la ventana configurada. */
 export function forecastComparisonOptions(rounds: ForecastRound[], now = new Date()): ForecastRound[] {
-  return rounds.filter((r) => r.estado !== 'Borrador' && withinWindow(r, now))
+  return rounds.filter((r) => withinWindow(r, now))
 }
 
 /** El forecast activo por defecto: el último cerrado (referencia estable para comparar). */

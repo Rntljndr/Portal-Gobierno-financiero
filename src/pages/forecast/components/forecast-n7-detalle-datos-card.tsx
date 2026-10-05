@@ -4,6 +4,7 @@ import { DataField } from '@/pages/servicio-detalle/components/data-field'
 import type { ForecastRound } from '@/data/forecast'
 import type { ForecastN4Linea, ForecastN7Linea } from '@/data/forecast-lineas'
 import type { ForecastIdentidadN7 } from '../lib/forecast-identidad'
+import { calcLlavePlanPct } from '../lib/forecast-edit-calc'
 import { formatFechaCorta } from '../lib/format-date'
 
 interface ForecastN7DetalleDatosCardProps {
@@ -15,9 +16,10 @@ interface ForecastN7DetalleDatosCardProps {
 
 /** Ficha de identidad del PEP N7 (F: "se deben ver como en Datos del servicio" — mismo acordeón que
  * DataAccordion/servicio-detalle, ForecastDatosCard: sin borde divisor entre header y body, header
- * clickeable con chevron, grids de 3 campos, DataField para label/valor. */
+ * clickeable con chevron, grids de 3 campos, DataField para label/valor. Colapsada por defecto (A9) —
+ * el gráfico vive aparte, en su propia sección colapsable ("Gráficos", ver ForecastChartSection). */
 export function ForecastN7DetalleDatosCard({ round, n4, n7, identidad }: ForecastN7DetalleDatosCardProps) {
-  const [open, setOpen] = useState(true)
+  const [open, setOpen] = useState(false)
   const isManual = n7.tipoActualizacion === 'manual'
 
   return (
@@ -45,8 +47,8 @@ export function ForecastN7DetalleDatosCard({ round, n4, n7, identidad }: Forecas
             <DataField label="Período" value={`${round.titulo} (${formatFechaCorta(round.fechaInicio)} al ${formatFechaCorta(round.fechaTermino)})`} />
           </div>
           <div className="grid grid-cols-3 gap-5">
-            <DataField label="Llave de Distribución Plan" value={`${identidad.llavePlanPct.toFixed(1)}%`} />
-            <DataField label="Llave de Distribución Forecast" value={`${identidad.llaveForecastPct.toFixed(1)}%`} />
+            <DataField label="Llave de Distribución Plan" value={`${calcLlavePlanPct(n4.n4Codigo, n7.n7Codigo).toFixed(1)}%`} />
+            <DataField label="Llave de Distribución Forecast" value={`${identidad.llaveDistribucionPct.toFixed(1)}%`} />
             <DataField label="Usuario Última Edición" value={isManual ? 'Andrea Morales' : '—'} />
           </div>
         </div>

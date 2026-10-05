@@ -9,6 +9,9 @@ interface TasasCambioTableProps {
   readOnly?: boolean
   /** Si es true, la tabla arranca colapsada y el título se puede plegar/desplegar (F: forecast anterior). Default false — el resto de los usos no cambia. */
   collapsible?: boolean
+  /** F: forecast anterior/cerrado — todas las columnas se ven en gris uniforme, sin distinguir
+   * "histórico" de "proyección" (ya pasó o no se usa, no tiene sentido esa diferenciación). */
+  soloHistorico?: boolean
 }
 
 function TasasCambioHeader({ readOnly, collapsible, open, onToggle }: { readOnly: boolean; collapsible: boolean; open: boolean; onToggle: () => void }) {
@@ -37,7 +40,7 @@ function TasasCambioHeader({ readOnly, collapsible, open, onToggle }: { readOnly
   )
 }
 
-function TasasCambioBody({ value, onChange, readOnly }: Pick<TasasCambioTableProps, 'value' | 'onChange' | 'readOnly'>) {
+function TasasCambioBody({ value, onChange, readOnly, soloHistorico }: Pick<TasasCambioTableProps, 'value' | 'onChange' | 'readOnly' | 'soloHistorico'>) {
   const th = 'p-[9px_10px] text-[11px] font-bold text-cs-gris-oscuro uppercase tracking-[0.04em] text-left border-b border-border whitespace-nowrap'
 
   return (
@@ -48,18 +51,18 @@ function TasasCambioBody({ value, onChange, readOnly }: Pick<TasasCambioTablePro
             <th className={cn(th, 'sticky left-0 z-[1] bg-[#F4F6FB]')}>País</th>
             <th className={cn(th, 'bg-[#F4F6FB]')}>Moneda</th>
             {forecastMeses.map((mes, i) => {
-              const isHist = i < FORECAST_MES_ACTUAL
+              const isHist = soloHistorico || i < FORECAST_MES_ACTUAL
               return (
                 <th
                   key={mes}
                   className={cn(
                     'min-w-[72px] p-[9px_10px] text-center text-[11px] font-bold whitespace-nowrap',
                     isHist ? 'bg-[#F4F6FB] text-muted-foreground' : 'bg-primary/[0.04] text-primary',
-                    i === FORECAST_MES_ACTUAL && 'border-l-2 border-l-primary/20',
+                    !soloHistorico && i === FORECAST_MES_ACTUAL && 'border-l-2 border-l-primary/20',
                   )}
                 >
                   {mes}
-                  {i === FORECAST_MES_ACTUAL && <div className="text-[9px] font-medium text-primary normal-case">▶ Proyección</div>}
+                  {!soloHistorico && i === FORECAST_MES_ACTUAL && <div className="text-[9px] font-medium text-primary normal-case">▶ Proyección</div>}
                 </th>
               )
             })}
@@ -73,10 +76,10 @@ function TasasCambioBody({ value, onChange, readOnly }: Pick<TasasCambioTablePro
                 <td className="sticky left-0 z-[1] bg-white p-[10px_14px] text-[12.5px] font-semibold whitespace-nowrap text-foreground">{p.pais}</td>
                 <td className="p-[10px_10px] text-[12.5px] font-bold text-primary">{p.moneda}</td>
                 {forecastMeses.map((_, mi) => {
-                  const isHist = mi < FORECAST_MES_ACTUAL
+                  const isHist = soloHistorico || mi < FORECAST_MES_ACTUAL
                   const editable = !readOnly && !isHist
                   return (
-                    <td key={mi} className={cn('p-[10px_10px] text-center', isHist ? 'bg-primary/[0.03]' : 'bg-white', mi === FORECAST_MES_ACTUAL && 'border-l-2 border-l-primary/20')}>
+                    <td key={mi} className={cn('p-[10px_10px] text-center', isHist ? 'bg-primary/[0.03]' : 'bg-white', !soloHistorico && mi === FORECAST_MES_ACTUAL && 'border-l-2 border-l-primary/20')}>
                       {editable ? (
                         <input
                           type="number"
@@ -103,13 +106,13 @@ function TasasCambioBody({ value, onChange, readOnly }: Pick<TasasCambioTablePro
   )
 }
 
-export function TasasCambioTable({ value, onChange, readOnly = false, collapsible = false }: TasasCambioTableProps) {
+export function TasasCambioTable({ value, onChange, readOnly = false, collapsible = false, soloHistorico = false }: TasasCambioTableProps) {
   const [open, setOpen] = useState(!collapsible)
 
   return (
     <div className="rounded-xl border border-border bg-white p-[20px_24px]">
       <TasasCambioHeader readOnly={readOnly} collapsible={collapsible} open={open} onToggle={() => setOpen((v) => !v)} />
-      {open && <TasasCambioBody value={value} onChange={onChange} readOnly={readOnly} />}
+      {open && <TasasCambioBody value={value} onChange={onChange} readOnly={readOnly} soloHistorico={soloHistorico} />}
     </div>
   )
 }

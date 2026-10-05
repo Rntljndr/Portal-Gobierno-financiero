@@ -6,7 +6,6 @@ import { useComparisonsState } from '@/pages/reales/lib/use-comparisons-state'
 import { usePrelimToolbar } from '../lib/use-prelim-toolbar'
 import { calcPrelimStats } from '../lib/preliminares-calc'
 import { downloadPreliminaresCsv } from '../lib/download-csv'
-import { PreliminaresCountrySummary } from './preliminares-country-summary'
 import { PreliminaresStatsRow } from './preliminares-stats-row'
 import { PreliminaresToolbar } from './preliminares-toolbar'
 import { PreliminaresTopActions } from './preliminares-top-actions'
@@ -36,7 +35,6 @@ export function PreliminarDetalleSection({ n4 }: { n4: PreliminarN4Row }) {
         onCierreContable={() => {}}
         showCierreContable={false}
       />
-      <PreliminaresCountrySummary rows={n4.children} paisesList={[n4.pais]} />
       {isCdG && <PreliminaresStatsRow totalServicio={stats.total} conPrelim={stats.conPrelim} definitivos={stats.definitivos} />}
 
       <PreliminaresToolbar

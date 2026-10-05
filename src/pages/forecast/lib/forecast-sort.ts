@@ -1,14 +1,21 @@
 import { useEffect, useState } from 'react'
-import type { ResumenTotals } from '@/shared/lib/resumen-blocks'
 
-export type ForecastSortCol = 'nombre' | 'plan' | 'real' | 'realMasForecast' | 'desvio' | 'pctDesvio' | null
+/** F: "el orden con chevron solo debe llegar hasta antes del primer mes de reales" — la columna de
+ * orden es "nombre" o la key de una columna de identidad (ver forecast-identity-cols.ts); los meses y
+ * los totales de resumen no son ordenables. `null` = sin orden aplicado (orden natural de los datos). */
+export type ForecastSortCol = string | null
 
 export type SortDir = 'asc' | 'desc'
 
-export function sortForecastRows<T>(rows: T[], col: ForecastSortCol, dir: SortDir, nombreOf: (r: T) => string, totalsOf: (r: T) => ResumenTotals): T[] {
+/** `valueOf` resuelve el valor comparable de una fila para la columna pedida — string (orden
+ * alfabético, es-CL) o number (orden numérico). Un solo callback genérico en vez de nombreOf/totalsOf
+ * separados, para no tener que enumerar cada columna nueva acá. */
+export function sortForecastRows<T>(rows: T[], col: ForecastSortCol, dir: SortDir, valueOf: (row: T, col: string) => string | number): T[] {
   if (!col) return rows
   return [...rows].sort((a, b) => {
-    const cmp = col === 'nombre' ? nombreOf(a).localeCompare(nombreOf(b), 'es') : (totalsOf(a)[col] ?? 0) - (totalsOf(b)[col] ?? 0)
+    const va = valueOf(a, col)
+    const vb = valueOf(b, col)
+    const cmp = typeof va === 'string' || typeof vb === 'string' ? String(va).localeCompare(String(vb), 'es') : va - vb
     return dir === 'asc' ? cmp : -cmp
   })
 }
@@ -26,7 +33,7 @@ export function useForecastSort(key: string) {
     rememberedSort.set(key, { col, dir })
   }, [key, col, dir])
 
-  const onSort = (c: NonNullable<ForecastSortCol>) => {
+  const onSort = (c: string) => {
     if (col !== c) {
       setCol(c)
       setDir('desc')

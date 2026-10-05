@@ -1,16 +1,23 @@
-import { useState, type ReactNode } from 'react'
+import { useState, type Dispatch, type ReactNode, type SetStateAction } from 'react'
 import { forecastRoundsIniciales, FORECAST_MES_ACTUAL, type ForecastRound } from '@/data/forecast'
 import type { ForecastMesNota } from '@/data/forecast-lineas'
 import { ForecastContext, type ForecastStore } from './forecast-context'
-import { distribuirMontoN4, restablecerLlaveN7 } from './forecast-llave'
+import { distribuirMontoN4Completo, restablecerLlaveN7 } from './forecast-llave'
+import { aplicarCierreRound, aplicarTransicionCdGBulk } from './forecast-envio'
+import { aplicarN7MesesBatch } from './forecast-batch-update'
+import { EMPTY_TABLA_COMPARATIVA, type ForecastTablaComparativa } from './forecast-tabla-comparativa'
 
-export function ForecastProvider({ children }: { children: ReactNode }) {
-  const [rounds, setRounds] = useState<ForecastRound[]>(forecastRoundsIniciales)
-
-  const store: ForecastStore = {
-    rounds,
-    addRound: (round) => setRounds((prev) => [round, ...prev.map((r) => (r.estado === 'Abierto' ? { ...r, estado: 'Cerrado' as const } : r))]),
-    closeRound: (id) => setRounds((prev) => prev.map((r) => (r.id === id ? { ...r, estado: 'Cerrado' as const, cerradoManual: true } : r))),
+/** Fábrica de las acciones del store, separada del componente para mantener ForecastProvider bajo el
+ * límite de líneas del linter — todas cierran sobre el mismo `setRounds`. */
+function createForecastActions(
+  setRounds: Dispatch<SetStateAction<ForecastRound[]>>,
+  setComparativa: Dispatch<SetStateAction<ForecastTablaComparativa>>,
+): Omit<ForecastStore, 'rounds' | 'comparativa'> {
+  return {
+    // A2: abrir un forecast nuevo no cierra el anterior — "Nuevo Forecast" ya queda deshabilitado
+    // mientras haya uno Abierto (forecast-list-header-actions.tsx).
+    addRound: (round) => setRounds((prev) => [round, ...prev]),
+    closeRound: (id) => setRounds((prev) => prev.map((r) => (r.id === id ? aplicarCierreRound(r) : r))),
     deleteRound: (id) => setRounds((prev) => prev.filter((r) => r.id !== id)),
 
     updateN4Monto: (roundId, n4Codigo, monthKey, monto, nota) =>
@@ -18,10 +25,8 @@ export function ForecastProvider({ children }: { children: ReactNode }) {
         prev.map((r) => {
           if (r.id !== roundId) return r
           const lineas = r.lineas.map((n4) => {
-            if (n4.n4Codigo !== n4Codigo) return n4
-            const sinAutomaticos = n4.n7.length > 0 && n4.n7.every((l) => l.tipoActualizacion === 'manual')
-            if (sinAutomaticos) return n4
-            const n7 = distribuirMontoN4(n4, monthKey, monto, FORECAST_MES_ACTUAL)
+            if (n4.n4Codigo !== n4Codigo || n4.n7.length === 0) return n4
+            const n7 = distribuirMontoN4Completo(n4, monthKey, monto, FORECAST_MES_ACTUAL)
             const notas: Record<string, ForecastMesNota> = nota ? { ...n4.notas, [monthKey]: nota } : n4.notas
             return { ...n4, n7, notas }
           })
@@ -56,24 +61,7 @@ export function ForecastProvider({ children }: { children: ReactNode }) {
       ),
 
     updateN7MesesBatch: (roundId, updates) =>
-      setRounds((prev) => {
-        const byN7Codigo = new Map(updates.map((u) => [u.n7Codigo, u]))
-        return prev.map((r) => {
-          if (r.id !== roundId) return r
-          const lineas = r.lineas.map((n4) => ({
-            ...n4,
-            n7: n4.n7.map((line) => {
-              const update = byN7Codigo.get(line.n7Codigo)
-              if (!update || update.n4Codigo !== n4.n4Codigo) return line
-              const notas = update.notas
-                ? { ...line.notas, ...Object.fromEntries(Object.keys(update.meses).map((k) => [k, update.notas!])) }
-                : line.notas
-              return { ...line, meses: { ...line.meses, ...update.meses }, tipoActualizacion: 'manual' as const, notas }
-            }),
-          }))
-          return { ...r, lineas }
-        })
-      }),
+      setRounds((prev) => prev.map((r) => (r.id === roundId ? { ...r, lineas: aplicarN7MesesBatch(r.lineas, updates) } : r))),
 
     updateRoundDatos: (roundId, patch) => setRounds((prev) => prev.map((r) => (r.id === roundId ? { ...r, ...patch } : r))),
 
@@ -86,7 +74,18 @@ export function ForecastProvider({ children }: { children: ReactNode }) {
           return { ...r, tasasCambio: { ...r.tasasCambio, [moneda]: serie } }
         }),
       ),
-  }
 
+    aplicarTransicionCdG: (roundId, transicion, seleccion) =>
+      setRounds((prev) => prev.map((r) => (r.id === roundId ? { ...r, lineas: aplicarTransicionCdGBulk(r.lineas, transicion, seleccion) } : r))),
+    setComparativa,
+  }
+}
+
+export function ForecastProvider({ children }: { children: ReactNode }) {
+  const [rounds, setRounds] = useState<ForecastRound[]>(forecastRoundsIniciales)
+  // Comparativa de tabla (botón "Comparar") — a nivel de store para que persista al navegar entre
+  // pantallas (F: "debe permanecer en todas las vistas donde existe el campo de comparación").
+  const [comparativa, setComparativa] = useState<ForecastTablaComparativa>(EMPTY_TABLA_COMPARATIVA)
+  const store: ForecastStore = { rounds, comparativa, ...createForecastActions(setRounds, setComparativa) }
   return <ForecastContext.Provider value={store}>{children}</ForecastContext.Provider>
 }

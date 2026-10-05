@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
-import { Breadcrumb, PageHeader } from '@/shared/ui'
+import { useNavigate } from 'react-router'
 import type { ForecastRound } from '@/data/forecast'
+import type { ForecastN4Linea } from '@/data/forecast-lineas'
 import { useForecastStore } from './lib/use-forecast-store'
 import { useForecastEditarN4 } from './lib/use-forecast-editar-n4'
 import { useForecastCargaMasiva } from './lib/use-forecast-carga-masiva'
@@ -9,49 +10,56 @@ import { buildFlatN7Rows } from './lib/forecast-flat-n7'
 import { calcN7Totals } from './lib/forecast-edit-calc'
 import { estaEnCero } from './lib/hide-zero-lines'
 import { useForecastFilters } from './lib/use-forecast-filters'
-import { ForecastListHeaderActions } from './components/forecast-list-header-actions'
+import { ForecastListPageHeader } from './components/forecast-list-page-header'
 import { ForecastListBody } from './components/forecast-list-body'
-import { ForecastAnterioresDrawer } from './components/forecast-anteriores-drawer'
-import { ForecastTasasDrawer } from './components/forecast-tasas-drawer'
-import { ForecastListOverlays } from './components/forecast-list-overlays'
-import { ForecastRoundModals } from './components/forecast-round-modals'
+import { ForecastListDrawers } from './components/forecast-list-drawers'
 
 export function ForecastListPage() {
-  const { rounds, closeRound, deleteRound } = useForecastStore()
+  const navigate = useNavigate()
+  const { rounds, closeRound, comparativa, setComparativa } = useForecastStore()
   const [closeTarget, setCloseTarget] = useState<ForecastRound | null>(null)
-  const [deleteTarget, setDeleteTarget] = useState<ForecastRound | null>(null)
   const [anterioresOpen, setAnterioresOpen] = useState(false)
   const [detalleOpen, setDetalleOpen] = useState(false)
   const [tasasOpen, setTasasOpen] = useState(false)
+  const [compararOpen, setCompararOpen] = useState(false)
   const [tab, setTab] = useState<'n4' | 'n7'>('n4')
+  // A5: PEP N7 en edición desde el tab plano — abre ForecastN7EditarDrawer sin navegar.
+  const [editandoN7, setEditandoN7] = useState<{ n4Codigo: string; n7Codigo: string } | null>(null)
+  // F: "a nivel 4... se debe agregar una columna con el botón de editar" — abre la asignación
+  // anualizada (ForecastEditarMontosModal) para ese N4, desde la tabla principal.
+  const [editandoMontosN4, setEditandoMontosN4] = useState<ForecastN4Linea | null>(null)
 
   const activo = rounds.find((r) => r.estado === 'Abierto')
-  const borrador = rounds.find((r) => r.estado === 'Borrador')
-  const anteriores = rounds.filter((r) => r.estado === 'Cerrado')
+  const anteriores = rounds.filter((r) => r.estado === 'Cerrado').sort((a, b) => (a.fechaTermino < b.fechaTermino ? 1 : -1))
+  // A4: sin forecast activo, se muestra el último cerrado — la vista nunca queda vacía.
+  const roundMostrado = activo ?? anteriores[0]
+  const anteriorRoundComparativa = rounds.find((r) => r.id === comparativa.forecastRoundId)
 
-  const tabla = useForecastEditarN4(activo?.id)
+  const tabla = useForecastEditarN4(roundMostrado?.id)
   const cm = useForecastCargaMasiva(activo)
 
   const flatN7Rows = useMemo(() => {
-    const rows = buildFlatN7Rows(activo?.lineas ?? [])
+    const rows = buildFlatN7Rows(roundMostrado?.lineas ?? [])
     return tabla.ocultarCeros ? rows.filter((r) => !estaEnCero(calcN7Totals(r.n4Codigo, r.n7, tabla.cutoff))) : rows
-  }, [activo, tabla.ocultarCeros, tabla.cutoff])
+  }, [roundMostrado, tabla.ocultarCeros, tabla.cutoff])
 
   const filtros = useForecastFilters(tab, tabla.lineasVisibles, flatN7Rows, tabla.cutoff)
 
   return (
     <div className="h-full overflow-y-auto">
-      <Breadcrumb items={[{ label: 'SIP', to: '/' }, { label: 'Forecast' }]} />
-      <PageHeader
-        title="Forecast"
-        subtitle="Gestión de ejercicios de proyección presupuestaria"
-        action={<ForecastListHeaderActions tab={tab} onTabChange={setTab} />}
+      <ForecastListPageHeader
+        tab={tab}
+        onTabChange={setTab}
+        hasActivo={!!activo}
+        onOpenConfiguraciones={() => activo && navigate(`/forecast/${activo.id}/configuraciones`)}
+        onCerrar={() => activo && setCloseTarget(activo)}
       />
 
       <ForecastListBody
         rounds={rounds}
         activo={activo}
-        borrador={borrador}
+        roundMostrado={roundMostrado}
+        ultimoCerrado={anteriores[0]}
         anterioresCount={anteriores.length}
         tab={tab}
         tabla={tabla}
@@ -60,27 +68,39 @@ export function ForecastListPage() {
         onToggleDetalle={() => setDetalleOpen((v) => !v)}
         onVerTasas={() => setTasasOpen(true)}
         onOpenAnteriores={() => setAnterioresOpen(true)}
+        onOpenConfiguraciones={() => activo && navigate(`/forecast/${activo.id}/configuraciones`)}
         onCerrar={() => activo && setCloseTarget(activo)}
         onImportar={cm.openDrawer}
-        onDescargar={() => activo && downloadForecastN4Xlsx(activo.titulo, filtros.filteredN4, tabla.cutoff)}
+        onDescargar={() => roundMostrado && downloadForecastN4Xlsx(roundMostrado.titulo, filtros.filteredN4, tabla.cutoff)}
+        onEditarN7={(n4Codigo, n7) => setEditandoN7({ n4Codigo, n7Codigo: n7.n7Codigo })}
+        onEditarMontosN4={setEditandoMontosN4}
+        comparativa={comparativa}
+        anteriorRound={anteriorRoundComparativa}
+        onOpenComparar={() => setCompararOpen(true)}
+        ocultarConfigCerrar
       />
 
-      <ForecastAnterioresDrawer open={anterioresOpen} onClose={() => setAnterioresOpen(false)} borrador={borrador} rounds={anteriores} onRequestDelete={setDeleteTarget} />
-
-      {activo && (
-        <>
-          <ForecastTasasDrawer open={tasasOpen} onClose={() => setTasasOpen(false)} round={activo} />
-          <ForecastListOverlays activo={activo} tabla={tabla} cm={cm} />
-        </>
-      )}
-
-      <ForecastRoundModals
+      <ForecastListDrawers
+        rounds={rounds}
+        activo={activo}
+        roundMostrado={roundMostrado}
+        anteriores={anteriores}
+        anterioresOpen={anterioresOpen}
+        onCloseAnteriores={() => setAnterioresOpen(false)}
+        tasasOpen={tasasOpen}
+        onCloseTasas={() => setTasasOpen(false)}
+        compararOpen={compararOpen}
+        onCloseComparar={() => setCompararOpen(false)}
+        comparativa={comparativa}
+        onApplyComparativa={setComparativa}
+        cm={cm}
+        editandoN7={editandoN7}
+        onCloseEditarN7={() => setEditandoN7(null)}
+        editandoMontosN4={editandoMontosN4}
+        onCloseEditarMontosN4={() => setEditandoMontosN4(null)}
         closeTarget={closeTarget}
         onCloseTarget={setCloseTarget}
         onConfirmClose={closeRound}
-        deleteTarget={deleteTarget}
-        onDeleteTarget={setDeleteTarget}
-        onConfirmDelete={deleteRound}
       />
     </div>
   )

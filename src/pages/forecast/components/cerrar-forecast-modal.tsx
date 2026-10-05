@@ -13,7 +13,7 @@ export function CerrarForecastModal({ round, onClose, onConfirm }: CerrarForecas
     <Modal
       open={round !== null}
       onClose={onClose}
-      title="¿Cerrar el Forecast ahora?"
+      title={round ? `¿Cerrar "${round.titulo}" ahora?` : '¿Cerrar el Forecast ahora?'}
       footer={
         <>
           <Button variant="outline" onClick={onClose}>
@@ -26,8 +26,9 @@ export function CerrarForecastModal({ round, onClose, onConfirm }: CerrarForecas
       }
     >
       <p className="text-[13px] leading-relaxed text-cs-gris-oscuro">
-        Al cerrar el forecast antes de su fecha de término (<strong className="text-foreground">{round ? formatFechaCorta(round.fechaTermino) : ''}</strong>), los usuarios ya no podrán editar sus
-        líneas. La reportería tomará los datos aprobados a partir de la próxima actualización.
+        Al cerrar el forecast antes de su fecha de término (<strong className="text-foreground">{round ? formatFechaCorta(round.fechaTermino) : ''}</strong>), todos los PEP quedarán en estado{' '}
+        <strong className="text-foreground">Validado por Control de Gestión</strong>, igual que en Reales, y los usuarios ya no podrán editar sus líneas. La reportería tomará los datos aprobados a
+        partir de la próxima actualización.
       </p>
     </Modal>
   )

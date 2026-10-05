@@ -1,8 +1,7 @@
-import { pepN4Tablon } from './reporteria'
 import { buildInitialLineas } from './forecast-lineas'
 import type { ForecastN4Linea } from './forecast-lineas'
 
-export type ForecastEstado = 'Borrador' | 'Abierto' | 'Cerrado'
+export type ForecastEstado = 'Abierto' | 'Cerrado'
 export type ForecastTipo = 'global' | 'parcial'
 
 export const forecastMeses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
@@ -16,7 +15,7 @@ export const forecastPaisesMoneda = [
   { pais: 'Colombia', moneda: 'COP' },
   { pais: 'Perú', moneda: 'PEN' },
   { pais: 'Uruguay', moneda: 'UYU' },
-  { pais: 'Regional', moneda: 'USD' },
+  { pais: 'EEUU', moneda: 'USD' },
 ]
 
 export const forecastTasasHistoricas: Record<string, number[]> = {
@@ -49,6 +48,11 @@ export interface ForecastRound {
   cerradoManual: boolean
   fechaInicio: string
   fechaTermino: string
+  /** A3: hora (HH:mm) del inicio/cierre del periodo de edición — junto a fechaInicio/fechaTermino en
+   * vez de fusionarlas en un datetime único, para no tocar las comparaciones de fecha (ordenamiento de
+   * anteriores, validación de rango) que ya operan sobre 'YYYY-MM-DD' en el resto del módulo. */
+  horaInicio: string
+  horaTermino: string
   desvio: number
   pepsCount: number | null
   selPeps: string[]
@@ -67,6 +71,8 @@ export const forecastRoundsIniciales: ForecastRound[] = [
     cerradoManual: false,
     fechaInicio: '2026-01-01',
     fechaTermino: '2026-03-31',
+    horaInicio: '09:00',
+    horaTermino: '18:00',
     desvio: 2.5,
     pepsCount: null,
     selPeps: [],
@@ -83,6 +89,8 @@ export const forecastRoundsIniciales: ForecastRound[] = [
     cerradoManual: true,
     fechaInicio: '2026-07-01',
     fechaTermino: '2026-07-31',
+    horaInicio: '09:00',
+    horaTermino: '18:00',
     desvio: 3.0,
     pepsCount: null,
     selPeps: [],
@@ -99,6 +107,8 @@ export const forecastRoundsIniciales: ForecastRound[] = [
     cerradoManual: true,
     fechaInicio: '2026-07-01',
     fechaTermino: '2026-07-31',
+    horaInicio: '09:00',
+    horaTermino: '18:00',
     desvio: 3.0,
     pepsCount: null,
     selPeps: [],
@@ -115,6 +125,8 @@ export const forecastRoundsIniciales: ForecastRound[] = [
     cerradoManual: false,
     fechaInicio: '2026-07-01',
     fechaTermino: '2026-07-31',
+    horaInicio: '09:00',
+    horaTermino: '18:00',
     desvio: 3.0,
     pepsCount: null,
     selPeps: [],
@@ -130,7 +142,9 @@ export const forecastRoundsIniciales: ForecastRound[] = [
     estado: 'Abierto',
     cerradoManual: false,
     fechaInicio: '2026-04-01',
-    fechaTermino: '2026-08-31',
+    fechaTermino: '2026-10-31',
+    horaInicio: '09:00',
+    horaTermino: '18:00',
     desvio: 3.0,
     pepsCount: null,
     selPeps: [],
@@ -138,32 +152,6 @@ export const forecastRoundsIniciales: ForecastRound[] = [
     tasasCambio: buildDefaultTasas(),
     lineas: buildInitialLineas([], FORECAST_MES_ACTUAL),
   },
-  {
-    id: 'F3_2026',
-    titulo: 'Forecast Parcial — Proyectos TI',
-    descripcion: 'Seguimiento acotado de proyectos de tecnología en curso',
-    tipo: 'parcial',
-    estado: 'Borrador',
-    cerradoManual: false,
-    fechaInicio: '2026-07-01',
-    fechaTermino: '2026-09-30',
-    desvio: 1.5,
-    pepsCount: 4,
-    selPeps: ['N4-2027-001', 'N4-2027-002', 'N4-2027-006', 'N4-2027-009'],
-    notificar: false,
-    tasasCambio: buildDefaultTasas(),
-    lineas: buildInitialLineas(['N4-2027-001', 'N4-2027-002', 'N4-2027-006', 'N4-2027-009'], FORECAST_MES_ACTUAL),
-  },
 ]
-
-export interface ForecastPep {
-  codigo: string
-  nombre: string
-  pais: string
-  area: string
-  cuenta: string
-}
-
-export const forecastPepList: ForecastPep[] = pepN4Tablon.map((n4) => ({ codigo: n4.codigo, nombre: n4.nombre, pais: n4.pais, area: n4.equipo, cuenta: 'OPEX' }))
 
 export { buildDefaultTasas }

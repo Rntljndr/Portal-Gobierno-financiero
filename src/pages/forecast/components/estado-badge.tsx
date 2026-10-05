@@ -1,14 +1,12 @@
 import { Badge } from '@/shared/ui'
 import type { ForecastEstado } from '@/data/forecast'
 
-const VARIANT: Record<ForecastEstado, 'warning' | 'success' | 'neutral'> = {
-  Borrador: 'warning',
+const VARIANT: Record<ForecastEstado, 'success' | 'neutral'> = {
   Abierto: 'success',
   Cerrado: 'neutral',
 }
 
 const LABEL: Record<ForecastEstado, (manual: boolean) => string> = {
-  Borrador: () => 'Borrador',
   Abierto: () => 'Abierto',
   Cerrado: (manual) => (manual ? 'Cerrado manualmente' : 'Cerrado'),
 }

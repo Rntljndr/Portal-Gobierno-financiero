@@ -1,19 +1,28 @@
-import { monthKeys, pepN4Tablon } from '@/data/reporteria'
-import { pepN4Meta } from '@/data/pep-n4-meta'
-import type { ForecastN4Linea, ForecastN7Linea } from '@/data/forecast-lineas'
+import { pepN4Tablon } from '@/data/reporteria'
+import { pepN4Meta, type PepRubro } from '@/data/pep-n4-meta'
+import type { ForecastEnvioEstado, ForecastN4Linea, ForecastN7Linea } from '@/data/forecast-lineas'
 import { calcLlaveDistribucion } from './forecast-llave'
-import { findPlanN4, findPlanN7 } from './forecast-edit-calc'
+import { calcN4Completitud } from './forecast-completitud'
 
 export interface ForecastIdentidadBase {
-  codServicio: string
+  /** Código PEP completo (A8: homologado con Reales — antes era un "Cod de servicio" sintético
+   * distinto del PEP N4/N7, ahora es el mismo dato que muestra la columna "Código" de Reales). */
+  pep: string
   pais: string
-  moneda: string
   gerenciaPadre: string
   gerencia: string
   equipo: string
   cuentaContable: string
-  pep: string
+  moneda: string
+  /** F: "en los filtros de N4 y N7 se debe agregar el rubro, también en las columnas se debe agregar
+   * el rubro" — mismo origen que el resto de la identidad (pepN4Meta), no existe por PEP N7 individual. */
+  rubro: PepRubro
   estado: string
+}
+
+export interface ForecastIdentidadN4 extends ForecastIdentidadBase {
+  /** % de completitud del N4 (M6) — columna propia, al lado de Moneda; no existe a nivel N7. */
+  completitudPct: number
 }
 
 /** Identidad de un servicio N4 para las columnas copiadas de ForecastN4Historico (F) — Estado se
@@ -21,19 +30,20 @@ export interface ForecastIdentidadBase {
  * (data/pep-n4-meta.ts), la misma metadata de gestión que ya usan Reales y Preliminares para estos
  * PEP N4 — evita inventar una segunda fuente de Gerencia/Cuenta Contable/Bandera que quede
  * inconsistente entre módulos. */
-export function n4Identidad(n4: ForecastN4Linea): ForecastIdentidadBase {
+export function n4Identidad(n4: ForecastN4Linea): ForecastIdentidadN4 {
   const meta = pepN4Meta[n4.n4Codigo]
   const hasManual = n4.n7.some((l) => l.tipoActualizacion === 'manual')
   return {
-    codServicio: n4.n4Codigo.replace('N4-', 'SVC-'),
+    pep: n4.n4Codigo,
     pais: n4.pais,
-    moneda: meta?.moneda ?? '—',
     gerenciaPadre: meta?.gerenciaPadre ?? '—',
     gerencia: meta?.gerencia ?? '—',
     equipo: n4.equipo,
     cuentaContable: meta?.cuentaContable ?? '—',
-    pep: n4.n4Codigo,
+    moneda: meta?.moneda ?? '—',
+    rubro: meta?.rubro ?? 'OPEX',
     estado: hasManual ? 'Manual' : 'Automático',
+    completitudPct: calcN4Completitud(n4),
   }
 }
 
@@ -43,12 +53,15 @@ function findPepN7Seed(n4Codigo: string, n7Codigo: string) {
 
 export interface ForecastIdentidadN7 extends ForecastIdentidadBase {
   centroCosto: string
-  bandera: string
   asignacion: string
-  llavePlanPct: number
-  llaveForecastPct: number
-  motivo: string
+  bandera: string
+  /** Llave de Distribución vigente del forecast (C5: única columna, comparación vertical contra la
+   * llave del plan que muestra la fila de Plan — ver calcLlavePlanPct). No existe en Reales (A8). */
+  llaveDistribucionPct: number
   ultimaEdicion: string
+  /** F: columna "Estado" al lado de la Llave de Distribución — Enviado (verde) si ya salió de
+   * "Abierto"/"Rechazado", No enviado (gris) si no. */
+  envioEstado: ForecastEnvioEstado
 }
 
 /** Identidad de un PEP N7 para las columnas copiadas de ForecastN7Historico (F) — mismos datos de
@@ -62,29 +75,63 @@ export function n7Identidad(n4Codigo: string, n7: ForecastN7Linea, siblings: For
   const equipo = seed?.equipo ?? '—'
   const meta = pepN4Meta[n4Codigo]
 
-  const planTotalN7 = monthKeys.reduce((s, k) => s + (findPlanN7(n4Codigo, n7.n7Codigo)[k] || 0), 0)
-  const planTotalN4 = monthKeys.reduce((s, k) => s + (findPlanN4(n4Codigo)[k] || 0), 0)
-  const llavePlanPct = planTotalN4 > 0 ? (planTotalN7 / planTotalN4) * 100 : 0
-  const llaveForecastPct = calcLlaveDistribucion({ n7: siblings }, cutoff).find((l) => l.n7Codigo === n7.n7Codigo)?.pct ?? 0
-
-  const motivo = Object.values(n7.notas).find((n) => n.justificacion)?.justificacion ?? '—'
+  const llaveDistribucionPct = calcLlaveDistribucion({ n7: siblings }, cutoff).find((l) => l.n7Codigo === n7.n7Codigo)?.pct ?? 0
 
   return {
-    codServicio: n7.n7Codigo.replace('N7-', 'SVC7-'),
+    pep: n7.n7Codigo,
     pais,
-    moneda: meta?.moneda ?? '—',
     gerenciaPadre: meta?.gerenciaPadre ?? '—',
     gerencia: meta?.gerencia ?? '—',
     equipo,
     centroCosto: meta?.centroCosto ?? '—',
+    asignacion: meta?.asignacion ?? '—',
     bandera: meta?.bandera ?? '—',
     cuentaContable: meta?.cuentaContable ?? '—',
-    asignacion: meta?.asignacion ?? '—',
-    llavePlanPct,
-    llaveForecastPct,
-    pep: n7.n7Codigo,
+    moneda: meta?.moneda ?? '—',
+    rubro: meta?.rubro ?? 'OPEX',
+    llaveDistribucionPct,
     estado: n7.tipoActualizacion === 'manual' ? 'Manual' : 'Automático',
-    motivo,
     ultimaEdicion: '—',
+    envioEstado: n7.envioEstado,
+  }
+}
+
+/** F: valor comparable de una columna de identidad, para el chevron de orden de cada columna —
+ * mismas keys que FORECAST_IDENTITY_N4_COLS/FORECAST_IDENTITY_N7_COLS. 'estado' es ambiguo entre
+ * niveles: en N7 es el envío (Enviado/No enviado, lo que realmente muestra esa columna — ver
+ * ForecastIdentityCells), en N4 es `identidad.estado` (Manual/Automático, la única variante que existe
+ * ahí). 'llave' y 'completitud' solo existen en un nivel; el otro no se usa nunca con esa key. */
+export function forecastIdentitySortValue(identidad: ForecastIdentidadN4 | ForecastIdentidadN7, key: string): string | number {
+  switch (key) {
+    case 'codigo':
+      return identidad.pep
+    case 'pais':
+      return identidad.pais
+    case 'gerenciaPadre':
+      return identidad.gerenciaPadre
+    case 'gerencia':
+      return identidad.gerencia
+    case 'equipo':
+      return identidad.equipo
+    case 'cuentaContable':
+      return identidad.cuentaContable
+    case 'moneda':
+      return identidad.moneda
+    case 'rubro':
+      return identidad.rubro
+    case 'completitud':
+      return 'completitudPct' in identidad ? identidad.completitudPct : 0
+    case 'centroCosto':
+      return 'centroCosto' in identidad ? identidad.centroCosto : ''
+    case 'asignacion':
+      return 'asignacion' in identidad ? identidad.asignacion : ''
+    case 'bandera':
+      return 'bandera' in identidad ? identidad.bandera : ''
+    case 'llave':
+      return 'llaveDistribucionPct' in identidad ? identidad.llaveDistribucionPct : 0
+    case 'estado':
+      return 'envioEstado' in identidad ? identidad.envioEstado : identidad.estado
+    default:
+      return ''
   }
 }

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/ui'
 import { monthKeys, monthLabels } from '@/data/reporteria'
@@ -13,21 +14,51 @@ interface ForecastN7DetalleTablaProps {
   cutoff: number
   draft: Record<string, string>
   onChangeMes: (monthKey: string, value: string) => void
-  onDistribuir: () => void
+  /** F: "un campo que sea monto total a asignar, según los meses que quedan para forecastear... al
+   * lado de este botón se debe agregar un botón de aplicar" — reemplaza "Repetir primer mes"/las
+   * flechas por fila. */
+  onAplicarMontoTotal: (monto: number) => void
+  /** Forecast anterior (F): todos los meses se muestran como texto fijo (el valor ya guardado, no el
+   * draft). */
+  readOnly?: boolean
 }
 
 /** Tabla de Forecast (F, copiada de GestionOpex QA — ForecastN7Historico "Editar"/PEP): un mes por
  * fila, Presupuesto (Plan) y Real/Forecast. Los meses ya cerrados muestran el Real como texto fijo;
  * los meses restantes del año son inputs editables — el valor se guarda en `draft` (estado local de
- * la página) hasta que se presiona "Guardar", no celda a celda. "Distribuir Montos" vive dentro de
- * este mismo recuadro, al pie de la tabla (F: "debe estar dentro de la misma tabla"). */
-export function ForecastN7DetalleTabla({ n7, plan, cutoff, draft, onChangeMes, onDistribuir }: ForecastN7DetalleTablaProps) {
+ * la página) hasta que se presiona "Guardar", no celda a celda. */
+export function ForecastN7DetalleTabla({ n7, plan, cutoff, draft, onChangeMes, onAplicarMontoTotal, readOnly = false }: ForecastN7DetalleTablaProps) {
+  const [montoTotal, setMontoTotal] = useState('')
   const planTotal = monthKeys.reduce((s, k) => s + (plan[k] || 0), 0)
-  const realForecastTotal = monthKeys.reduce((s, k, i) => s + (i < cutoff ? n7.meses[k] || 0 : Number(draft[k]) || 0), 0)
+  const realForecastTotal = monthKeys.reduce((s, k, i) => s + (readOnly || i < cutoff ? n7.meses[k] || 0 : Number(draft[k]) || 0), 0)
+  const hayMesesEditables = !readOnly && cutoff < monthKeys.length - 1
+  const montoTotalNum = Number(montoTotal)
+  const puedeAplicar = hayMesesEditables && montoTotal.trim() !== '' && !Number.isNaN(montoTotalNum) && montoTotalNum >= 0
 
   return (
     <div className="mx-8 mb-3 overflow-hidden rounded-xl border border-border bg-white shadow-[0_1px_4px_rgba(0,20,60,0.06)]">
-      <div className="border-b border-border p-[16px_20px] text-[15px] font-bold text-primary">Tabla de Forecast</div>
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-[16px_20px]">
+        <span className="text-[15px] font-bold text-primary">Tabla de Forecast</span>
+        {hayMesesEditables && (
+          <div className="flex items-center gap-2">
+            <label className="text-[11.5px] font-semibold text-cs-gris-oscuro" htmlFor="monto-total-asignar">
+              Monto total a asignar
+            </label>
+            <input
+              id="monto-total-asignar"
+              type="number"
+              min="0"
+              value={montoTotal}
+              onChange={(e) => setMontoTotal(e.target.value)}
+              placeholder="0"
+              className="w-[140px] rounded-lg border border-border px-3 py-1.5 text-right text-[13px] outline-none focus:border-primary"
+            />
+            <Button variant="outline" size="sm" disabled={!puedeAplicar} onClick={() => onAplicarMontoTotal(montoTotalNum)}>
+              Aplicar
+            </Button>
+          </div>
+        )}
+      </div>
       <table className="w-full border-collapse">
         <thead>
           <tr>
@@ -38,12 +69,12 @@ export function ForecastN7DetalleTabla({ n7, plan, cutoff, draft, onChangeMes, o
         </thead>
         <tbody>
           {monthKeys.map((k, i) => {
-            const closed = i < cutoff
+            const closed = readOnly || i < cutoff
             return (
               <tr key={k} className={cn(!closed && 'bg-primary/[0.02]')}>
                 <td className={cn(td, 'font-semibold text-foreground')}>
                   {monthLabels[i]}
-                  <span className="ml-2 text-[10px] font-semibold text-muted-foreground">{closed ? 'Real' : 'FC'}</span>
+                  <span className="ml-2 text-[10px] font-semibold text-muted-foreground">{i < cutoff ? 'Real' : 'FC'}</span>
                 </td>
                 <td className={cn(td, 'text-right tabular-nums text-cs-gris-oscuro')}>{formatForecastAmount(plan[k] || 0)}</td>
                 <td className={cn(td, 'text-right')}>
@@ -71,11 +102,6 @@ export function ForecastN7DetalleTabla({ n7, plan, cutoff, draft, onChangeMes, o
           </tr>
         </tfoot>
       </table>
-      <div className="flex justify-end border-t border-border p-[14px_20px]">
-        <Button variant="outline" size="sm" onClick={onDistribuir}>
-          Distribuir Montos
-        </Button>
-      </div>
     </div>
   )
 }

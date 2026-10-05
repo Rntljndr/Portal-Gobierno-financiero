@@ -4,6 +4,7 @@ import { forecastMeses, forecastPaisesMoneda, FORECAST_MES_ACTUAL, type Forecast
 import { calcN4Meses, findPlanN4, findPlanN7 } from './forecast-edit-calc'
 import { buildFlatN7Rows } from './forecast-flat-n7'
 import { formatFechaCorta } from './format-date'
+import { equiposFromN4Codes } from './forecast-equipos'
 
 /**
  * Descarga completa de un forecast anterior (F): Datos + Tasas de cambio + Servicios N4 + Servicios
@@ -71,7 +72,7 @@ function datosSheet(round: ForecastRound): XLSX.WorkSheet {
     ['Porcentaje desvío', `${round.desvio}%`],
     ['Notificar usuarios', round.notificar ? 'Sí' : 'No'],
   ]
-  if (round.tipo === 'parcial') rows.push(['PEPs habilitados', String(round.pepsCount ?? round.selPeps.length)])
+  if (round.tipo === 'parcial') rows.push(['Equipos habilitados', String(equiposFromN4Codes(round.selPeps).size)])
   return XLSX.utils.aoa_to_sheet(rows)
 }
 

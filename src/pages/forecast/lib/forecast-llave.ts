@@ -53,6 +53,34 @@ export function distribuirMontoN4(n4: ForecastN4Linea, monthKey: string, monto: 
   })
 }
 
+/** Distribuye `monto` para `monthKey` del N4 entre TODOS sus N7 según la llave vigente — a diferencia
+ * de `distribuirMontoN4`, no respeta a los N7 en edición manual (F: "al editar [el monto a nivel N4] se
+ * debe mantener la llave de distribución, el % no se altera, el monto se debe dividir según la llave").
+ * Editar el monto desde "Asignación de monto" (N4) reafirma la llave sobre toda la línea, así que
+ * cualquier N7 manual vuelve a quedar automático (ForecastEditarMontosModal, vía `updateN4Monto`). */
+export function distribuirMontoN4Completo(n4: ForecastN4Linea, monthKey: string, monto: number, cutoff: number): ForecastN7Linea[] {
+  const llave = calcLlaveDistribucion(n4, cutoff)
+  const pctTotal = llave.reduce((s, l) => s + l.pct, 0)
+
+  let acumuladoAsignado = 0
+  const nuevosMontos = new Map<string, number>()
+  llave.forEach((l, i) => {
+    if (i === llave.length - 1) {
+      nuevosMontos.set(l.n7Codigo, Math.round(monto - acumuladoAsignado))
+      return
+    }
+    const share = pctTotal > 0 ? Math.round((monto * l.pct) / pctTotal) : 0
+    nuevosMontos.set(l.n7Codigo, share)
+    acumuladoAsignado += share
+  })
+
+  return n4.n7.map((n7) => ({
+    ...n7,
+    meses: { ...n7.meses, [monthKey]: nuevosMontos.get(n7.n7Codigo) ?? 0 },
+    tipoActualizacion: 'automatica' as const,
+  }))
+}
+
 /** Vuelve un N7 a `automatica` y re-aplica la llave sobre los meses de forecast (>= cutoff), sin alterar el total N4 vigente en cada mes. */
 export function restablecerLlaveN7(n4: ForecastN4Linea, n7Codigo: string, cutoff: number): ForecastN4Linea {
   const targetPorMes = calcN4Meses(n4)

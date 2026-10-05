@@ -22,10 +22,23 @@ export function ForecastMonthCell({ value, locked, manual = false, disabledReaso
       >
         <span className="inline-flex items-center justify-end gap-1">
           {formatForecastAmount(value)}
-          <span className="opacity-0 transition-opacity group-hover:opacity-100">
+          {/* F: alinear los valores de mes al mismo borde derecho que Plan/Forecast anterior — el
+           * ícono no debe ocupar espacio en el layout mientras está oculto (`hidden`, no `opacity-0`). */}
+          <span className="hidden items-center group-hover:inline-flex">
             <Icon name={disabledReason ? 'alert' : 'lock'} size={10} color="#8A90A2" />
           </span>
         </span>
+      </td>
+    )
+  }
+
+  // F (Forecast N4): "en los meses de forecast no debe existir una selección para editar" — sin
+  // onEdit, la celda queda informativa nomás (sin cursor-pointer, hover ni tooltip de "click para
+  // editar"); la edición ahora vive en la columna Acciones (ver ForecastN4AccionesCell).
+  if (!onEdit) {
+    return (
+      <td className={cn('p-[10px_6px] text-right text-[11.5px] tabular-nums whitespace-nowrap text-muted-foreground', manual && 'bg-warning-surface/40', positionClassName)}>
+        {formatForecastAmount(value)}
       </td>
     )
   }
@@ -42,7 +55,7 @@ export function ForecastMonthCell({ value, locked, manual = false, disabledReaso
     >
       <span className="inline-flex items-center justify-end gap-1">
         {formatForecastAmount(value)}
-        <span className="opacity-0 transition-opacity group-hover:opacity-100">
+        <span className="hidden items-center group-hover:inline-flex">
           <Icon name="edit" size={10} color="#0047B0" />
         </span>
       </span>

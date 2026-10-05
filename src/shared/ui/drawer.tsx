@@ -7,6 +7,8 @@ interface DrawerProps {
   open: boolean
   onClose: () => void
   title: string
+  /** Contenido extra junto al título, en la misma línea (p.ej. un tag de estado seleccionable). */
+  titleExtra?: ReactNode
   eyebrow?: string
   subtitle?: string
   wide?: boolean
@@ -16,9 +18,14 @@ interface DrawerProps {
   closeDisabled?: boolean
   footer?: ReactNode
   children: ReactNode
+  /** 'dark' replica el header azul oscuro con texto blanco de ciertas pantallas de Presupuesto (p.ej.
+   * "Asignación de monto") — default 'light' (header blanco, el de siempre) para no afectar al resto
+   * de los drawers que ya usan este componente. */
+  headerVariant?: 'light' | 'dark'
 }
 
-export function Drawer({ open, onClose, title, eyebrow, subtitle, wide, xwide, closeDisabled, footer, children }: DrawerProps) {
+export function Drawer({ open, onClose, title, titleExtra, eyebrow, subtitle, wide, xwide, closeDisabled, footer, children, headerVariant = 'light' }: DrawerProps) {
+  const dark = headerVariant === 'dark'
   return (
     <Dialog.Root open={open} onOpenChange={(next) => !next && !closeDisabled && onClose()}>
       <Dialog.Portal>
@@ -31,18 +38,24 @@ export function Drawer({ open, onClose, title, eyebrow, subtitle, wide, xwide, c
             xwide ? 'w-[1260px]' : wide ? 'w-[640px]' : 'w-[460px]',
           )}
         >
-          <div className="flex items-start justify-between border-b border-border p-[18px_22px]">
+          <div className={cn('flex items-start justify-between p-[18px_22px]', dark ? 'bg-primary' : 'border-b border-border')}>
             <div>
-              {eyebrow && <div className="mb-1 text-[10.5px] font-bold tracking-[0.1em] text-primary uppercase">{eyebrow}</div>}
-              <Dialog.Title className="text-[17px] font-bold text-foreground">{title}</Dialog.Title>
-              {subtitle && <div className="mt-0.5 text-[11px] text-muted-foreground">{subtitle}</div>}
+              {eyebrow && <div className={cn('mb-1 text-[10.5px] font-bold tracking-[0.1em] uppercase', dark ? 'text-white/70' : 'text-primary')}>{eyebrow}</div>}
+              <div className="flex items-center gap-2">
+                <Dialog.Title className={cn('text-[17px] font-bold', dark ? 'text-white' : 'text-foreground')}>{title}</Dialog.Title>
+                {titleExtra}
+              </div>
+              {subtitle && <div className={cn('mt-0.5 text-[11px]', dark ? 'text-white/70' : 'text-muted-foreground')}>{subtitle}</div>}
             </div>
             <Dialog.Close asChild>
               <button
                 type="button"
                 disabled={closeDisabled}
                 aria-label="Cerrar"
-                className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-surface-hover disabled:opacity-40"
+                className={cn(
+                  'flex size-8 items-center justify-center rounded-lg disabled:opacity-40',
+                  dark ? 'text-white/80 hover:bg-white/10' : 'text-muted-foreground hover:bg-surface-hover',
+                )}
               >
                 <Icon name="x_close" size={16} color="currentColor" />
               </button>

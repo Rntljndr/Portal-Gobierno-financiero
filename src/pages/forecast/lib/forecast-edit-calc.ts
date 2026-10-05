@@ -22,6 +22,15 @@ export function findPlanN7(n4Codigo: string, n7Codigo: string): Record<string, n
   return findPlanN4Row(n4Codigo)?.children.find((n7) => n7.codigo === n7Codigo)?.meses ?? {}
 }
 
+/** % que representa el plan de este N7 sobre el plan total de su N4 — la "Llave de Distribución" que
+ * muestra la fila de Plan (C5: comparación vertical contra la llave real del forecast, en la fila de
+ * arriba). */
+export function calcLlavePlanPct(n4Codigo: string, n7Codigo: string): number {
+  const planTotalN7 = monthKeys.reduce((s, k) => s + (findPlanN7(n4Codigo, n7Codigo)[k] || 0), 0)
+  const planTotalN4 = monthKeys.reduce((s, k) => s + (findPlanN4(n4Codigo)[k] || 0), 0)
+  return planTotalN4 > 0 ? (planTotalN7 / planTotalN4) * 100 : 0
+}
+
 function calcTotalsFromMeses(meses: Record<string, number>, plan: Record<string, number>, cutoff: number): ResumenTotals {
   const planTotal = monthKeys.reduce((s, k) => s + (plan[k] || 0), 0)
   const real = monthKeys.slice(0, cutoff).reduce((s, k) => s + (meses[k] || 0), 0)
@@ -43,29 +52,3 @@ export function calcN7Totals(n4Codigo: string, n7: ForecastN7Linea, cutoff: numb
   return calcTotalsFromMeses(n7.meses, findPlanN7(n4Codigo, n7.n7Codigo), cutoff)
 }
 
-/** Agrega un conjunto de totales y recalcula el desvío sobre el agregado (nunca promedia porcentajes). Análogo a reales-calc.ts#sumTotals. */
-function aggregateTotals(items: ResumenTotals[]): ResumenTotals {
-  const acc = items.reduce(
-    (a, t) => ({ plan: a.plan + t.plan, real: a.real + t.real, realMasForecast: a.realMasForecast + t.realMasForecast, planAcum: a.planAcum + t.planAcum }),
-    { plan: 0, real: 0, realMasForecast: 0, planAcum: 0 },
-  )
-  const desvio = acc.realMasForecast - acc.plan
-  const pctDesvio = acc.plan > 0 ? (desvio / acc.plan) * 100 : 0
-  const desvioAcumMonto = acc.real - acc.planAcum
-  const desvioAcumPct = acc.planAcum > 0 ? (desvioAcumMonto / acc.planAcum) * 100 : null
-  return { ...acc, desvio, pctDesvio, desvioAcumMonto, desvioAcumPct }
-}
-
-export function sumN4Totals(rows: ForecastN4Linea[], cutoff: number): ResumenTotals {
-  return aggregateTotals(rows.map((r) => calcN4Totals(r, cutoff)))
-}
-
-export function sumN7Totals(n4Codigo: string, rows: ForecastN7Linea[], cutoff: number): ResumenTotals {
-  return aggregateTotals(rows.map((r) => calcN7Totals(n4Codigo, r, cutoff)))
-}
-
-/** Variante de sumN7Totals para listados aplanados (F: tab "Forecast N7") donde cada línea N7 puede
- * pertenecer a un N4 distinto — no se puede asumir un único n4Codigo para todas como hace sumN7Totals. */
-export function sumN7TotalsFlat(rows: { n4Codigo: string; n7: ForecastN7Linea }[], cutoff: number): ResumenTotals {
-  return aggregateTotals(rows.map((r) => calcN7Totals(r.n4Codigo, r.n7, cutoff)))
-}

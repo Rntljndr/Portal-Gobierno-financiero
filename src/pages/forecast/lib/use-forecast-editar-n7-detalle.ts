@@ -27,8 +27,8 @@ function buildDraft(n7: ForecastN7Linea | undefined, cutoff: number): Record<str
 /** Estado de ForecastN7DetallePage (F, copiada de GestionOpex QA): los meses restantes del año se
  * editan directo en la Tabla de Forecast (inputs, no un drawer por celda) y quedan en `draft` hasta
  * que se presiona "Guardar", que los aplica todos juntos en un solo updateN7MesesBatch junto con la
- * Justificación de Desvío / Comentarios. "Distribuir Montos" (al pie de la tabla) es un atajo que
- * completa varios meses del draft a la vez, sin guardar todavía. */
+ * Justificación de Desvío / Comentarios. "Distribuir Montos" no existe a nivel N7 (C7) — solo tiene
+ * sentido a nivel N4, sobre el agregado de sus PEP N7 (ver A6). */
 export function useForecastEditarN7Detalle(roundId: string | undefined, n4Codigo: string | undefined, n7Codigo: string | undefined) {
   const { rounds, updateN7MesesBatch } = useForecastStore()
   const round = rounds.find((r) => r.id === roundId)
@@ -38,7 +38,6 @@ export function useForecastEditarN7Detalle(roundId: string | undefined, n4Codigo
   const cutoff = FORECAST_MES_ACTUAL
 
   const [draft, setDraft] = useState<Record<string, string>>(() => buildDraft(n7, cutoff))
-  const [distribuirOpen, setDistribuirOpen] = useState(false)
   const [justificacion, setJustificacion] = useState(FORECAST_JUSTIFICACION_OPTIONS[0])
   const [comentario, setComentario] = useState('')
 
@@ -53,10 +52,25 @@ export function useForecastEditarN7Detalle(roundId: string | undefined, n4Codigo
 
   const setMes = (monthKey: string, value: string) => setDraft((d) => ({ ...d, [monthKey]: value }))
 
-  /** "Distribuir Montos" completa el draft con lo elegido en el drawer, sin guardar todavía. */
-  const aplicarDistribucion = (meses: Record<string, number>) => {
-    setDraft((d) => ({ ...d, ...Object.fromEntries(Object.entries(meses).map(([k, v]) => [k, String(v)])) }))
-    setDistribuirOpen(false)
+  const editables = monthKeys.filter((_, i) => i >= cutoff)
+
+  /** F: "se debe agregar un campo que sea monto total a asignar, según los meses que quedan para
+   * forecastear" — reemplaza "Repetir primer mes"/flechas por fila: un monto único se reparte EN
+   * PARTES IGUALES entre los meses de forecast aún abiertos (F: "el monto será distribuido
+   * igualitariamente", mismo criterio que ForecastEditarMontosModal/"Asignación de monto" de
+   * Presupuesto) — el último mes absorbe el redondeo. */
+  const aplicarMontoTotal = (monto: number) => {
+    let acumulado = 0
+    setDraft((d) => {
+      const next = { ...d }
+      editables.forEach((k, i) => {
+        const partesIguales = Math.round(monto / editables.length)
+        const valor = i === editables.length - 1 ? Math.round(monto - acumulado) : partesIguales
+        acumulado += valor
+        next[k] = String(valor)
+      })
+      return next
+    })
   }
 
   const guardar = () => {
@@ -83,9 +97,7 @@ export function useForecastEditarN7Detalle(roundId: string | undefined, n4Codigo
     cutoff,
     draft,
     setMes,
-    distribuirOpen,
-    setDistribuirOpen,
-    aplicarDistribucion,
+    aplicarMontoTotal,
     justificacion,
     setJustificacion,
     comentario,

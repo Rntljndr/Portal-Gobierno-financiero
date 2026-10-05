@@ -1,6 +1,7 @@
+import { MultiSelect } from '@/shared/ui'
 import { cn } from '@/shared/lib/utils'
 import type { CrearForecastForm, FormErrors } from '../lib/use-crear-forecast'
-import { PepSelectionSection } from './pep-selection-section'
+import { FORECAST_GERENCIA_OPTIONS, equiposDisponiblesParaGerencias } from '../lib/forecast-gerencias'
 import { TipoForecastSelector } from './tipo-forecast-selector'
 
 const label = 'mb-1.5 block text-[11.5px] font-bold tracking-[0.05em] text-cs-gris-oscuro uppercase'
@@ -13,12 +14,36 @@ interface CrearForecastFormFieldsProps {
   form: CrearForecastForm
   setField: <K extends keyof CrearForecastForm>(field: K, value: CrearForecastForm[K]) => void
   errors: FormErrors
-  selPeps: Set<string>
-  onTogglePep: (codigo: string) => void
+  selEquipos: Set<string>
+  onChangeEquipos: (equipos: string[]) => void
+  selGerencias: Set<string>
+  onChangeGerencias: (gerencias: string[]) => void
   readOnly?: boolean
 }
 
-export function CrearForecastFormFields({ form, setField, errors, selPeps, onTogglePep, readOnly = false }: CrearForecastFormFieldsProps) {
+/** Gerencia + Equipos de un Forecast Parcial (F: "a la izquierda se habilita un dropdown con la
+ * gerencia... al lado derecho de este campo se habilita otro dropdown con los equipos, dependiendo de
+ * la gerencia que has habilitado") — dos MultiSelect lado a lado (mismo componente que los filtros de
+ * N4/N7), reemplazan la tabla de checkboxes anterior. Extraído aparte para mantener
+ * CrearForecastFormFields bajo el límite de líneas del linter. */
+function ParcialGruposFields({ selEquipos, onChangeEquipos, selGerencias, onChangeGerencias, error }: Pick<CrearForecastFormFieldsProps, 'selEquipos' | 'onChangeEquipos' | 'selGerencias' | 'onChangeGerencias'> & { error?: string }) {
+  const equiposOptions = equiposDisponiblesParaGerencias(selGerencias)
+  return (
+    <div className="mb-2 grid grid-cols-2 gap-3">
+      <div>
+        <label className={label}>Gerencia</label>
+        <MultiSelect placeholder="Todas las gerencias" options={FORECAST_GERENCIA_OPTIONS.map((g) => g.gerencia)} values={[...selGerencias]} onChange={onChangeGerencias} />
+      </div>
+      <div>
+        <label className={label}>Equipos</label>
+        <MultiSelect placeholder="Todos los equipos" options={equiposOptions} values={[...selEquipos]} onChange={onChangeEquipos} />
+        {error && <div className={errMsg}>{error}</div>}
+      </div>
+    </div>
+  )
+}
+
+export function CrearForecastFormFields({ form, setField, errors, selEquipos, onChangeEquipos, selGerencias, onChangeGerencias, readOnly = false }: CrearForecastFormFieldsProps) {
   return (
     <div className="rounded-xl border border-border bg-white p-[20px_24px]">
       <div className="mb-4 border-b border-border pb-3 text-[13px] font-bold text-foreground">Datos del Forecast</div>
@@ -39,13 +64,20 @@ export function CrearForecastFormFields({ form, setField, errors, selPeps, onTog
 
       <div className="mb-4 grid grid-cols-2 gap-3">
         <div>
+          {/* F: "al crear un nuevo forecast la fecha de inicio no debe tener hora de inicio" — a
+           * diferencia de Fecha de término, que sí la mantiene (define el cierre exacto del periodo
+           * de edición, A3). form.horaInicio sigue con su valor por defecto (09:00) para no romper lo
+           * que ya lo muestra (ForecastActivoCard/ForecastPeriodoBanner). */}
           <label className={label}>Fecha de inicio{!readOnly && <span className="text-[#E53E3E]"> *</span>}</label>
           <input readOnly={readOnly} type="date" value={form.fechaInicio} onChange={(e) => setField('fechaInicio', e.target.value)} className={cn(input, errors.fechaInicio && inputErr)} />
           {errors.fechaInicio && <div className={errMsg}>{errors.fechaInicio}</div>}
         </div>
         <div>
           <label className={label}>Fecha de término{!readOnly && <span className="text-[#E53E3E]"> *</span>}</label>
-          <input readOnly={readOnly} type="date" value={form.fechaTermino} onChange={(e) => setField('fechaTermino', e.target.value)} className={cn(input, errors.fechaTermino && inputErr)} />
+          <div className="flex gap-2">
+            <input readOnly={readOnly} type="date" value={form.fechaTermino} onChange={(e) => setField('fechaTermino', e.target.value)} className={cn(input, 'flex-1', errors.fechaTermino && inputErr)} />
+            <input readOnly={readOnly} type="time" value={form.horaTermino} onChange={(e) => setField('horaTermino', e.target.value)} className={cn(input, 'w-[108px]')} />
+          </div>
           {errors.fechaTermino && <div className={errMsg}>{errors.fechaTermino}</div>}
         </div>
       </div>
@@ -74,7 +106,15 @@ export function CrearForecastFormFields({ form, setField, errors, selPeps, onTog
         <TipoForecastSelector value={form.tipo} onChange={(tipo) => setField('tipo', tipo)} readOnly={readOnly} />
       </div>
 
-      {form.tipo === 'parcial' && <PepSelectionSection selPeps={selPeps} onTogglePep={onTogglePep} error={errors.peps} readOnly={readOnly} />}
+      {form.tipo === 'parcial' && (
+        <>
+          <ParcialGruposFields selEquipos={selEquipos} onChangeEquipos={onChangeEquipos} selGerencias={selGerencias} onChangeGerencias={onChangeGerencias} error={errors.equipos} />
+          {/* F: debajo del campo de forecast parcial. */}
+          <div className="mb-4 rounded-md bg-[#EEF4FF] p-[8px_12px] text-[11px] text-primary">
+            El forecast será visible en su totalidad. Solo la gerencia y los equipos seleccionados podrán editarlo
+          </div>
+        </>
+      )}
 
       <label className={cn('flex items-center gap-2.5', readOnly ? 'cursor-default' : 'cursor-pointer')}>
         <input type="checkbox" checked={form.notificar} disabled={readOnly} onChange={(e) => setField('notificar', e.target.checked)} className="size-4 accent-primary" />

@@ -56,7 +56,7 @@ export function ForecastFiltersPanel({ open, isN7, filters, options, onChange, o
           <input className={inputClass} placeholder={isN7 ? 'N7-...' : 'N4-2027-...'} value={filters.codigo} onChange={(e) => onChange('codigo', e.target.value)} />
         </div>
         <div>
-          <label className={labelClass}>País</label>
+          <label className={labelClass}>País Origen</label>
           <MultiSelect placeholder="Todos los países" options={options.pais} values={filters.pais} onChange={(v) => onChange('pais', v)} />
         </div>
         <div>
@@ -96,6 +96,10 @@ export function ForecastFiltersPanel({ open, isN7, filters, options, onChange, o
         <div>
           <label className={labelClass}>Moneda</label>
           <MultiSelect placeholder="Todas las monedas" options={options.moneda} values={filters.moneda} onChange={(v) => onChange('moneda', v)} />
+        </div>
+        <div>
+          <label className={labelClass}>Rubro</label>
+          <MultiSelect placeholder="Todos los rubros" options={options.rubro} values={filters.rubro} onChange={(v) => onChange('rubro', v)} />
         </div>
       </div>
       <div className="flex justify-end border-t border-primary/10 pt-2">

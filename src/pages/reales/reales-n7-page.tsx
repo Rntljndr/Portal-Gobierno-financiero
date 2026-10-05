@@ -10,9 +10,9 @@ import { RealesComparisonDrawer } from './components/reales-comparison-drawer'
 import { RealesDetailToolbar } from './components/reales-detail-toolbar'
 import { RealesSearchPanel } from './components/reales-search-panel'
 import { RealesDetailHeader } from './components/reales-detail-header'
-import { RealesCountrySummary } from './components/reales-country-summary'
 import { RealesTopActions } from './components/reales-top-actions'
 import { RealesTable } from './components/reales-table'
+import { RealesN4InfoCard } from './components/reales-n4-info-card'
 
 export function RealesN7Page() {
   const { codigo } = useParams()
@@ -55,14 +55,9 @@ export function RealesN7Page() {
             { label: `N4 — ${n4.nombre}` },
           ]}
         />
-        <RealesDetailHeader title={n4.nombre} codigo={n4.codigo} />
-        <RealesTopActions
-          filtersOpen={filtersOpen}
-          onToggleFilters={() => setFiltersOpen((v) => !v)}
-          activeFilterCount={search ? 1 : 0}
-          activeForecastLabel={cs.activeForecastLabel}
-        />
-        <RealesCountrySummary title={`Reales — ${n4.pais}`} subtitle={`N4 ${n4.codigo} · Real acumulado vs. plan acumulado`} rows={[n4]} paisesList={[n4.pais]} currency="USD" />
+        <RealesDetailHeader title={n4.nombre} codigo={n4.codigo} showCodigoBadge={false} activeForecastLabel={cs.activeForecastLabel} />
+        <RealesN4InfoCard n4={n4} />
+        <RealesTopActions filtersOpen={filtersOpen} onToggleFilters={() => setFiltersOpen((v) => !v)} activeFilterCount={search ? 1 : 0} />
         <RealesDetailToolbar
           comparisonCount={cs.comparisonKeys.length}
           allComparisonsCollapsed={cs.allRowsCollapsed(children.map((c) => c.codigo))}

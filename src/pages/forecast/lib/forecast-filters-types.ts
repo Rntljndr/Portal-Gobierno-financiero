@@ -10,6 +10,7 @@ export interface ForecastFilters {
   bandera: string[]
   cuentaContable: string[]
   moneda: string[]
+  rubro: string[]
 }
 
 export const EMPTY_FORECAST_FILTERS: ForecastFilters = {
@@ -24,6 +25,7 @@ export const EMPTY_FORECAST_FILTERS: ForecastFilters = {
   bandera: [],
   cuentaContable: [],
   moneda: [],
+  rubro: [],
 }
 
 export interface ForecastFilterOptions {
@@ -36,4 +38,5 @@ export interface ForecastFilterOptions {
   bandera: string[]
   cuentaContable: string[]
   moneda: string[]
+  rubro: string[]
 }

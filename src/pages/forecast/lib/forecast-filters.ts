@@ -19,6 +19,7 @@ export function buildForecastN4Options(rows: ForecastN4Linea[]): ForecastFilterO
     equipo: distinct(idents.map((i) => i.equipo)),
     cuentaContable: distinct(idents.map((i) => i.cuentaContable)),
     moneda: distinct(idents.map((i) => i.moneda)),
+    rubro: distinct(idents.map((i) => i.rubro)),
     centroCosto: [],
     asignacion: [],
     bandera: [],
@@ -37,6 +38,7 @@ export function buildForecastN7Options(rows: ForecastFlatN7Row[], cutoff: number
     bandera: distinct(idents.map((i) => i.bandera)),
     cuentaContable: distinct(idents.map((i) => i.cuentaContable)),
     moneda: distinct(idents.map((i) => i.moneda)),
+    rubro: distinct(idents.map((i) => i.rubro)),
   }
 }
 
@@ -55,6 +57,7 @@ export function applyForecastN4Filters(rows: ForecastN4Linea[], f: ForecastFilte
     if (f.equipo.length && !f.equipo.includes(idn.equipo)) return false
     if (f.cuentaContable.length && !f.cuentaContable.includes(idn.cuentaContable)) return false
     if (f.moneda.length && !f.moneda.includes(idn.moneda)) return false
+    if (f.rubro.length && !f.rubro.includes(idn.rubro)) return false
     return true
   })
 }
@@ -73,6 +76,7 @@ export function applyForecastN7Filters(rows: ForecastFlatN7Row[], f: ForecastFil
     if (f.bandera.length && !f.bandera.includes(idn.bandera)) return false
     if (f.cuentaContable.length && !f.cuentaContable.includes(idn.cuentaContable)) return false
     if (f.moneda.length && !f.moneda.includes(idn.moneda)) return false
+    if (f.rubro.length && !f.rubro.includes(idn.rubro)) return false
     return true
   })
 }

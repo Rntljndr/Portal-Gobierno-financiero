@@ -3,6 +3,7 @@ import { Badge, Breadcrumb, EmptyState, Icon, VolverBar } from '@/shared/ui'
 import { usePreliminaresStore } from './lib/use-preliminares-store'
 import { PreliminarDetalleSection } from './components/preliminar-detalle-section'
 import { CierreIndicator } from './components/cierre-indicator'
+import { PreliminaresN4InfoCard } from './components/preliminares-n4-info-card'
 
 export function PreliminaresN7Page() {
   const { codigo } = useParams()
@@ -34,6 +35,8 @@ export function PreliminaresN7Page() {
           </div>
           <CierreIndicator mesAbierto={store.mesAbierto} />
         </div>
+
+        <PreliminaresN4InfoCard n4={n4} />
 
         <PreliminarDetalleSection n4={n4} />
       </div>

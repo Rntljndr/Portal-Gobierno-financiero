@@ -1,22 +1,31 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
-import { Breadcrumb, Button, EmptyState, Icon } from '@/shared/ui'
-import { useForecastStore } from './lib/use-forecast-store'
-import { downloadForecastAnteriorXlsx } from './lib/download-forecast-anterior'
-import { EstadoBadge } from './components/estado-badge'
-import { CerrarForecastModal } from './components/cerrar-forecast-modal'
-import { ForecastDatosCard } from './components/forecast-datos-card'
-import { PepSelectionSection } from './components/pep-selection-section'
-import { ForecastAnteriorTablas } from './components/forecast-anterior-tablas'
-import { TasasCambioTable } from './components/tasas-cambio-table'
-import { formatFechaCorta } from './lib/format-date'
+import { EmptyState } from '@/shared/ui'
+import type { ForecastRound } from '@/data/forecast'
+import type { ForecastN4Linea } from '@/data/forecast-lineas'
+import { downloadForecastN4Xlsx } from './lib/download-forecast-xlsx'
+import { useForecastDetail } from './lib/use-forecast-detail'
+import { ForecastListBody } from './components/forecast-list-body'
+import { DetailHeader, DetailOverlays } from './components/forecast-detail-sections'
 
+/** Vista de un forecast puntual — activo (llegando vía "Volver al Forecast" desde las pantallas de
+ * edición) o anterior (F: "misma estructura que el forecast, solo que cambia que no puede editar, no
+ * tiene configuraciones, no se puede abrir uno nuevo desde allí, no tiene que enviar a control de
+ * gestión, no tiene que hacer una edición masiva, las tabs desaparecen") — reutiliza ForecastListBody
+ * en vez de una tabla aparte, para que ambas vistas queden siempre alineadas. */
 export function ForecastDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { rounds, closeRound } = useForecastStore()
-  const round = rounds.find((r) => r.id === id)
-  const [showClose, setShowClose] = useState(false)
+  const [closeTarget, setCloseTarget] = useState<ForecastRound | null>(null)
+  const [anterioresOpen, setAnterioresOpen] = useState(false)
+  const [detalleOpen, setDetalleOpen] = useState(false)
+  const [tasasOpen, setTasasOpen] = useState(false)
+  const [compararOpen, setCompararOpen] = useState(false)
+  const [tab, setTab] = useState<'n4' | 'n7'>('n4')
+  const [editandoN7, setEditandoN7] = useState<{ n4Codigo: string; n7Codigo: string } | null>(null)
+  const [editandoMontosN4, setEditandoMontosN4] = useState<ForecastN4Linea | null>(null)
+
+  const { rounds, closeRound, comparativa, setComparativa, round, activo, activoReal, anteriores, anteriorRoundComparativa, tabla, cm, filtros } = useForecastDetail(id, tab)
 
   if (!round) {
     return (
@@ -27,72 +36,64 @@ export function ForecastDetailPage() {
   }
 
   const esAnterior = round.estado === 'Cerrado'
-  const selPeps = new Set(round.selPeps)
+  // F: "cuando se ingresa a un forecast anterior, la única línea a comparar es la de plan" — acá no
+  // hay botón "Comparar" (ya oculto, ver ForecastTablaHeader#ocultarComparar) para cambiarlo, así que
+  // cualquier "Forecast anterior" elegido mientras se vio el activo no debe arrastrarse a esta vista.
+  const comparativaEfectiva = esAnterior ? { plan: true, forecastRoundId: null } : comparativa
+  const anteriorRoundEfectivo = esAnterior ? undefined : anteriorRoundComparativa
 
   return (
     <div className="h-full overflow-y-auto">
-      <Breadcrumb
-        items={
-          esAnterior
-            ? [{ label: 'SIP', to: '/' }, { label: 'Forecast', to: '/forecast' }, { label: 'Forecasts Anteriores', to: '/forecast' }, { label: round.titulo }]
-            : [{ label: 'SIP', to: '/' }, { label: 'Forecast', to: '/forecast' }, { label: round.titulo }]
-        }
+      <DetailHeader round={round} esAnterior={esAnterior} tab={tab} onTabChange={setTab} onVolver={() => navigate('/forecast')} />
+
+      <ForecastListBody
+        rounds={rounds}
+        activo={activo}
+        roundMostrado={round}
+        ultimoCerrado={undefined}
+        anterioresCount={anteriores.length}
+        tab={tab}
+        tabla={tabla}
+        filtros={filtros}
+        detalleOpen={detalleOpen}
+        onToggleDetalle={() => setDetalleOpen((v) => !v)}
+        onVerTasas={() => setTasasOpen(true)}
+        onOpenAnteriores={() => setAnterioresOpen(true)}
+        onOpenConfiguraciones={() => activo && navigate(`/forecast/${activo.id}/configuraciones`)}
+        onCerrar={() => activo && setCloseTarget(activo)}
+        onImportar={cm.openDrawer}
+        onDescargar={() => downloadForecastN4Xlsx(round.titulo, filtros.filteredN4, tabla.cutoff)}
+        onEditarN7={(n4Codigo, n7) => setEditandoN7({ n4Codigo, n7Codigo: n7.n7Codigo })}
+        onEditarMontosN4={setEditandoMontosN4}
+        comparativa={comparativaEfectiva}
+        anteriorRound={anteriorRoundEfectivo}
+        onOpenComparar={() => setCompararOpen(true)}
+        historico={esAnterior}
       />
-      <div className="flex flex-wrap items-start justify-between gap-4 p-[10px_32px_18px]">
-        <div>
-          <div className="text-[22px] leading-tight font-bold tracking-tight text-primary">{round.titulo}</div>
-          <div className="mt-2 flex items-center gap-2">
-            <EstadoBadge estado={round.estado} cerradoManual={round.cerradoManual} />
-            <span className="text-[12.5px] text-muted-foreground">
-              {formatFechaCorta(round.fechaInicio)} — {formatFechaCorta(round.fechaTermino)} · Desvío máx: {round.desvio}%
-            </span>
-          </div>
-        </div>
-        <div className="flex gap-2">
-          {esAnterior && (
-            <Button variant="outline" onClick={() => downloadForecastAnteriorXlsx(round)}>
-              <Icon name="download" size={13} color="#0047B0" /> Descargar
-            </Button>
-          )}
-          {round.estado === 'Abierto' && (
-            <Button variant="primary" onClick={() => navigate(`/forecast/${round.id}/editar`)}>
-              <Icon name="edit" size={13} color="#fff" /> Editar Forecast
-            </Button>
-          )}
-          {round.estado === 'Abierto' && (
-            <Button variant="outline" className="border-[#FECACA] text-[#B42318] hover:bg-[#FEE8E8]" onClick={() => setShowClose(true)}>
-              <Icon name="x_close" size={13} color="#B42318" /> Cerrar Forecast
-            </Button>
-          )}
-          <Button variant="outline" onClick={() => navigate('/forecast')}>
-            ← Volver
-          </Button>
-        </div>
-      </div>
 
-      <div className="mx-8 mb-2 text-[11.5px] text-muted-foreground">Este forecast ya fue creado — los datos a continuación no se pueden modificar.</div>
-
-      <ForecastDatosCard round={round} />
-
-      {round.tipo === 'parcial' && (
-        <div className="mx-8 mb-5 rounded-xl border border-border bg-white p-[20px_24px]">
-          <PepSelectionSection selPeps={selPeps} onTogglePep={() => {}} readOnly bordered={false} />
-        </div>
-      )}
-
-      <div className="mx-8 mb-5">
-        <TasasCambioTable value={round.tasasCambio} readOnly collapsible={esAnterior} />
-      </div>
-
-      {esAnterior && <ForecastAnteriorTablas round={round} />}
-
-      <CerrarForecastModal
-        round={showClose ? round : null}
-        onClose={() => setShowClose(false)}
-        onConfirm={() => {
-          closeRound(round.id)
-          setShowClose(false)
-        }}
+      <DetailOverlays
+        rounds={rounds}
+        round={round}
+        activo={activo}
+        activoReal={activoReal}
+        anteriores={anteriores}
+        anterioresOpen={anterioresOpen}
+        onCloseAnteriores={() => setAnterioresOpen(false)}
+        tasasOpen={tasasOpen}
+        onCloseTasas={() => setTasasOpen(false)}
+        compararOpen={compararOpen}
+        onCloseComparar={() => setCompararOpen(false)}
+        comparativa={comparativa}
+        onApplyComparativa={setComparativa}
+        cm={cm}
+        editandoN7={editandoN7}
+        onCloseEditarN7={() => setEditandoN7(null)}
+        editandoMontosN4={editandoMontosN4}
+        onCloseEditarMontosN4={() => setEditandoMontosN4(null)}
+        cutoff={tabla.cutoff}
+        closeTarget={closeTarget}
+        onCloseTarget={setCloseTarget}
+        onConfirmClose={closeRound}
       />
     </div>
   )
