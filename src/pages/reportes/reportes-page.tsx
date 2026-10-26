@@ -15,7 +15,7 @@ export function ReportesPage() {
           title="Reporte Negocio"
           description="Consolidado ejecutivo por país, división y bandera"
           buttonLabel="Ver"
-          onNavigate={() => navigate('/reporte-direccion', { state: { from: 'reportes' } })}
+          onNavigate={() => navigate('/reporte-plan?reporte=negocio')}
         />
         <NavShortcutCard
           icon={<Icon name="view_cards" size={18} color="#1F6F47" />}
@@ -23,7 +23,7 @@ export function ReportesPage() {
           title="Reporte Tecnología"
           description="Presupuesto consolidado por país, gerencia y rubro"
           buttonLabel="Ver"
-          onNavigate={() => navigate('/reporte-consolidado', { state: { from: 'reportes' } })}
+          onNavigate={() => navigate('/reporte-plan?reporte=tecnologia')}
         />
       </div>
     </div>

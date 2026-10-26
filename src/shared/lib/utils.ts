@@ -1,5 +1,9 @@
 import { clsx, type ClassValue } from 'clsx'
-import { twMerge } from 'tailwind-merge'
+import { extendTailwindMerge } from 'tailwind-merge'
+
+/** El token de tipografía `text-xxs` (10px, tokens.css) es un tamaño, no un color: sin esto tailwind-merge lo
+ * confunde con un color y lo descarta al combinarlo con `text-white`, `text-primary`, etc. */
+const twMerge = extendTailwindMerge({ extend: { theme: { text: ['xxs'] } } })
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))

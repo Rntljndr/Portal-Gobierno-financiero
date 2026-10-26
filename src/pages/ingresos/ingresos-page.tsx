@@ -16,7 +16,7 @@ export function IngresosPage() {
 
   return (
     <div className="flex h-full flex-col overflow-y-auto">
-      <Breadcrumb items={[{ label: 'SIP', to: '/' }, { label: 'Administración', to: '/administracion/peps' }, { label: 'Ingresos' }]} />
+      <Breadcrumb items={[{ label: 'SIP', to: '/' }, { label: 'Administración', to: '/administracion' }, { label: 'Ingresos' }]} />
       <PageHeader title="Ingresos" subtitle="Ingresos mensuales por bandera, en la moneda local del país de cada bandera" />
 
       <IngresosToolbar

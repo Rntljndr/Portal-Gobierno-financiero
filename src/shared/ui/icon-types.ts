@@ -1,5 +1,6 @@
 export type IconName =
   | 'dashboard'
+  | 'home'
   | 'calendar'
   | 'bell'
   | 'chart'

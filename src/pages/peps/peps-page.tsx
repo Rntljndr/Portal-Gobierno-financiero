@@ -23,7 +23,7 @@ export function PepsPage() {
       <Breadcrumb
         items={[
           { label: 'SIP', to: '/' },
-          { label: 'Administración', to: '/administracion/peps' },
+          { label: 'Administración', to: '/administracion' },
           { label: 'ABM PEPS – Nivel 4' },
         ]}
       />
@@ -35,14 +35,17 @@ export function PepsPage() {
           <Button variant="outline" size="sm" disabled className="opacity-50">
             <Icon name="download" size={12} color="#0047B0" /> Descargar
           </Button>
-          <Button variant="outline" size="sm" onClick={() => setOpenModal('crearN4Masivo')}>
-            <Icon name="upload" size={12} color="#0047B0" /> Crear PEP N4 masivamente
-          </Button>
           <Button variant="outline" size="sm" onClick={() => setOpenModal('crearN7Masivo')}>
             <Icon name="upload" size={12} color="#0047B0" /> Crear PEP N7 masivamente
           </Button>
+          <Button variant="outline" size="sm" onClick={() => setOpenModal('crearN4Masivo')}>
+            <Icon name="upload" size={12} color="#0047B0" /> Crear PEP N4 masivamente
+          </Button>
           <Button variant="primary" size="sm" onClick={() => setOpenModal('editarEquipo')}>
             <Icon name="edit" size={12} color="#fff" /> Editar equipo
+          </Button>
+          <Button variant="primary" size="sm" onClick={() => setOpenModal('habilitarPeps')}>
+            <Icon name="plus" size={12} color="#fff" /> Habilitar PEPs
           </Button>
           <Button variant="primary" size="sm" onClick={() => setOpenModal('asignarCecos')}>
             <Icon name="edit" size={12} color="#fff" /> Asignar CeCos

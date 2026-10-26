@@ -1,41 +1,9 @@
-import { useState } from 'react'
-import { Button, Drawer, Select } from '@/shared/ui'
-import {
-  banderaPaisOpciones,
-  cecoOpciones,
-  cuentaContableOpciones,
-  destinoOpciones,
-  equipoOpciones,
-  gerenciaOpciones,
-  pepFiltroOpciones,
-  type PepN4Row,
-} from '@/data/peps'
-
-interface CrearPepN4Form {
-  pais: string
-  area: string
-  bandera: string
-  cuenta: string
-  destino: string
-  ceco: string
-  gerencia: string
-  equipo: string
-}
-
-const EMPTY_FORM: CrearPepN4Form = { pais: '', area: '', bandera: '', cuenta: '', destino: '', ceco: '', gerencia: '', equipo: '' }
-
-const label = 'mb-1.5 block text-[12px] font-semibold text-cs-gris-oscuro'
-
-function Field({ children, text, required }: { children: React.ReactNode; text: string; required?: boolean }) {
-  return (
-    <div>
-      <label className={label}>
-        {text} {required && <span className="text-[#DC2626]">*</span>}
-      </label>
-      {children}
-    </div>
-  )
-}
+import { Button, Drawer } from '@/shared/ui'
+import type { PepN4Row } from '@/data/peps'
+import { useCrearPepN4 } from '../lib/use-crear-pep-n4'
+import { CrearPepN4EjercicioSection } from './crear-pep-n4-ejercicio-section'
+import { CrearPepN4Campos, CrearPepN4ContratoDolares, Field } from './crear-pep-n4-campos'
+import { CrearPepN4GerenciaSection } from './crear-pep-n4-gerencia-section'
 
 interface CrearPepN4DrawerProps {
   open: boolean
@@ -43,31 +11,25 @@ interface CrearPepN4DrawerProps {
   onCreated: (row: PepN4Row) => void
 }
 
+/** "Crear PEP N4" (F: "debe tener el drawer que aparece en [el ABM de referencia]") — mismas secciones
+ * que el drawer de referencia: Ejercicio de habilitación + línea de tiempo, Nombre del servicio,
+ * País/Área/Cuenta Contable, Bandera/Destino/Centro de Costos, y la cascada Gerencia Padre > Gerencia >
+ * Equipo tomada de Gerencias y Equipos (ver useCrearPepN4) — Centro de Costos es el único campo
+ * opcional, igual que en la referencia. F: "si se selecciona 2026 [ejercicio en curso], dada la regla
+ * de que el PEP pasa al siguiente ejercicio, debemos asignar Gerencia Padre/Gerencia/Equipo para cada
+ * año" — CrearPepN4GerenciaSection pide un bloque por 2026 y otro por 2027 en ese caso; con 2027 solo
+ * pide el de planificación. */
 export function CrearPepN4Drawer({ open, onClose, onCreated }: CrearPepN4DrawerProps) {
-  const [form, setForm] = useState<CrearPepN4Form>(EMPTY_FORM)
-  const set = <K extends keyof CrearPepN4Form>(key: K, value: string) => setForm((f) => ({ ...f, [key]: value }))
-
-  const canSubmit = form.pais && form.area && form.bandera && form.cuenta
+  const s = useCrearPepN4()
 
   const close = () => {
-    setForm(EMPTY_FORM)
+    s.reset()
     onClose()
   }
 
   const submit = () => {
-    if (!canSubmit) return
-    const seq = String(Date.now()).slice(-4)
-    onCreated({
-      pep: `${form.pais.slice(0, 2).toUpperCase()}-N4-${seq}`,
-      pais: form.pais,
-      moneda: 'ARS',
-      cod: seq,
-      servicio: `Nuevo servicio ${seq}`,
-      area: form.area,
-      cuenta: form.cuenta,
-      fechaCreacion: new Date().toISOString().slice(0, 10),
-      ultimaEdicion: { fecha: new Date().toISOString().slice(0, 10), usuario: 'Andrea Morales' },
-    })
+    if (!s.canSubmit) return
+    onCreated(s.buildRow())
     close()
   }
 
@@ -75,6 +37,7 @@ export function CrearPepN4Drawer({ open, onClose, onCreated }: CrearPepN4DrawerP
     <Drawer
       open={open}
       onClose={close}
+      eyebrow="ABM PEPS · NUEVO PEP N4"
       title="Crear PEP N4"
       wide
       footer={
@@ -82,42 +45,28 @@ export function CrearPepN4Drawer({ open, onClose, onCreated }: CrearPepN4DrawerP
           <Button variant="outline" onClick={close}>
             Cancelar
           </Button>
-          <Button variant="primary" disabled={!canSubmit} className="disabled:opacity-50" onClick={submit}>
-            Crear PEP N4
+          <Button variant="primary" disabled={!s.canSubmit} className="disabled:opacity-50" onClick={submit}>
+            Crear PEP
           </Button>
         </>
       }
     >
-      <div className="grid grid-cols-3 gap-4">
-        <Field text="País" required>
-          <Select value={form.pais} onChange={(v) => set('pais', v)} options={pepFiltroOpciones.pais} />
-        </Field>
-        <Field text="Área" required>
-          <Select value={form.area} onChange={(v) => set('area', v)} options={pepFiltroOpciones.area} />
-        </Field>
-        <Field text="Bandera" required>
-          <Select value={form.bandera} onChange={(v) => set('bandera', v)} options={banderaPaisOpciones.map((b) => `${b.emoji} ${b.label}`)} />
-        </Field>
-      </div>
-      <div className="mt-4 grid grid-cols-3 gap-4">
-        <Field text="Cuenta contable" required>
-          <Select value={form.cuenta} onChange={(v) => set('cuenta', v)} options={cuentaContableOpciones} />
-        </Field>
-        <Field text="Destino">
-          <Select value={form.destino} onChange={(v) => set('destino', v)} options={destinoOpciones} />
-        </Field>
-        <Field text="Centro de costos">
-          <Select value={form.ceco} onChange={(v) => set('ceco', v)} options={cecoOpciones} />
+      <CrearPepN4EjercicioSection ejercicio={s.form.ejercicio} onChange={s.setEjercicio} />
+
+      <div className="mb-5">
+        <Field text="Nombre del servicio" required>
+          <input
+            value={s.form.nombre}
+            onChange={(e) => s.setNombre(e.target.value)}
+            placeholder="Ej: HP - Consultoría SAP Chile"
+            className="h-10 w-full rounded-lg border border-border bg-white px-3 text-[13px] text-foreground outline-none focus:border-primary"
+          />
         </Field>
       </div>
-      <div className="mt-4 grid grid-cols-3 gap-4">
-        <Field text="Gerencia">
-          <Select value={form.gerencia} onChange={(v) => set('gerencia', v)} options={gerenciaOpciones} />
-        </Field>
-        <Field text="Equipo">
-          <Select value={form.equipo} onChange={(v) => set('equipo', v)} options={equipoOpciones} />
-        </Field>
-      </div>
+
+      <CrearPepN4Campos s={s} />
+      <CrearPepN4GerenciaSection s={s} />
+      <CrearPepN4ContratoDolares s={s} />
     </Drawer>
   )
 }

@@ -40,12 +40,12 @@ export function Drawer({ open, onClose, title, titleExtra, eyebrow, subtitle, wi
         >
           <div className={cn('flex items-start justify-between p-[18px_22px]', dark ? 'bg-primary' : 'border-b border-border')}>
             <div>
-              {eyebrow && <div className={cn('mb-1 text-[10.5px] font-bold tracking-[0.1em] uppercase', dark ? 'text-white/70' : 'text-primary')}>{eyebrow}</div>}
+              {eyebrow && <div className={cn('mb-1 text-xxs font-bold tracking-widest uppercase', dark ? 'text-white/70' : 'text-primary')}>{eyebrow}</div>}
               <div className="flex items-center gap-2">
-                <Dialog.Title className={cn('text-[17px] font-bold', dark ? 'text-white' : 'text-foreground')}>{title}</Dialog.Title>
+                <Dialog.Title className={cn('text-lg font-bold', dark ? 'text-white' : 'text-foreground')}>{title}</Dialog.Title>
                 {titleExtra}
               </div>
-              {subtitle && <div className={cn('mt-0.5 text-[11px]', dark ? 'text-white/70' : 'text-muted-foreground')}>{subtitle}</div>}
+              {subtitle && <div className={cn('mt-0.5 text-xs', dark ? 'text-white/70' : 'text-muted-foreground')}>{subtitle}</div>}
             </div>
             <Dialog.Close asChild>
               <button

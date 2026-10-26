@@ -21,24 +21,26 @@ export function MultiSelectMenu({ placeholder, options, values, query, onQueryCh
     >
       <div className="p-1.5">
         <div className="flex h-8 items-center gap-2 rounded-lg border border-border bg-background px-2.5">
-          <Icon name="search" size={13} color="#8A90A2" />
+          <span className="text-muted-foreground">
+            <Icon name="search" size={13} color="currentColor" />
+          </span>
           <input
             autoFocus
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}
             placeholder={`Buscar en ${placeholder.toLowerCase()}...`}
-            className="h-full flex-1 bg-transparent text-[12.5px] outline-none placeholder:text-muted-foreground"
+            className="h-full flex-1 bg-transparent text-xs outline-none placeholder:text-muted-foreground"
           />
         </div>
       </div>
       <div className="max-h-[280px] overflow-y-auto p-1">
         {visible.length === 0 ? (
-          <div className="p-2.5 text-center text-[12.5px] text-muted-foreground">Sin resultados</div>
+          <div className="p-2.5 text-center text-xs text-muted-foreground">Sin resultados</div>
         ) : (
           visible.map((option) => (
             <label
               key={option}
-              className="flex cursor-pointer items-center gap-2 rounded-lg px-2.5 py-2 text-[12.5px] text-foreground hover:bg-surface-hover"
+              className="flex cursor-pointer items-center gap-2 rounded-lg px-2.5 py-2 text-xs text-foreground hover:bg-surface-hover"
             >
               <input
                 type="checkbox"

@@ -41,6 +41,33 @@ export const pepsN7: Record<string, PepN7Row[]> = {
 export const gerenciaOpciones = ['PMO', 'Tecnología', 'Finanzas', 'Operaciones', 'RRHH']
 export const equipoOpciones = ['Desarrollo', 'QA', 'Infraestructura', 'Producto', 'Diseño']
 export const cuentaContableOpciones = ['Honorarios Profesionales', 'Servicios Tecnológicos', 'Gastos Generales', 'Licencias y Suscripciones']
+
+/** País/Área de "Crear PEP N4" (F: copiado del drawer de referencia) — Área queda deshabilitada hasta
+ * elegir País (mismo criterio independiente de la cascada Gerencia Padre/Gerencia/Equipo, que sí viene
+ * de `estructuraParaAnio`/Gerencias y Equipos). */
+export const crearPepPaisOpciones = [
+  { value: 'AG', label: 'AG · Argentina' },
+  { value: 'BG', label: 'BG · Brasil' },
+  { value: 'CG', label: 'CG · Chile' },
+  { value: 'LG', label: 'LG · Colombia' },
+  { value: 'PG', label: 'PG · Perú' },
+  { value: 'EG', label: 'EG · Estados Unidos' },
+]
+
+export const crearPepAreaOpciones = [
+  { value: 'OA', label: 'OA · Operaciones' },
+  { value: 'SI', label: 'SI · Seguridad Informática' },
+  { value: 'SM', label: 'SM · SM' },
+  { value: 'TD', label: 'TD · TxD' },
+  { value: 'VO', label: 'VO · Cencommerce' },
+  { value: 'PM', label: 'PM · PMO-Licenciamiento' },
+  { value: 'BO', label: 'BO · Back Office' },
+]
+
+/** Ejercicio en curso vs. en planificación (F: "Ejercicio de habilitación") — mismos años que el resto
+ * del portal (Forecast activo 2026, PEP N4 de planificación ya nombrados "N4-2027-*" en pep-n4-meta). */
+export const EJERCICIO_ACTUAL = 2026
+export const EJERCICIO_PLANIFICACION = 2027
 export const banderaPaisOpciones = [
   { emoji: '🇦🇷', label: 'Argentina' },
   { emoji: '🇧🇷', label: 'Brasil' },

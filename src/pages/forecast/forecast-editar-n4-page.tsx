@@ -52,6 +52,11 @@ export function ForecastEditarN4Page() {
               <Button variant="outline" size="sm" onClick={() => downloadForecastN4Xlsx(round.titulo, s.lineasVisibles, s.cutoff)}>
                 <Icon name="download" size={12} color="#0047B0" /> Descargar
               </Button>
+              {!readOnly && (
+                <Button variant="outline" size="sm" onClick={() => navigate('/reporte-ejercicio-curso?vista=gestion&sub=forecast')}>
+                  <Icon name="chart" size={12} color="currentColor" /> Ver en destino
+                </Button>
+              )}
               <EstadoBadge estado={round.estado} cerradoManual={round.cerradoManual} />
             </div>
           }

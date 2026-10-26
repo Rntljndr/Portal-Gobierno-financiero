@@ -7,8 +7,8 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: 'bg-cs-azul text-white hover:bg-[#003685]',
-        outline: 'border border-[#B6CCF7] bg-white text-primary hover:bg-surface-hover',
+        primary: 'bg-cs-azul text-white hover:bg-primary-hover',
+        outline: 'border border-info-line bg-white text-primary hover:bg-surface-hover',
         onBlue: 'border border-white/28 bg-white/14 text-white hover:bg-white/22',
         onGreenCard: 'border border-success-line bg-white text-success hover:border-success',
         ghost: 'bg-transparent text-primary hover:bg-transparent hover:text-cs-azul-oscuro',

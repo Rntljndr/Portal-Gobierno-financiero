@@ -22,6 +22,12 @@
   --color-ok-line: #abefc6;
 
   --font-sans: 'Montserrat', system-ui, -apple-system, sans-serif;
+
+  /* Design system (skill): escala tipográfica xxs = 10px (labels de KPI), Shadow-M y hover de acción */
+  --text-xxs: 10px;
+  --text-xxs--line-height: 1.4;
+  --shadow-m: 0 2px 15px -3px #0006;
+  --color-primary-hover: #003685;
 }
 
 /* Capa semántica: alias con significado, consumidos por los componentes */
@@ -55,6 +61,16 @@
   --border-table: #f1f3f8;
   --border-table-strong: #e4eaf6;
   --surface-hover: #f0f6ff;
+  /* Design system (skill): superficie elevada (Drw-config-row, Tag Gray), track de barras, feedback info */
+  --surface-elevated: #f3f5fc;
+  --surface-subtle: #f8fafc;
+  --chart-track: #eef1fb;
+  --info: var(--color-cs-azul);
+  --info-surface: #eff4ff;
+  --info-line: #b6ccf7;
+  --surface-disabled: #edeff4;
+  --text-disabled: #b0b7c9;
+  --chart-warning: #f59e0b;
   --ring: var(--color-cs-azul);
 
   /* Subgrupo específico de superficie: el sidebar es azul oscuro, no reusa los tokens de UI clara */
@@ -95,6 +111,15 @@
   --color-border-table: var(--border-table);
   --color-border-table-strong: var(--border-table-strong);
   --color-surface-hover: var(--surface-hover);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-chart-track: var(--chart-track);
+  --color-info: var(--info);
+  --color-info-surface: var(--info-surface);
+  --color-info-line: var(--info-line);
+  --color-surface-disabled: var(--surface-disabled);
+  --color-text-disabled: var(--text-disabled);
+  --color-chart-warning: var(--chart-warning);
   --color-ring: var(--ring);
 
   --color-sidebar-bg: var(--sidebar-bg);
@@ -108,4 +133,15 @@ body {
   background-color: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sans);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

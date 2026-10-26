@@ -1,4 +1,4 @@
-import { Button, BulkUploadDropzone, Drawer, Icon } from '@/shared/ui'
+import { Alert, Button, BulkUploadDropzone, Drawer, Icon } from '@/shared/ui'
 import { formatForecastAmount } from '../lib/format-forecast-amount'
 import type { useForecastCargaMasiva } from '../lib/use-forecast-carga-masiva'
 
@@ -33,9 +33,7 @@ export function ForecastCargaMasivaDrawer({ cm, onDownloadTemplate }: ForecastCa
       {cm.step === 'result' && cm.result && <ResultView result={cm.result} />}
 
       {cm.step === 'done' && (
-        <div className="flex items-center gap-2 rounded-lg border border-success-line bg-success-surface p-3 text-[12.5px] text-success">
-          <Icon name="check" size={14} color="currentColor" /> Carga masiva aplicada correctamente.
-        </div>
+        <Alert variant="success" icon="check" title="Carga masiva aplicada correctamente." />
       )}
 
       <div className="mt-6 flex justify-end gap-2.5">
@@ -59,10 +57,20 @@ function ResultView({ result }: { result: NonNullable<ReturnType<typeof useForec
   if (result.errorCount > 0) {
     return (
       <div>
-        <div className="mb-2 flex items-center gap-2 rounded-lg border border-destructive-line bg-destructive-surface p-3 text-[12.5px] text-destructive">
-          <Icon name="alert" size={14} color="currentColor" />
-          {result.errorCount} fila{result.errorCount === 1 ? '' : 's'} con errores — no se aplicó ningún cambio. Corregí el archivo y volvé a subirlo.
-        </div>
+        <Alert
+          variant="error"
+          className="mb-2"
+          title={
+            <>
+              <strong className="font-bold">
+                {result.errorCount} fila{result.errorCount === 1 ? '' : 's'} con errores
+              </strong>{' '}
+              — no se aplicó ningún cambio
+            </>
+          }
+        >
+          Corrige el archivo y vuelve a subirlo.
+        </Alert>
         <div className="max-h-[320px] overflow-y-auto rounded-lg border border-border">
           {result.rows
             .filter((r) => !r.ok)

@@ -28,7 +28,7 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        'flex shrink-0 flex-col text-sidebar-foreground transition-[width,min-width] duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]',
+        'flex h-full shrink-0 flex-col overflow-hidden text-sidebar-foreground transition-[width,min-width] duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]',
         collapsed ? 'w-14 min-w-14' : 'w-60 min-w-60',
       )}
       style={{ background: 'linear-gradient(180deg, var(--color-sidebar-bg) 0%, var(--color-sidebar-bg-2) 100%)' }}

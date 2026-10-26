@@ -1,9 +1,9 @@
 import { monthKeys, monthLabels, pepN4Tablon } from './reporteria'
-import { pepN4Meta } from './pep-n4-meta'
+import { pepN4Meta, type PepRubro } from './pep-n4-meta'
 import { buildSubPeps, CON_SUBPEPS, type PepSubPep } from './pep-subpeps'
 
 export { monthKeys, monthLabels }
-export type { PepSubPep }
+export type { PepSubPep, PepRubro }
 
 /** Meses ya cerrados (con real reportado); el resto del año queda en forecast. */
 export const REALES_LAST_CLOSED = 7
@@ -27,6 +27,11 @@ export interface RealesRow {
   bandera: string
   cuentaContable: string
   moneda: string
+  /** Vocabulario de rubro del design system (`PepN4Meta.rubro`) — ya venía en cada fila vía `enrich()`,
+   * solo faltaba declararlo acá. */
+  rubro: PepRubro
+  /** Responsable de cuenta — ya venía en cada fila vía `enrich()`, solo faltaba declararlo acá. */
+  responsableCuenta: string
   subPeps?: PepSubPep[]
   /** Ajuste R4: PEP con reales en 2026 que no forma parte del universo de Presupuesto 2026 (viene de SAP sin PEP presupuestado). */
   sinPresupuesto?: boolean
@@ -58,7 +63,13 @@ const presupuestoRows: RealesN4Row[] = pepN4Tablon.map((n4) => ({
  * Ajuste R4/R10: PEPs con reales en 2026 que llegan directo de SAP sin PEP presupuestado — nómina del DF, amortizaciones,
  * gastos de oficina y gastos sin PEP, cargados manualmente por Control de Gestión (Ajuste R10) mes a mes.
  */
-function sinPresupuestoRow(codigo: string, nombre: string, meses: Record<string, number>): RealesN4Row {
+function sinPresupuestoRow(
+  codigo: string,
+  nombre: string,
+  meses: Record<string, number>,
+  rubro: PepRubro,
+  responsableCuenta: string,
+): RealesN4Row {
   const base: RealesRow = {
     codigo,
     nombre,
@@ -74,6 +85,8 @@ function sinPresupuestoRow(codigo: string, nombre: string, meses: Record<string,
     bandera: 'Cencosud',
     cuentaContable: 'CA-9000',
     moneda: 'USD',
+    rubro,
+    responsableCuenta,
     sinPresupuesto: true,
     tipoActualizacion: 'manual',
   }
@@ -81,10 +94,10 @@ function sinPresupuestoRow(codigo: string, nombre: string, meses: Record<string,
 }
 
 const sinPresupuestoRows: RealesN4Row[] = [
-  sinPresupuestoRow('SAP-2026-901', 'Nómina del DF', { ene: 210, feb: 205, mar: 215, abr: 208, may: 220, jun: 218, jul: 212, ago: 0, sep: 0, oct: 0, nov: 0, dic: 0 }),
-  sinPresupuestoRow('SAP-2026-902', 'Amortizaciones', { ene: 95, feb: 95, mar: 95, abr: 95, may: 95, jun: 95, jul: 95, ago: 0, sep: 0, oct: 0, nov: 0, dic: 0 }),
-  sinPresupuestoRow('SAP-2026-903', 'Gastos de Oficina', { ene: 42, feb: 38, mar: 45, abr: 40, may: 47, jun: 43, jul: 41, ago: 0, sep: 0, oct: 0, nov: 0, dic: 0 }),
-  sinPresupuestoRow('SAP-2026-904', 'Gastos sin PEP', { ene: 18, feb: 22, mar: 15, abr: 25, may: 19, jun: 21, jul: 17, ago: 0, sep: 0, oct: 0, nov: 0, dic: 0 }),
+  sinPresupuestoRow('SAP-2026-901', 'Nómina del DF', { ene: 210, feb: 205, mar: 215, abr: 208, may: 220, jun: 218, jul: 212, ago: 0, sep: 0, oct: 0, nov: 0, dic: 0 }, 'Nómina', 'Daniela Fuentes'),
+  sinPresupuestoRow('SAP-2026-902', 'Amortizaciones', { ene: 95, feb: 95, mar: 95, abr: 95, may: 95, jun: 95, jul: 95, ago: 0, sep: 0, oct: 0, nov: 0, dic: 0 }, 'Amortizaciones', 'Marcela Soto'),
+  sinPresupuestoRow('SAP-2026-903', 'Gastos de Oficina', { ene: 42, feb: 38, mar: 45, abr: 40, may: 47, jun: 43, jul: 41, ago: 0, sep: 0, oct: 0, nov: 0, dic: 0 }, 'OPEX', 'Daniela Fuentes'),
+  sinPresupuestoRow('SAP-2026-904', 'Gastos sin PEP', { ene: 18, feb: 22, mar: 15, abr: 25, may: 19, jun: 21, jul: 17, ago: 0, sep: 0, oct: 0, nov: 0, dic: 0 }, 'OPEX', 'Daniela Fuentes'),
 ]
 
 export const realesRows: RealesN4Row[] = [...presupuestoRows, ...sinPresupuestoRows]

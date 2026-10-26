@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { Button, ColumnsDrawer, Icon } from '@/shared/ui'
 import { ReporteriaHeader } from './components/page-header'
 import { FiltersPanel } from './components/filters-panel'
@@ -13,13 +14,14 @@ import { useReporteriaPageState } from './lib/use-reporteria-page-state'
 
 const TOGGLEABLE_STICKY_COLS = ALL_STICKY_COLS.filter((c) => c.toggleable)
 
-export function ReporteriaPage() {
+/** `selector`: dentro del Reporte de plan, las tarjetas para cambiar de reporte. */
+export function ReporteriaPage({ selector }: { selector?: ReactNode } = {}) {
   const s = useReporteriaPageState()
   const applied = s.filtersState.applied
 
   return (
     <div className="h-full overflow-y-auto">
-      <ReporteriaHeader forecastVersion={s.filtersState.draft.forecastVersion} savedConfigsState={s.savedConfigsState} />
+      <ReporteriaHeader forecastVersion={s.filtersState.draft.forecastVersion} savedConfigsState={s.savedConfigsState} selector={selector} />
       <FiltersPanel
         draft={s.filtersState.draft}
         onChange={s.filtersState.onChange}

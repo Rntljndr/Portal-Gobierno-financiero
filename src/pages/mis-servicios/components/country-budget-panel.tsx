@@ -1,21 +1,29 @@
 import { useState } from 'react'
 import { Icon } from '@/shared/ui'
 import { cn } from '@/shared/lib/utils'
-import { budgetByDestino, budgetByOrigen } from '../lib/budget-by-country'
+import type { CountryCardData } from '../lib/budget-by-country'
 import { CountryBudgetCard } from './country-budget-card'
-import type { Servicio } from '@/data/services'
 
-export function CountryBudgetPanel({ services }: { services: Servicio[] }) {
+type Vista = 'origen' | 'destino'
+
+interface CountryBudgetPanelProps {
+  titulo: string
+  /** Las tarjetas de país según la vista elegida (origen / destino). */
+  rows: (vista: Vista) => CountryCardData[]
+}
+
+/** Panel azul "por país" de las vistas de ejercicio: tarjetas por país con origen / destino. */
+export function CountryBudgetPanel({ titulo, rows: rowsDe }: CountryBudgetPanelProps) {
   const [open, setOpen] = useState(true)
-  const [vista, setVista] = useState<'origen' | 'destino'>('origen')
-  const rows = vista === 'destino' ? budgetByDestino(services) : budgetByOrigen(services)
+  const [vista, setVista] = useState<Vista>('origen')
+  const rows = rowsDe(vista)
 
   return (
     <div className="mx-8 mb-7 rounded-[18px] bg-[linear-gradient(180deg,var(--color-cs-azul)_0%,#003685_100%)] p-5.5">
       <div className={cn('flex items-center gap-4', open && 'mb-4.5')}>
         <button type="button" onClick={() => setOpen((v) => !v)} className="min-w-0 flex-1 text-left">
           <div className="text-[17px] leading-tight font-extrabold tracking-tight text-white">
-            Presupuesto 2027 por país
+            {titulo}
           </div>
           <div className="mt-0.5 text-xs text-white/72">
             {vista === 'destino'

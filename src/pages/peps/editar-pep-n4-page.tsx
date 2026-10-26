@@ -24,7 +24,7 @@ export function EditarPepN4Page() {
       <Breadcrumb
         items={[
           { label: 'SIP', to: '/' },
-          { label: 'Administración', to: '/administracion/peps' },
+          { label: 'Administración', to: '/administracion' },
           { label: 'ABM PEPS – Nivel 4', to: '/administracion/peps' },
           { label: s.pep.pep },
         ]}

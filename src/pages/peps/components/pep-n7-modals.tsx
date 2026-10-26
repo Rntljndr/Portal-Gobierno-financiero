@@ -36,7 +36,17 @@ export function PepN7Modals({
 
       <CrearEditarPepN7Drawer open={n7DrawerOpen} onClose={onN7DrawerClose} editing={n7Editing} pepCodigo={pep.pep} onSubmit={onN7Submit} />
 
-      <BulkUploadDrawer open={masivoOpen} onClose={onMasivoClose} title="Crear PEP N7 masivamente" applyLabel="Aplicar carga masiva" onApplied={onMasivoApplied} />
+      <BulkUploadDrawer
+        open={masivoOpen}
+        onClose={onMasivoClose}
+        title="Crear PEP N7 masivamente"
+        subtitle="Sube un archivo .xlsx con los PEP N7 a crear."
+        infoNote="Cada PEP N7 se crea en los ejercicios abiertos donde su PEP N4 tenga presupuesto. Si el PEP N4 solo existe en el ejercicio en planificación, el PEP N7 se crea solo ahí."
+        applyLabel="Aplicar carga masiva"
+        accept=".csv,.xlsx"
+        hint="Formatos aceptados: .csv, .xlsx"
+        onApplied={onMasivoApplied}
+      />
 
       <Modal
         open={deleteRow !== null}

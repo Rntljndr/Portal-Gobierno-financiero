@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import { Breadcrumb, Icon, PageHeader, SegmentedTabs } from '@/shared/ui'
 import { servicios, type Pais } from '@/data/services'
 import { currencyViews, type CurrencyView } from '@/data/reporteria'
@@ -19,7 +19,10 @@ const BREADCRUMB_TRAILS: Record<'default' | 'reportes', { label: string; to?: st
   reportes: [{ label: 'SIP', to: '/' }, { label: 'Reportes', to: '/reportes' }, { label: 'Tecnología' }],
 }
 
-export function ConsolidadoPage() {
+const TRAIL_PLAN = [{ label: 'SIP', to: '/' }, { label: 'Reporte de plan' }]
+
+/** `selector`: dentro del Reporte de plan, las tarjetas para cambiar de reporte (el encabezado pasa a ser el del plan). */
+export function ConsolidadoPage({ selector }: { selector?: ReactNode } = {}) {
   const breadcrumbFrom = useBreadcrumbFrom()
   const [vista, setVista] = useState<CurrencyView>('dolar')
   const [paisMoneda, setPaisMoneda] = useState<Pais | null>(null)
@@ -36,10 +39,10 @@ export function ConsolidadoPage() {
 
   return (
     <div className="h-full overflow-y-auto">
-      <Breadcrumb items={BREADCRUMB_TRAILS[breadcrumbFrom === 'reportes' ? 'reportes' : 'default']} />
+      <Breadcrumb items={selector ? TRAIL_PLAN : BREADCRUMB_TRAILS[breadcrumbFrom === 'reportes' ? 'reportes' : 'default']} />
       <PageHeader
-        title="Reporte Tecnología Cencosud"
-        subtitle="Propuesta de plan, composición del gasto y distribución regional."
+        title={selector ? 'Reporte de plan' : 'Reporte Tecnología Cencosud'}
+        subtitle={selector ? undefined : 'Propuesta de plan, composición del gasto y distribución regional.'}
         action={
           <div className="flex flex-col items-end gap-1.5">
             <div className="flex items-center gap-3">
@@ -60,6 +63,7 @@ export function ConsolidadoPage() {
           </div>
         }
       />
+      {selector && <div className="mx-8 mb-6">{selector}</div>}
 
       <ConsolidadoFiltersBar
         filters={filters}

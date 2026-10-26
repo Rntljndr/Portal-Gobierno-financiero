@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import { Breadcrumb, PageHeader, SegmentedTabs, type VistaNumero } from '@/shared/ui'
 import { currencyViews, type CurrencyView } from '@/data/reporteria'
 import { useBreadcrumbFrom } from '@/shared/lib/breadcrumb-origin'
@@ -19,7 +19,10 @@ const BREADCRUMB_TRAILS: Record<'default' | 'reportes', { label: string; to?: st
   reportes: [{ label: 'SIP', to: '/' }, { label: 'Reportes', to: '/reportes' }, { label: 'Reporte Negocio' }],
 }
 
-export function ReporteDireccionPage() {
+const TRAIL_PLAN = [{ label: 'SIP', to: '/' }, { label: 'Reporte de plan' }]
+
+/** `selector`: dentro del Reporte de plan, las tarjetas para cambiar de reporte (el encabezado pasa a ser el del plan). */
+export function ReporteDireccionPage({ selector }: { selector?: ReactNode } = {}) {
   const breadcrumbFrom = useBreadcrumbFrom()
   const { filters, onChange, activeCount } = useDireccionFilters()
   const [vista, setVista] = useState<CurrencyView>('dolar')
@@ -36,10 +39,10 @@ export function ReporteDireccionPage() {
 
   return (
     <div className="h-full overflow-y-auto">
-      <Breadcrumb items={BREADCRUMB_TRAILS[breadcrumbFrom === 'reportes' ? 'reportes' : 'default']} />
+      <Breadcrumb items={selector ? TRAIL_PLAN : BREADCRUMB_TRAILS[breadcrumbFrom === 'reportes' ? 'reportes' : 'default']} />
       <PageHeader
-        title="Reporte Negocio"
-        subtitle="Consolidado ejecutivo por país, división y bandera"
+        title={selector ? 'Reporte de plan' : 'Reporte Negocio'}
+        subtitle={selector ? undefined : 'Consolidado ejecutivo por país, división y bandera'}
         action={
           <div className="flex items-center gap-3">
             <div className="text-[12.5px] font-semibold text-primary">Ver montos por</div>
@@ -51,6 +54,7 @@ export function ReporteDireccionPage() {
           </div>
         }
       />
+      {selector && <div className="mx-8 mb-6">{selector}</div>}
       <DireccionFiltersPanel filters={filters} onChange={onChange} activeCount={activeCount} />
       <DireccionCountrySummary
         tree={summaryTree}

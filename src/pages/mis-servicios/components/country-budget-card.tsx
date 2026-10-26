@@ -1,8 +1,8 @@
 import { Icon } from '@/shared/ui'
 import { paisFlag } from '@/data/services'
-import type { CountryBudgetRow } from '../lib/budget-by-country'
+import type { CardTone, CountryCardData } from '../lib/budget-by-country'
 
-function MetricRow({ label, value, tone }: { label: string; value: React.ReactNode; tone?: 'up' | 'down' | 'ipc' | 'hl' | 'muted' }) {
+function MetricRow({ label, value, tone }: { label: string; value: React.ReactNode; tone?: CardTone }) {
   // Bug corregido: "up" significa que Forecast+IPC subió respecto a Forecast base (gasto al alza) — debe
   // verse en rojo, no en verde. Estaba invertido (mismo bug que service-card-metrics.tsx).
   const toneClass =
@@ -17,7 +17,8 @@ function MetricRow({ label, value, tone }: { label: string; value: React.ReactNo
 
 const EmptyValue = () => <span className="inline-block h-0 w-[22px] border-b-2 border-[#C2C8D4] align-middle" />
 
-export function CountryBudgetCard({ c, onViewFx }: { c: CountryBudgetRow; onViewFx: () => void }) {
+/** Tarjeta de país del panel "por país": encabezado con país y moneda y las métricas que arma cada vista. */
+export function CountryBudgetCard({ c, onViewFx }: { c: CountryCardData; onViewFx: () => void }) {
   return (
     <div className="rounded-2xl bg-white p-[11px_10px] shadow-[0_1px_2px_rgba(6,20,60,0.05),0_5px_14px_-6px_rgba(6,20,60,0.14)]">
       <div className="mb-1.5 flex items-center justify-between border-b border-primary/12 pb-1.5">
@@ -25,18 +26,13 @@ export function CountryBudgetCard({ c, onViewFx }: { c: CountryBudgetRow; onView
         <span className="text-[9px] font-bold tracking-wide text-[#8A90A2]">{c.moneda}</span>
       </div>
       <div className="flex flex-col gap-1">
-        <MetricRow label="Plan" value={c.empty ? <EmptyValue /> : c.plan} />
-        <MetricRow label="Forecast base" value={c.empty ? <EmptyValue /> : c.base} tone="muted" />
-        <MetricRow label="Forecast + IPC" value={c.empty ? <EmptyValue /> : c.fcIpc} tone="hl" />
-        <div className="my-px h-px bg-border" />
-        <MetricRow label="Variación $" value={c.empty ? <EmptyValue /> : c.varAbs} tone={c.empty ? undefined : c.up ? 'up' : 'down'} />
-        <MetricRow
-          label="Variación %"
-          value={c.empty ? <EmptyValue /> : <>{c.varPct}<span className="ml-1 text-[13px]">{c.up ? '↗' : '↘'}</span></>}
-          tone={c.empty ? undefined : c.up ? 'up' : 'down'}
-        />
-        <div className="my-px h-px bg-border" />
-        <MetricRow label="IPC" value={c.empty ? <EmptyValue /> : c.ipc} tone={c.empty ? undefined : 'ipc'} />
+        {c.metricas.map((m, i) =>
+          m === 'sep' ? (
+            <div key={i} className="my-px h-px bg-border" />
+          ) : (
+            <MetricRow key={m.label} label={m.label} value={c.empty ? <EmptyValue /> : m.value} tone={c.empty ? undefined : m.tone} />
+          ),
+        )}
       </div>
       {c.empty ? (
         <div className="mt-2.5 border-t border-dashed border-border pt-2 text-center text-[10px] font-semibold tracking-wide text-[#98A0AE] uppercase">

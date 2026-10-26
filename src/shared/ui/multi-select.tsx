@@ -31,7 +31,7 @@ export function MultiSelect({ placeholder, options, values, onChange }: MultiSel
       <Popover.Trigger asChild>
         <button
           type="button"
-          className="flex h-[38px] w-full items-center gap-2 rounded-lg border border-border bg-white px-3 text-left text-[12.5px] text-foreground hover:border-border-strong"
+          className="flex h-[38px] w-full items-center gap-2 rounded-lg border border-border bg-white px-3 text-left text-xs text-foreground hover:border-border-strong"
         >
           <div className="flex min-w-0 flex-1 flex-wrap gap-1 overflow-hidden">
             {values.length === 0 ? (
@@ -40,16 +40,18 @@ export function MultiSelect({ placeholder, options, values, onChange }: MultiSel
               values.map((v) => (
                 <span
                   key={v}
-                  className="relative inline-flex items-center gap-1 rounded-full bg-[#EFF4FF] py-[3px] pr-1.5 pl-2 text-[11px] font-semibold text-primary"
+                  className="relative inline-flex items-center gap-1 rounded-full bg-info-surface py-[3px] pr-2 pl-2 text-xs font-medium text-primary"
                 >
                   {v}
-                  <Icon name="x_close" size={10} color="#0047B0" />
+                  <Icon name="x_close" size={10} color="currentColor" />
                   <span className="absolute inset-y-0 right-0.5 w-4 cursor-pointer" onClick={(e) => remove(v, e)} />
                 </span>
               ))
             )}
           </div>
-          <Icon name="chevron_down" size={14} color="#8A90A2" />
+          <span className="text-muted-foreground">
+            <Icon name="chevron_down" size={14} color="currentColor" />
+          </span>
         </button>
       </Popover.Trigger>
       <Popover.Portal>

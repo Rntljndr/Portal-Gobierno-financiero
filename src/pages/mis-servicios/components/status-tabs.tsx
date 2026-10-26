@@ -2,10 +2,12 @@ import { cn } from '@/shared/lib/utils'
 
 export type StatusTab = 'todos' | 'pendientes' | 'enviados' | 'aprobados'
 
-interface StatusTabsProps {
-  active: StatusTab
-  onChange: (tab: StatusTab) => void
-  counts: Record<StatusTab, number>
+interface StatusTabsProps<K extends string> {
+  active: K
+  onChange: (tab: K) => void
+  counts: Record<K, number>
+  /** Pestañas; por defecto, los estados del ejercicio en planificación. */
+  tabs?: { key: K; label: string }[]
 }
 
 const TABS: { key: StatusTab; label: string }[] = [
@@ -15,10 +17,11 @@ const TABS: { key: StatusTab; label: string }[] = [
   { key: 'aprobados', label: 'Validado' },
 ]
 
-export function StatusTabs({ active, onChange, counts }: StatusTabsProps) {
+export function StatusTabs<K extends string = StatusTab>({ active, onChange, counts, tabs }: StatusTabsProps<K>) {
+  const lista = tabs ?? (TABS as unknown as { key: K; label: string }[])
   return (
     <div className="flex flex-1 gap-1 border-b border-border">
-      {TABS.map((tab) => {
+      {lista.map((tab) => {
         const isActive = active === tab.key
         return (
           <button

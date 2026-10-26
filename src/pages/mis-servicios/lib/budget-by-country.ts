@@ -1,7 +1,20 @@
 import { convertMoneda, getDestinos, paisIpc, paisLabel, paisMoneda, paises, type Pais, type Servicio } from '@/data/services'
 import { formatCompact } from '@/shared/lib/format'
 
-export interface CountryBudgetRow {
+export type CardTone = 'up' | 'down' | 'ipc' | 'hl' | 'muted'
+/** Fila de una tarjeta de país ('sep' = separador). */
+export type CardMetric = { label: string; value: string; tone?: CardTone } | 'sep'
+
+/** Datos de una tarjeta de país del panel "por país" (genérica: cada vista arma sus métricas). */
+export interface CountryCardData {
+  pais: Pais
+  label: string
+  moneda: string
+  empty: boolean
+  metricas: CardMetric[]
+}
+
+export interface CountryBudgetRow extends CountryCardData {
   pais: Pais
   label: string
   moneda: string
@@ -20,7 +33,7 @@ function summarize(pais: Pais, plan: number, base: number, fcIpc: number, empty:
   const varPct = base ? (varAbs / base) * 100 : 0
   const up = varAbs >= 0
   const ipc = paisIpc[pais]
-  return {
+  const r = {
     pais,
     label: paisLabel[pais] ?? pais.toUpperCase(),
     moneda: paisMoneda[pais],
@@ -33,6 +46,18 @@ function summarize(pais: Pais, plan: number, base: number, fcIpc: number, empty:
     up,
     ipc: ipc != null ? `${ipc.toFixed(1)}%` : '—',
   }
+  const tone: CardTone = up ? 'up' : 'down'
+  const metricas: CardMetric[] = [
+    { label: 'Plan', value: r.plan },
+    { label: 'Forecast base', value: r.base, tone: 'muted' },
+    { label: 'Forecast + IPC', value: r.fcIpc, tone: 'hl' },
+    'sep',
+    { label: 'Variación $', value: r.varAbs, tone },
+    { label: 'Variación %', value: `${r.varPct} ${up ? '↗' : '↘'}`, tone },
+    'sep',
+    { label: 'IPC', value: r.ipc, tone: 'ipc' },
+  ]
+  return { ...r, metricas }
 }
 
 export function budgetByOrigen(services: Servicio[]): CountryBudgetRow[] {

@@ -9,6 +9,13 @@ export const GLYPHS_A: Partial<Record<IconName, (p: GlyphProps) => React.ReactNo
       <rect x="11" y="11" width="7" height="7" rx="1.8" stroke={color} strokeWidth={sw} />
     </svg>
   ),
+  home: ({ s, color, sw }) => (
+    <svg width={s} height={s} viewBox="0 0 20 20" fill="none">
+      <path d="M3 9.5L10 3l7 6.5" stroke={color} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M5 8v8a1 1 0 001 1h8a1 1 0 001-1V8" stroke={color} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M8 17v-4a1 1 0 011-1h2a1 1 0 011 1v4" stroke={color} strokeWidth={sw} strokeLinejoin="round" />
+    </svg>
+  ),
   calendar: ({ s, color, sw }) => (
     <svg width={s} height={s} viewBox="0 0 20 20" fill="none">
       <rect x="2.5" y="4" width="15" height="13.5" rx="2" stroke={color} strokeWidth={sw} />

@@ -27,13 +27,13 @@ export function Select({ value, onChange, options, placeholder = 'Seleccionar...
     <SelectPrimitive.Root value={value} onValueChange={onChange} disabled={disabled}>
       <SelectPrimitive.Trigger
         className={cn(
-          'flex h-[38px] w-full items-center justify-between gap-2 rounded-lg border border-border bg-white px-3 text-left text-[12.5px] text-foreground outline-none hover:border-border-strong data-[placeholder]:text-muted-foreground data-[disabled]:cursor-not-allowed data-[disabled]:opacity-60',
+          'flex h-[38px] w-full items-center justify-between gap-2 rounded-lg border border-border bg-white px-3 text-left text-xs text-foreground outline-none hover:border-border-strong data-[placeholder]:text-muted-foreground data-[disabled]:cursor-not-allowed data-[disabled]:opacity-60',
           className,
         )}
       >
         <SelectPrimitive.Value placeholder={placeholder} />
-        <SelectPrimitive.Icon>
-          <Icon name="chevron_down" size={14} color="#8A90A2" />
+        <SelectPrimitive.Icon className="text-muted-foreground">
+          <Icon name="chevron_down" size={14} color="currentColor" />
         </SelectPrimitive.Icon>
       </SelectPrimitive.Trigger>
       <SelectPrimitive.Portal>
@@ -47,7 +47,7 @@ export function Select({ value, onChange, options, placeholder = 'Seleccionar...
               <SelectPrimitive.Item
                 key={opt.value}
                 value={opt.value}
-                className="flex cursor-pointer items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-[12.5px] text-foreground outline-none data-[highlighted]:bg-surface-hover data-[state=checked]:bg-primary/10 data-[state=checked]:font-semibold data-[state=checked]:text-primary"
+                className="flex cursor-pointer items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-xs text-foreground outline-none data-[highlighted]:bg-surface-hover data-[state=checked]:bg-primary/10 data-[state=checked]:font-bold data-[state=checked]:text-primary"
               >
                 <SelectPrimitive.ItemText>{opt.label}</SelectPrimitive.ItemText>
                 <SelectPrimitive.ItemIndicator>

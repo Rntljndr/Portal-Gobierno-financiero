@@ -11,6 +11,7 @@ import { ServicesSection } from './components/services-section'
 import { SendBar } from './components/send-bar'
 import { MisServiciosModals, type OpenModal } from './components/mis-servicios-modals'
 import { useMisServicios } from './lib/use-mis-servicios'
+import { budgetByDestino, budgetByOrigen } from './lib/budget-by-country'
 
 export function MisServiciosPage() {
   const navigate = useNavigate()
@@ -29,7 +30,7 @@ export function MisServiciosPage() {
         {showDeadline && <DeadlineBanner deadline={deadline} onDismiss={() => setShowDeadline(false)} />}
         <EditElementsTabs />
         <FilterBar filters={state.filters} onChange={state.onChangeFilter} onClear={state.clearFilters} />
-        <CountryBudgetPanel services={state.filteredAll} />
+        <CountryBudgetPanel titulo="Presupuesto 2027 por país" rows={(v) => (v === 'destino' ? budgetByDestino(state.filteredAll) : budgetByOrigen(state.filteredAll))} />
         <ServicesSection
           state={state}
           onOpenModal={setOpenModal}

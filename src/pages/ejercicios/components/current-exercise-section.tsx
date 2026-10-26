@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router'
 import { Icon, Button } from '@/shared/ui'
 import { currentExercise } from '@/data/exercises'
 
@@ -19,6 +20,8 @@ const cardClasses =
   'relative flex items-center gap-3 overflow-hidden rounded-2xl bg-[linear-gradient(95deg,var(--color-cs-azul-oscuro)_0%,var(--color-cs-azul)_60%,var(--color-cs-azul-claro)_140%)] p-[14px_18px] text-white'
 
 export function CurrentExerciseSection() {
+  const navigate = useNavigate()
+
   return (
     <>
       <div className="px-8 pb-2.5 text-[10.5px] font-bold tracking-[0.14em] text-muted-foreground uppercase">
@@ -38,7 +41,7 @@ export function CurrentExerciseSection() {
               <div className="mt-0.5 text-[11.5px] text-white/85">{currentExercise.description}</div>
             </div>
           </div>
-          <Button variant="onBlue" size="sm" className="relative z-1 ml-auto">
+          <Button variant="onBlue" size="sm" className="relative z-1 ml-auto" onClick={() => navigate('/ejercicios/en-curso')}>
             Ir <Icon name="chevron_right" size={11} color="#fff" />
           </Button>
         </div>
@@ -49,14 +52,12 @@ export function CurrentExerciseSection() {
               <Icon name="chart" size={18} color="#fff" />
             </div>
             <div className="relative z-1 min-w-0">
-              <div className="mb-0.5 text-[9.5px] font-bold tracking-[0.14em] text-white/70 uppercase">Reportería</div>
-              <div className="text-[15px] leading-tight font-bold tracking-tight">
-                Reportería de Ejercicio en curso {currentExercise.year}
-              </div>
-              <div className="mt-0.5 text-[11.5px] text-white/85">Información del ejercicio en tiempo real</div>
+              <div className="mb-0.5 text-[9.5px] font-bold tracking-[0.14em] text-white/70 uppercase">Reporte</div>
+              <div className="text-[15px] leading-tight font-bold tracking-tight">Reporte ejercicio en curso {currentExercise.year}</div>
+              <div className="mt-0.5 text-[11.5px] text-white/85">Gasto real, forecast y desvíos del año</div>
             </div>
           </div>
-          <Button variant="onBlue" size="sm" className="relative z-1 ml-auto">
+          <Button variant="onBlue" size="sm" className="relative z-1 ml-auto" onClick={() => navigate('/reporte-ejercicio-curso')}>
             Ver <Icon name="chevron_right" size={11} color="#fff" />
           </Button>
         </div>

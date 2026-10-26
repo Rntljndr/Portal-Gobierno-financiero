@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button, BulkUploadDropzone, Drawer, Icon } from '@/shared/ui'
+import { Alert, Button, BulkUploadDropzone, Drawer, Icon } from '@/shared/ui'
 import { parseImportFile, type ImportResult } from '../lib/parse-import'
 import { exportPlantillaImportacionXlsx } from '../lib/export-ingresos'
 
@@ -8,20 +8,19 @@ type Status = 'idle' | 'procesando' | 'listo' | 'error-archivo'
 function ImportResultSummary({ result }: { result: ImportResult }) {
   return (
     <div className="mt-4 space-y-2.5">
-      <div className="flex items-center gap-1.5 rounded-lg border border-success-line bg-success-surface p-3 text-[13px] font-bold text-success">
-        <Icon name="check" size={14} color="#067647" /> {result.validCount} filas válidas
-        {result.errorCount > 0 && ` · ${result.errorCount} con error`}
-      </div>
+      <Alert variant="success" icon="check" title={<strong className="font-bold">{result.validCount} filas válidas</strong>} />
       {result.errorCount > 0 && (
-        <div className="max-h-[320px] space-y-1.5 overflow-y-auto rounded-lg border border-destructive-line bg-destructive-surface p-3">
-          {result.rows
-            .filter((r) => !r.ok)
-            .map((r) => (
-              <div key={r.fila} className="text-xs text-destructive">
-                <span className="font-bold">Fila {r.fila}:</span> {r.error}
-              </div>
-            ))}
-        </div>
+        <Alert variant="error" title={<strong className="font-bold">{result.errorCount} filas con error</strong>}>
+          <div className="max-h-[280px] space-y-1 overflow-y-auto">
+            {result.rows
+              .filter((r) => !r.ok)
+              .map((r) => (
+                <div key={r.fila}>
+                  <span className="font-bold">Fila {r.fila}:</span> {r.error}
+                </div>
+              ))}
+          </div>
+        </Alert>
       )}
     </div>
   )
@@ -111,9 +110,9 @@ export function ImportarIngresosDrawer({ open, onClose, ejercicio, onAplicar }: 
       )}
 
       {status === 'error-archivo' && (
-        <div className="mt-4 rounded-lg border border-destructive-line bg-destructive-surface p-3.5 text-[13px] text-destructive">
-          No se pudo leer el archivo. Verificá que sea un Excel (.xlsx/.xls) o CSV válido.
-        </div>
+        <Alert variant="error" className="mt-4" title="No se pudo leer el archivo">
+          Verifica que sea un Excel (.xlsx/.xls) o CSV válido.
+        </Alert>
       )}
 
       {status === 'listo' && result && <ImportResultSummary result={result} />}

@@ -27,9 +27,7 @@ export function ReporteriaConsolidadaPage() {
       <Breadcrumb
         items={[
           { label: 'SIP', to: '/' },
-          { label: 'Presupuesto', to: '/ejercicios' },
-          { label: 'Ejercicios', to: '/ejercicios' },
-          { label: 'Reportería', to: '/reporteria' },
+          { label: 'Reporte de plan', to: '/reporte-plan' },
           { label: 'Reportería Consolidada' },
         ]}
       />

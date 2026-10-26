@@ -24,7 +24,7 @@ export function NextExerciseSection() {
       <div className="px-8 pb-2.5 text-[10.5px] font-bold tracking-[0.14em] text-muted-foreground uppercase">
         Próximo ejercicio
       </div>
-      <div className="mx-8 mb-[18px] grid grid-cols-3 gap-[18px]">
+      <div className="mx-8 mb-[18px] grid grid-cols-2 gap-[18px]">
         <NavShortcutCard
           icon={<CalendarBadgeGreen year={nextExercise.year} />}
           label="Próximo ejercicio"
@@ -35,19 +35,11 @@ export function NextExerciseSection() {
         />
         <NavShortcutCard
           icon={<Icon name="chart" size={18} color="#1F6F47" />}
-          label="Reportería"
-          title={`Reportería próximo ejercicio ${nextExercise.year}`}
-          description="Información del próximo ejercicio en tiempo real"
+          label="Reporte"
+          title={`Reporte de plan ${nextExercise.year}`}
+          description="Reportería planificación, Negocio y Tecnología"
           buttonLabel="Ver"
-          onNavigate={() => navigate('/reporteria')}
-        />
-        <NavShortcutCard
-          icon={<Icon name="dashboard" size={18} color="#1F6F47" />}
-          label="Negocio"
-          title="Reporte Negocio"
-          description="Consolidado ejecutivo por país, división y bandera"
-          buttonLabel="Ver"
-          onNavigate={() => navigate('/reporte-direccion')}
+          onNavigate={() => navigate('/reporte-plan')}
         />
       </div>
     </>

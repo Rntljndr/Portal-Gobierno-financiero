@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Drawer } from './drawer'
 import { Button } from './button'
 import { Icon } from './icon'
+import { Alert } from './alert'
 import { BulkUploadDropzone } from './bulk-upload-dropzone'
 
 type Status = 'idle' | 'uploading' | 'success'
@@ -12,6 +13,14 @@ interface BulkUploadDrawerProps {
   onApplied: (count: number) => void
   title: string
   applyLabel: string
+  /** Texto bajo el título, p.ej. "Sube un archivo .xlsx con los PEP N7 a crear." */
+  subtitle?: string
+  /** Callout informativo opcional sobre la mecánica de la carga (p.ej. en qué ejercicios se crea cada fila). */
+  infoNote?: string
+  /** Si se pasa, muestra el link "Descargar template" bajo el dropzone. */
+  onDownloadTemplate?: () => void
+  accept?: string
+  hint?: string
 }
 
 const FAKE_ERRORS = [
@@ -19,7 +28,7 @@ const FAKE_ERRORS = [
   { line: 7, msg: 'El valor de "País" no es válido.' },
 ]
 
-export function BulkUploadDrawer({ open, onClose, onApplied, title, applyLabel }: BulkUploadDrawerProps) {
+export function BulkUploadDrawer({ open, onClose, onApplied, title, applyLabel, subtitle, infoNote, onDownloadTemplate, accept, hint }: BulkUploadDrawerProps) {
   const [fileName, setFileName] = useState('')
   const [status, setStatus] = useState<Status>('idle')
 
@@ -48,6 +57,7 @@ export function BulkUploadDrawer({ open, onClose, onApplied, title, applyLabel }
         onClose()
       }}
       title={title}
+      subtitle={subtitle}
       closeDisabled={status === 'uploading'}
       footer={
         <>
@@ -60,7 +70,21 @@ export function BulkUploadDrawer({ open, onClose, onApplied, title, applyLabel }
         </>
       }
     >
-      <BulkUploadDropzone fileName={fileName} disabled={status === 'uploading'} onFile={handleFile} />
+      {infoNote && (
+        <Alert variant="info" className="mb-4" title={infoNote} />
+      )}
+
+      <BulkUploadDropzone fileName={fileName} disabled={status === 'uploading'} onFile={handleFile} accept={accept} hint={hint} />
+
+      {onDownloadTemplate && (
+        <button
+          type="button"
+          onClick={onDownloadTemplate}
+          className="mt-3 flex items-center gap-1.5 text-[12.5px] font-semibold text-primary hover:underline"
+        >
+          <Icon name="download" size={12} color="#0047B0" /> Descargar template
+        </button>
+      )}
 
       {status === 'uploading' && (
         <div className="mt-4 flex items-center gap-2.5 text-[13px] text-cs-gris-oscuro">
@@ -70,18 +94,13 @@ export function BulkUploadDrawer({ open, onClose, onApplied, title, applyLabel }
       )}
 
       {status === 'success' && (
-        <div className="mt-4 rounded-lg border border-success-line bg-success-surface p-3.5">
-          <div className="flex items-center gap-1.5 text-[13px] font-bold text-success">
-            <Icon name="check" size={14} color="#067647" /> 8 filas procesadas correctamente
-          </div>
-          <div className="mt-2 space-y-1 border-t border-success-line pt-2">
-            {FAKE_ERRORS.map((e) => (
-              <div key={e.line} className="text-xs text-warning">
-                Línea {e.line}: {e.msg}
-              </div>
-            ))}
-          </div>
-        </div>
+        <Alert variant="success" icon="check" className="mt-4" title={<strong className="font-bold">8 filas procesadas correctamente</strong>}>
+          {FAKE_ERRORS.map((e) => (
+            <div key={e.line} className="text-warning">
+              Línea {e.line}: {e.msg}
+            </div>
+          ))}
+        </Alert>
       )}
     </Drawer>
   )

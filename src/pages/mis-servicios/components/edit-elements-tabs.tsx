@@ -1,21 +1,31 @@
 import { Link } from 'react-router'
 import { Icon, type IconName } from '@/shared/ui'
+import { contarEstructura, estructuraParaAnio, GERENCIAS_EQUIPOS_ANIOS } from '@/data/gerencias-equipos'
 
-const ITEMS: { to: string; icon: IconName; title: string; meta: string }[] = [
+const gerenciasCount = contarEstructura(estructuraParaAnio(GERENCIAS_EQUIPOS_ANIOS[0])).gerencias
+
+export interface ElementItem {
+  to: string
+  icon: IconName
+  title: string
+  meta: string
+}
+
+const ITEMS: ElementItem[] = [
   { to: '/ejercicios/mis-servicios/drivers', icon: 'drives', title: 'Drivers', meta: '199 elementos' },
   { to: '/ejercicios/mis-servicios/cecos', icon: 'ceco', title: 'Centros de costo', meta: '354 elementos' },
   { to: '/ejercicios/mis-servicios/banderas', icon: 'flag', title: 'Banderas', meta: '120 elementos' },
-  { to: '/administracion/peps', icon: 'config', title: 'ABM PEPS N4', meta: '8 elementos' },
+  { to: '/administracion/gerencias-equipos', icon: 'config', title: 'Gerencias y Equipos', meta: `${gerenciasCount} gerencias` },
 ]
 
-export function EditElementsTabs() {
+/** Accesos a los elementos del ejercicio. Por defecto, los de planificación (drivers, cecos, banderas,
+ * gerencias); el ejercicio en curso pasa los suyos (forecast, reales, preliminares, reporte). */
+export function EditElementsTabs({ titulo = 'Editar elementos del ejercicio', items = ITEMS }: { titulo?: string; items?: ElementItem[] } = {}) {
   return (
     <>
-      <div className="mx-8 mt-2.5 mb-2.5 text-[11px] font-bold tracking-[0.16em] text-[#5B6478] uppercase">
-        Editar elementos del ejercicio
-      </div>
+      <div className="mx-8 mt-2.5 mb-2.5 text-[11px] font-bold tracking-[0.16em] text-[#5B6478] uppercase">{titulo}</div>
       <div className="mx-8 mb-[22px] flex gap-3.5 rounded-2xl border border-[#DCE4F0] bg-[linear-gradient(180deg,#F4F7FB_0%,#EAEFF7_100%)] p-5.5">
-        {ITEMS.map((item) => (
+        {items.map((item) => (
           <Link
             key={item.to}
             to={item.to}
